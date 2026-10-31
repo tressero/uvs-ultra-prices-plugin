@@ -97,7 +97,7 @@ uninstall the extension.</p>
 <p>Prices are informational. Always confirm on TCGplayer before buying.</p>
 
 <h2>Contact</h2>
-<p>Email <a href="mailto:marc@ochsner.me">marc@ochsner.me</a>.</p>
+<p>Email <a href="mailto:marcaochsner+uvs@gmail.com">marcaochsner+uvs@gmail.com</a>.</p>
 
 <h2>Changes</h2>
 <p>If this policy changes, the date above changes with it, and the extension's store

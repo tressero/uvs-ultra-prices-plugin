@@ -59,7 +59,7 @@ Prices are informational. Always confirm on TCGplayer before buying.
 
 ## Contact
 
-Email <marc@ochsner.me>.
+Email <marcaochsner+uvs@gmail.com>.
 
 ## Source
 

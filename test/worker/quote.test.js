@@ -202,7 +202,7 @@ describe('human-facing pages', () => {
     const response = await worker.fetch(new Request('https://prices.test/privacy'), ENV(), fakeCtx());
     const body = await response.text();
     expect(body).toContain('uvs-ultra-prices.marc-ee2.workers.dev');
-    expect(body).toContain('marc@ochsner.me');
+    expect(body).toContain('marcaochsner+uvs@gmail.com');
     expect(body).toContain('No remote code');
   });
 
