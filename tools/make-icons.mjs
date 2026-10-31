@@ -1,127 +1,65 @@
 /**
- * Generate the extension icons (a dollar sign on the site's blue) without any
- * binary assets checked in or an image library.
+ * Render the extension icons with a real browser, so the glyph is crisp at
+ * every size instead of a hand-plotted bitmap.
  *
  *   node tools/make-icons.mjs
+ *
+ * Requires Playwright's Chromium (already a dev dependency). The PNGs are
+ * committed, so this only needs to run when the mark changes.
  */
-import { mkdir, writeFile } from 'node:fs/promises';
+import { chromium } from 'playwright';
+import { mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { deflateSync } from 'node:zlib';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'extension', 'src', 'icons');
+const SIZES = [16, 32, 48, 128];
 
-const BACKGROUND = [47, 74, 138]; // #2f4a8a
-const FOREGROUND = [255, 255, 255];
-
-// 5x7 "$"
-const GLYPH = [
-  '00100',
-  '01111',
-  '10100',
-  '01110',
-  '00101',
-  '11110',
-  '00100',
-];
-
-const CRC_TABLE = (() => {
-  const table = new Int32Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-    table[n] = c;
+/** Sizing is in percentages/em so one document is crisp at every size. */
+function markup(size) {
+  return `<!doctype html>
+<style>
+  html, body { margin: 0; width: ${size}px; height: ${size}px; background: transparent; }
+  .icon {
+    width: 100%; height: 100%;
+    border-radius: 22%;
+    background:
+      radial-gradient(120% 120% at 20% 0%, #4a6fc4 0%, #2f4a8a 45%, #1b2c55 100%);
+    box-shadow: inset 0 0 0 ${Math.max(1, size * 0.035)}px rgba(255,255,255,0.10);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "DejaVu Sans", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    color: #fff;
+    font-size: ${Math.round(size * 0.66)}px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-shadow: 0 ${Math.max(1, size * 0.012)}px ${Math.max(1, size * 0.02)}px rgba(0,0,0,0.35);
+    -webkit-font-smoothing: antialiased;
   }
-  return table;
-})();
-
-function crc32(buffer) {
-  let c = 0xffffffff;
-  for (const byte of buffer) c = CRC_TABLE[(c ^ byte) & 0xff] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
-}
-
-function chunk(type, data) {
-  const length = Buffer.alloc(4);
-  length.writeUInt32BE(data.length);
-  const body = Buffer.concat([Buffer.from(type, 'ascii'), data]);
-  const crc = Buffer.alloc(4);
-  crc.writeUInt32BE(crc32(body));
-  return Buffer.concat([length, body, crc]);
-}
-
-function png(width, height, rgba) {
-  const signature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(width, 0);
-  ihdr.writeUInt32BE(height, 4);
-  ihdr[8] = 8; // bit depth
-  ihdr[9] = 6; // RGBA
-  const raw = Buffer.alloc((width * 4 + 1) * height);
-  for (let y = 0; y < height; y++) {
-    raw[y * (width * 4 + 1)] = 0; // filter: none
-    rgba.copy(raw, y * (width * 4 + 1) + 1, y * width * 4, (y + 1) * width * 4);
-  }
-  return Buffer.concat([
-    signature,
-    chunk('IHDR', ihdr),
-    chunk('IDAT', deflateSync(raw, { level: 9 })),
-    chunk('IEND', Buffer.alloc(0)),
-  ]);
-}
-
-function draw(size) {
-  const rgba = Buffer.alloc(size * size * 4);
-  const radius = size * 0.22;
-  const glyphW = GLYPH[0].length;
-  const glyphH = GLYPH.length;
-  const cell = Math.max(1, Math.floor((size * 0.62) / glyphH));
-  const offsetX = Math.round((size - glyphW * cell) / 2);
-  const offsetY = Math.round((size - glyphH * cell) / 2);
-
-  const set = (x, y, colour, alpha = 255) => {
-    const i = (y * size + x) * 4;
-    rgba[i] = colour[0];
-    rgba[i + 1] = colour[1];
-    rgba[i + 2] = colour[2];
-    rgba[i + 3] = alpha;
-  };
-
-  // Rounded square background with 1px antialiasing on the corners.
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const dx = Math.max(radius - x, x - (size - 1 - radius), 0);
-      const dy = Math.max(radius - y, y - (size - 1 - radius), 0);
-      const distance = Math.hypot(dx, dy);
-      if (distance <= radius) set(x, y, BACKGROUND);
-      else if (distance <= radius + 1) {
-        const alpha = Math.round(255 * (1 - (distance - radius)));
-        set(x, y, BACKGROUND, Math.max(0, Math.min(255, alpha)));
-      }
-    }
-  }
-
-  // Glyph.
-  for (let gy = 0; gy < glyphH; gy++) {
-    for (let gx = 0; gx < glyphW; gx++) {
-      if (GLYPH[gy][gx] !== '1') continue;
-      for (let y = 0; y < cell; y++) {
-        for (let x = 0; x < cell; x++) {
-          const px = offsetX + gx * cell + x;
-          const py = offsetY + gy * cell + y;
-          if (px >= 0 && py >= 0 && px < size && py < size) set(px, py, FOREGROUND);
-        }
-      }
-    }
-  }
-
-  return png(size, size, rgba);
+  .icon span { transform: translateY(${size * -0.02}px); }
+</style>
+<div class="icon"><span>$</span></div>`;
 }
 
 await mkdir(OUT, { recursive: true });
-for (const size of [16, 32, 48, 128]) {
-  const file = join(OUT, `icon-${size}.png`);
-  await writeFile(file, draw(size));
-  console.log(`icon-${size}.png`);
+
+const browser = await chromium.launch({ channel: 'chromium' });
+try {
+  for (const size of SIZES) {
+    const page = await browser.newPage({
+      viewport: { width: size, height: size },
+      deviceScaleFactor: 1,
+    });
+    await page.setContent(markup(size));
+    await page.screenshot({
+      path: join(OUT, `icon-${size}.png`),
+      omitBackground: true,
+      clip: { x: 0, y: 0, width: size, height: size },
+    });
+    await page.close();
+    console.log(`icon-${size}.png`);
+  }
+} finally {
+  await browser.close();
 }

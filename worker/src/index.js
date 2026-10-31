@@ -1,6 +1,8 @@
 /**
  * Pricing service for the UVS Ultra Deck Prices extension.
  *
+ *   GET  /                   what this is
+ *   GET  /privacy            privacy policy (the URL on the store listing)
  *   GET  /v1/health          catalog status (no auth, cheap)
  *   POST /v1/quote           { cards, metric } -> priced deck
  *   POST /v1/admin/sync      force a sync (Authorization: Bearer ADMIN_TOKEN)
@@ -13,6 +15,7 @@ import setMap from '../../data/set-map.json';
 import { priceDeck } from '../../shared/match.js';
 import { error, HttpError, json, preflight, readJson, secureEquals } from './http.js';
 import { groupKey, mappedGroupIds, readMeta, syncCatalog } from './sync.js';
+import { homePage, privacyPage } from './pages.js';
 
 const MAX_CARDS = 200;
 
@@ -150,6 +153,18 @@ export default {
     if (request.method === 'OPTIONS') return preflight();
 
     try {
+      // Human-facing pages. Static HTML, no scripts.
+      if ((url.pathname === '/' || url.pathname === '/privacy') && request.method === 'GET') {
+        const body = url.pathname === '/privacy' ? privacyPage() : homePage();
+        return new Response(body, {
+          headers: {
+            'content-type': 'text/html; charset=utf-8',
+            'cache-control': 'public, max-age=3600',
+            'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; img-src data:",
+          },
+        });
+      }
+
       if (url.pathname === '/v1/health' && request.method === 'GET') return await handleHealth(env);
       if (url.pathname === '/v1/quote' && request.method === 'POST') return await handleQuote(request, env, ctx);
       if (url.pathname === '/v1/admin/sync' && request.method === 'POST') return await handleAdminSync(request, env);

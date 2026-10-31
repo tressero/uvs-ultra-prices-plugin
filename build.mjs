@@ -78,6 +78,9 @@ await writeFile(
 );
 
 const manifest = JSON.parse(await readFile(join(SRC, 'manifest.json'), 'utf8'));
+// One source of truth for the version: package.json.
+const { version } = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
+manifest.version = version;
 
 // Only the origin the extension actually talks to gets a host permission.
 const permissions = new Set([...manifest.host_permissions, `${workerOrigin}/*`]);

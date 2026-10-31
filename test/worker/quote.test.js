@@ -162,6 +162,36 @@ describe('admin routes', () => {
   });
 });
 
+describe('human-facing pages', () => {
+  it('serves a home page and a privacy policy with no scripts', async () => {
+    for (const path of ['/', '/privacy']) {
+      const response = await worker.fetch(new Request(`https://prices.test${path}`), ENV(), fakeCtx());
+      const body = await response.text();
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toContain('text/html');
+      expect(body).not.toMatch(/<script/i);
+      expect(body.length).toBeGreaterThan(500);
+    }
+  });
+
+  it('names the real pricing service and the contact in the policy', async () => {
+    const response = await worker.fetch(new Request('https://prices.test/privacy'), ENV(), fakeCtx());
+    const body = await response.text();
+    expect(body).toContain('uvs-ultra-prices.marc-ee2.workers.dev');
+    expect(body).toContain('marc@ochsner.me');
+    expect(body).toContain('No remote code');
+  });
+
+  it('does not serve pages for other methods', async () => {
+    const response = await worker.fetch(
+      new Request('https://prices.test/privacy', { method: 'POST', body: '{}' }),
+      ENV(),
+      fakeCtx(),
+    );
+    expect(response.status).toBe(404);
+  });
+});
+
 describe('CORS', () => {
   it('answers preflight', async () => {
     const response = await worker.fetch(

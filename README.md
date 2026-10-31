@@ -7,7 +7,7 @@ Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
 
 ## Status
 
-**M2 — deck pages and deck lists, priced from a Cloudflare Worker.**
+**M4 — ready to submit to the Chrome Web Store.**
 
 - Deck pages: a price chip per card and a deck total.
 - List pages (`topdecks.php`, `folder.php`, `user.php`): a total beside each
@@ -16,7 +16,10 @@ Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
 - 60 of 105 sets map to a TCGplayer group; everything else shows `n/a` instead
   of a guessed price.
 
-Not built yet: store submission (M4).
+Store assets, listing copy and the submission checklist live in
+[`docs/store-listing.md`](docs/store-listing.md); the policy is
+[`docs/privacy.md`](docs/privacy.md) and is also served at
+<https://uvs-ultra-prices.marc-ee2.workers.dev/privacy>.
 
 ## Quick start
 
@@ -117,6 +120,20 @@ npm run preview
 
 `worker/.dev.vars` (git-ignored) holds `ADMIN_TOKEN=dev-token` for local runs.
 
+## Shipping a build
+
+```bash
+npm test            # 52 tests, no network
+npm run build       # dist/
+npm run package     # dist.zip, manifest at the root, version from package.json
+```
+
+`npm run package` refuses to build if `config/worker.json` still holds the
+placeholder URL or if the manifest version disagrees with `package.json`.
+
+`npm run screenshots` regenerates the three store images (1280×800) from the live
+site using the built extension.
+
 ## Data
 
 | File | What it is |
@@ -125,6 +142,7 @@ npm run preview
 | `data/prices.snapshot.json` | Offline fallback, trimmed products + prices for the mapped sets (`npm run prices`) |
 | `config/worker.json` | The deployed pricing worker URL (single source for the manifest and the client) |
 | `fixtures/` | Saved pages so tests never touch the network (`npm run fixtures`) |
+| `store/screenshots/` | Chrome Web Store screenshots (`npm run screenshots`) |
 
 Regenerate the data when TCGplayer adds sets:
 

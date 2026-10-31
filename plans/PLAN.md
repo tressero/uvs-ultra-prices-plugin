@@ -253,10 +253,26 @@ fixtures/           saved deck pages, deck_card_list fragments, tcgcsv payloads
 | **M1** ✅ | Worker + daily tcgcsv sync, matcher, set map (~100 sets), quote endpoint | 2–3 d |
 | **M2** ✅ | Top Decks lazy totals, caching layers, unpriced UX | 1–2 d |
 | **M3** | Settings popup, overrides, contract tests, icons, polish | 1–2 d |
-| **M4** | CWS listing, privacy policy, CI packaging, optional affiliate-API migration | 1–2 d |
+| **M4** ✅ | CWS listing, privacy policy, CI packaging, optional affiliate-API migration | 1–2 d |
 
 **Run in parallel from day one**: TCGplayer affiliate/Impact application; the nightly contract
 test (before there is anything to break).
+
+### M4 notes (built)
+
+- `docs/store-listing.md` holds every field the dashboard asks for: name, short
+  and long description, category, single-purpose statement, permission
+  justifications, data-usage answers, reviewer notes.
+- `/` and `/privacy` are served by the worker as static HTML with a strict CSP, so
+  the store has a real privacy URL and homepage without extra hosting.
+- `npm run package` produces `dist.zip` with the manifest at the root and refuses
+  to run on a placeholder worker URL or a version mismatch.
+- Icons are rendered from HTML in Chromium (`npm run icons`) rather than plotted
+  as bitmaps, so they stay crisp at 16px.
+- CI builds, tests, packages, attaches the zip to a tag release, and can upload to
+  the store or deploy the worker when the secrets are present.
+- Still manual, by nature: the $5 developer registration, filling the dashboard,
+  and pressing "submit for review".
 
 ### M2 notes (built)
 
