@@ -56,6 +56,15 @@ jobs:
         id: build
         run: echo "label=$(cat dist/version.txt)" >> "$GITHUB_OUTPUT"
 
+      - name: Detect optional deployment secrets
+        id: secrets
+        env:
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -n "$CHROME_EXTENSION_ID" ]; then echo "chrome=true" >> "$GITHUB_OUTPUT"; else echo "chrome=false" >> "$GITHUB_OUTPUT"; fi
+          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then echo "cloudflare=true" >> "$GITHUB_OUTPUT"; else echo "cloudflare=false" >> "$GITHUB_OUTPUT"; fi
+
       - name: Attach the versioned zip to the GitHub release
         uses: softprops/action-gh-release@v2
         with:
@@ -66,7 +75,7 @@ jobs:
       # Needs repository secrets CHROME_EXTENSION_ID, CHROME_CLIENT_ID,
       # CHROME_CLIENT_SECRET and CHROME_REFRESH_TOKEN.
       - name: Upload to the Chrome Web Store
-        if: ${{ secrets.CHROME_EXTENSION_ID != '' }}
+        if: steps.secrets.outputs.chrome == 'true'
         env:
           EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
           CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
@@ -81,7 +90,7 @@ jobs:
             --refresh-token "$REFRESH_TOKEN"
 
       - name: Deploy the pricing worker
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        if: steps.secrets.outputs.cloudflare == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
