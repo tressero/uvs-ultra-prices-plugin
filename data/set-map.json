@@ -1,0 +1,99 @@
+{
+  "aot01": {
+    "groupId": 23573,
+    "name": "Attack on Titan: Battle for Humanity",
+    "hits": 2,
+    "cards": 2,
+    "runnerUpHits": 0
+  },
+  "aot02": {
+    "groupId": 23791,
+    "name": "Attack On Titan: Origins of Power",
+    "hits": 1,
+    "cards": 1,
+    "runnerUpHits": 0
+  },
+  "aot03": {
+    "groupId": 24209,
+    "name": "Attack on Titan: Apocalypse",
+    "hits": 4,
+    "cards": 4,
+    "runnerUpHits": 0
+  },
+  "cb02": {
+    "groupId": 23385,
+    "name": "Challenger Series: Cowboy Bebop and Trigun Stampede",
+    "hits": 1,
+    "cards": 1,
+    "runnerUpHits": 1
+  },
+  "cha03gmm": {
+    "groupId": 23503,
+    "name": "Challenger Series: Godzilla",
+    "hits": 2,
+    "cards": 2,
+    "runnerUpHits": 1
+  },
+  "cr02": {
+    "groupId": 24191,
+    "name": "Critical Role: Heroes of Exandria",
+    "hits": 3,
+    "cards": 4,
+    "runnerUpHits": 0
+  },
+  "ft01": {
+    "groupId": null,
+    "name": null,
+    "hits": 0,
+    "cards": 14
+  },
+  "gdz01": {
+    "groupId": 24583,
+    "name": "Godzilla: Reign of Kaiju",
+    "hits": 6,
+    "cards": 6,
+    "runnerUpHits": 1
+  },
+  "ggs01": {
+    "groupId": 24482,
+    "name": "GUILTY GEAR -STRIVE-",
+    "hits": 4,
+    "cards": 5,
+    "runnerUpHits": 0
+  },
+  "sf62x": {
+    "groupId": 24889,
+    "name": "Challenger Series: Street Fighter 6 - Series 2",
+    "hits": 9,
+    "cards": 10,
+    "runnerUpHits": 0
+  },
+  "tk802": {
+    "groupId": 24715,
+    "name": "TEKKEN 8",
+    "hits": 1,
+    "cards": 1,
+    "runnerUpHits": 0
+  },
+  "tmnt01": {
+    "groupId": 24301,
+    "name": "Teenage Mutant Ninja Turtles",
+    "hits": 2,
+    "cards": 3,
+    "runnerUpHits": 0
+  },
+  "ts01": {
+    "groupId": 23385,
+    "name": "Challenger Series: Cowboy Bebop and Trigun Stampede",
+    "hits": 1,
+    "cards": 1,
+    "runnerUpHits": 0
+  },
+  "yyhdt": {
+    "groupId": 23386,
+    "name": "Yu Yu Hakusho: Dark Tournament",
+    "hits": 7,
+    "cards": 7,
+    "runnerUpHits": 1
+  }
+}

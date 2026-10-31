@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>UVS Ultra Deck Prices</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="popup-header">
+      <h1>Deck Prices</h1>
+      <p class="popup-sub">TCGplayer prices on UVS Ultra</p>
+    </header>
+
+    <section class="popup-section">
+      <h2>Headline price</h2>
+      <label class="popup-radio">
+        <input type="radio" name="metric" value="market" />
+        <span>
+          <strong>Market</strong>
+          <small>What the deck is worth — TCGplayer's market price</small>
+        </span>
+      </label>
+      <label class="popup-radio">
+        <input type="radio" name="metric" value="low" />
+        <span>
+          <strong>Low</strong>
+          <small>Cheapest listings — cost to actually buy the deck</small>
+        </span>
+      </label>
+    </section>
+
+    <section class="popup-section">
+      <label class="popup-check">
+        <input type="checkbox" id="show-unmatched" />
+        <span>Show cards with no TCGplayer match as “n/a”</span>
+      </label>
+    </section>
+
+    <footer class="popup-footer">
+      <span id="status" class="popup-status">Loading…</span>
+      <span id="saved" class="popup-saved">Saved</span>
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

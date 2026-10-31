@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "UVS Ultra Deck Prices",
+  "version": "0.1.0",
+  "description": "Shows TCGplayer prices next to every card on UVS Ultra decks, and totals the deck.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://uvsultra.online/*"],
+  "background": {
+    "service_worker": "sw.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://uvsultra.online/deck.php*"
+      ],
+      "js": ["deck.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "UVS Ultra Deck Prices"
+  }
+}

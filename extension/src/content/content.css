@@ -1,0 +1,103 @@
+/*
+ * UVS Ultra Deck Prices — injected styles.
+ *
+ * The site is Bootstrap 3 on a #D9D9D9 page, with deck rows coloured per card
+ * type (character #485693, foundation #B6A7A0, attack #d25421, ...). Chips are
+ * translucent dark so they stay legible on every row colour, and never taller
+ * than the 24px row.
+ */
+
+.uvsp-chip {
+  float: right;
+  display: inline-block;
+  margin: 3px 3px 0 4px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font: 600 11px/16px arial, sans-serif;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+a.uvsp-chip:hover,
+a.uvsp-chip:focus {
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Unpriced: visible, but obviously not a number we stand behind. */
+.uvsp-chip--none {
+  background: rgba(0, 0, 0, 0.2);
+  color: #111;
+  font-weight: 500;
+  font-style: italic;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+/* Matched by number or fuzzy spelling: dotted underline = "check this one". */
+.uvsp-chip--unsure {
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.9);
+  border-radius: 9px;
+}
+
+/* --- summary panel ------------------------------------------------------ */
+
+.uvsp-panel {
+  clear: both;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #f7f7f7;
+  color: #222;
+  font: 12px/1.5 arial, sans-serif;
+}
+
+.uvsp-panel-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.uvsp-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #555;
+}
+
+.uvsp-total {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #111;
+}
+
+/* Partial total: the number is real but only covers priced cards. */
+.uvsp-total--partial::after {
+  content: '*';
+  font-size: 13px;
+  vertical-align: super;
+  color: #a15c00;
+}
+
+.uvsp-sub {
+  font-size: 12px;
+  color: #555;
+}
+
+.uvsp-panel-note {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #777;
+}
+
+.uvsp-panel-note--warn {
+  color: #8a4b00;
+}

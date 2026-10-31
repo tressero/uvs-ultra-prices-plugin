@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>UVS Ultra</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="UVSUltra the ultimate UVS search database" />
+		<meta name="keywords" content="UVSUltra, UVS, search, database, ccg, engine, ultimate, fighting, system" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="alternate" type="application/rss+xml" title="UVSUltra News" href="news.rss"/>
+		<link rel="stylesheet" href="css/bootstrap3/css/bootstrap.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/style.css?1.24" type="text/css" />
+		<link rel="stylesheet" href="css/colorbox.css" type="text/css" />
+		<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.9.2.custom.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/jquery.cluetip.css" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="js/skins/simple/style.css" />
+		<link rel="stylesheet" type="text/css" href="js/sets/default/style.css" />
+		<link rel="stylesheet" type="text/css" href="css/messenger.css" />
+		<link rel="stylesheet" type="text/css" href="css/messenger-theme-flat.css" />
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min.js"></script>
+		<script type="text/javascript" src="js/jquery.colorbox-min.js"></script>
+		<script type="text/javascript" src="js/jquery.cluetip.min.js"></script>
+		<script type="text/javascript" src="js/jquery.markitup.js"></script>
+		<!--
+		<script type="text/javascript" src="js/sets/default/set.js"></script>
+		-->
+		<script type="text/javascript" src="js/function.js?20260701-5"></script>
+		<script type="text/javascript" src="js/highcharts.js"></script>
+		<script type="text/javascript" src="js/jquery.chromatable.js"></script>
+		<script type="text/javascript" src="css/bootstrap3/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/messenger.min.js"></script>
+		<script type="text/javascript" src="js/messenger-theme-flat.js"></script>
+		<script type="text/javascript" src="js/jquery-ias.min.js"></script>
+        <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	</head>
+	<body>
+
+<nav class="navbar navbar-inverse" id="topbar">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+		<a class="navbar-brand" href="index.php">UVS Ultra</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+            <li><a href="index.php"><i class="glyphicon glyphicon-search glyphicon glyphicon-white"></i> Card Search</a></li>
+            <li><a href="live.php"><i class="glyphicon glyphicon-bullhorn glyphicon glyphicon-white"></i> Live</a></li>
+            <!--
+            <li><a href="topdecks.php"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Top decks</a></li>
+            -->
+            <!--
+            <li><a href="user.php?id=6389#!user-folders"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Tournament Decks</a></li>
+            -->
+            <li><a href="folder.php?id=5349"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Tournament Decks</a></li>
+            <!--
+            <li><a href="user.php?id=13768#!user-folders"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> MetaVersus Decks</a></li>
+            -->
+            <li><a href="folder.php?id=5003"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> MetaVersus Decks</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-stats glyphicon glyphicon-white"></i> Stats <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="stats.php">Cards Statistics</a></li>
+                    <!--
+                    <li><a href="tournament_rating.php">Player rating</a></li>
+                    <li><a href="tournament_character.php">Character rating</a></li>
+                    -->
+                </ul>
+            </li>
+                    </ul>
+        <ul class="nav navbar-nav pull-right">
+                        <li><a href="?lang=fr">FR</a></li>                            <li><a href="whyregister.php"><i class="glyphicon glyphicon-question-sign glyphicon glyphicon-white"></i> Why Register ?</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#connectionModal"><i class="glyphicon glyphicon-user glyphicon glyphicon-white"></i> Sign in</a></li>
+                    </ul>
+	</div><!-- /.navbar-collapse -->
+</nav><!-- /navbar -->
+<div id="newDeckModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form mehod="get" class="form-inline deck-form-create">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Create new deck</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="deck_name" id="deck_name" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success deck-save-name" value="Create" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="newFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form mehod="get" class="form-inline folder-form-create">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Create new folder</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="folder_name" id="folder_name" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success folder-save-name" value="Create" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="moveDeckFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form mehod="get" class="form-inline deckfolder-form-move">
+            <div class="modal-content">
+            </div>
+        </form>
+    </div>
+</div>
+<div id="moveFolderFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form mehod="get" class="form-inline folder-form-move">
+            <div class="modal-content">
+            </div>
+        </form>
+    </div>
+</div>
+<div id="importDeckModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form action="import_from_xml.php" method="post" enctype="multipart/form-data">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Import deck</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="deck_name" id="deck_name" /><br />
+					<label>XML File :</label> <input type="file" name="deck_file" id="deck_file" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success" value="Import" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="connectionModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Sign in or Register</h3>
+            </div>
+            <div class="modal-body">
+                <form name="login" method="post" class="form-horizontal well well-sm">
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 controls col-sm-7">
+                            <div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input class="form-control" type="text" id="login" name="login" placeholder="Login">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 controls col-sm-7">
+                            <div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                <input class="form-control" type="password" id="password" name="password" placeholder="Password">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+						<div class="col-sm-offset-4 col-sm-3">
+		                    <input type="submit" class="btn btn-primary" value="Sign in" />
+						</div>
+                    </div>
+                    <div class="form-group">
+						<div class="col-sm-offset-3 col-sm-4">
+							<label><input type="checkbox" name="new" /> Create new account</label>
+						</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+				<a href="whyregister.php" class="btn btn-info btn-sm pull-left">Why Register ?</a>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="deckModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="modal-header-mydeck">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">
+					My decks<br />
+					<small class="list-mydeck-display-by">
+						Display type :
+						<!--
+							<a href="menu_list_user_deck.php?mddisplaytype=folder&mdorderby=date_created&js" rel="DESC" class="label label-default label-info">Folder View</a>
+-->
+							<a href="menu_list_user_deck.php?mddisplaytype=folder&js" rel="DESC" class="label label-default label-info">Folder View</a>
+							<!--
+							<a href="menu_list_user_deck.php?mddisplaytype=flat&mdorderby=date_created&js" rel="DESC" class="label label-default">Flat View</a>
+-->
+							<a href="menu_list_user_deck.php?mddisplaytype=flat&js" rel="DESC" class="label label-default">Flat View</a>
+												</small><br />
+					<small class="list-mydeck-sort-by">
+						Order by :
+						<!--
+							<a href="menu_list_user_deck.php?mdorderby=date_created&mddisplaytype=folder&js" rel="DESC" class="label label-default label-info">Date Created<i class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=date_created&js" rel="DESC" class="label label-default label-info">Date Created<i class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a>
+							<!--
+							<a href="menu_list_user_deck.php?mdorderby=date_modified&mddisplaytype=folder&js" rel="DESC" class="label label-default">Date modified</a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=date_modified&js" rel="DESC" class="label label-default">Date modified</a>
+							<!--
+							<a href="menu_list_user_deck.php?mdorderby=name&mddisplaytype=folder&js" rel="ASC" class="label label-default">Name</a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=name&js" rel="ASC" class="label label-default">Name</a>
+												</small>
+				</h3>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary pull-left" data-toggle="modal" data-target="#newDeckModal" onclick="$('#deckModal').modal('hide');">Create new deck</a>
+                <a href="#" class="btn btn-info pull-left" data-toggle="modal" data-target="#newFolderModal" onclick="$('#deckModal').modal('hide');">Create new folder</a>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="reportModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Report an error</h3>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div id="header" class="deck-header">
+        <h2>
+                    <img src="images/icons/all.png?20230902" alt="all" />                    <span id="name">JP</span>
+                    <small>
+                            <span class="label label-success deck-info-format" title="Click to see each card's format.">Legacy <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span>                    </small>
+        </h2>
+
+                    <span class="pull-right deck-badges">
+                            <span class="badge" title="0 comments"><i class="glyphicon glyphicon-pencil"></i> 0</span>
+                            <span class="badge" title="1 views"><i class="glyphicon glyphicon-eye-open"></i> 1</span>
+                            </span>
+
+            <div class="deck-actions">
+                    <div class="deck-creator pull-left">
+                            <span class="small" style="display: block">By <span class="avatar-popover"><img src="images/avatar/15689.png?1759222421" width="16" height="16" /> <a href="user.php?id=15689">writ</a>
+                      <span class="avatar-popover-title">
+                              <strong>writ</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/15689.png?1759222421" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">116 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=15689" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+                                                </div>
+                    <div class="pull-right">
+                            <small class="deck-sort-by">
+                                    Sort cards by : 
+                                    <a href="deck_card_list.php?js&tri=difficulty&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default">Difficulty</a>
+                                    <a href="deck_card_list.php?js&tri=cc&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default">Control</a>
+                                    <a href="deck_card_list.php?js&tri=block&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default">Block</a>
+                                    <a href="deck_card_list.php?js&tri=block_zone&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default">Block Zone</a>
+                                    <a href="deck_card_list.php?js&tri=speed&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default">Speed</a>
+                                    <a href="deck_card_list.php?js&tri=damage&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default">Damage</a>
+                                    <a href="deck_card_list.php?js&tri=extension&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default">Most Recent</a>
+                                    <a href="deck_card_list.php?js&tri=qty&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default">Qty</a>
+                                    <a href="deck_card_list.php?js&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="label label-default label-info">None</a>
+                            </small>
+                    </div>
+            </div>
+            <div class="clear"></div>
+    </div>
+    <div class="deck-sort">
+            <div class="btn-group">
+                    <a href="#" onclick="$('#code_forum').toggle(); $('#code_forum').select(); return false;" class="btn btn-info btn-sm">Forum Code</a>
+                                        <a href="deck_proxy.php?deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx" class="btn btn-info btn-sm">Proxy List</a>
+                                </div>
+            </div>
+
+    <textarea id="code_forum" style="display : none;">
+    [b][url=https://uvsultra.online/deck.php?deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx]JP[/url][/b]
+    [b]Character[/b]
+    1 JP, Regal Businessman
+
+    [b]Foundation[/b]
+    4 Following in Bison's Footsteps
+3 Former Head Financial Manager
+4 Nothing But a Squawking Crow
+4 Satisfy My Hunger
+4 Wolf's Ferocity
+4 Prideless Negotiations
+4 Spirit Beast Puu
+4 Invincible Body
+4 Settling Old Debts
+1 Come at Me
+4 Exploring New Lands
+
+    [b]Attack[/b]
+    3 Psycho Hammer
+4 Unlimited Psycho Crusher
+4 Super Magic Giant: Phantom Mk II
+4 Bloodsucking Universe
+3 Knee Press Nightmare
+2 Psycho Punisher
+3 Winged Death
+
+    [b]Asset[/b]
+    3 Psycho Power
+3 Leo's Katana
+
+    [b]Action[/b]
+        
+    [b]Backup[/b]
+        
+
+    [b]Arena[/b]
+        
+
+    [b]Side[/b]
+        </textarea>
+
+    <div class="listing_deck">
+            <div class="listing_deck_left">
+        <div class="type_card_character">
+            <h4>Character <small>(0 cards)</small></h4>
+            <ul>
+                	<ul>
+	            <li id="deck-card-12830" class="card-list card-list-character" onclick="$(this).colorbox({'href' : 'card.php?id=12830'});" onmouseover="$('#set_card_12830_0').show(); preview_listing_deck2('sf62x', '002', 'character'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12830_0').hide();">
+                <img src="images/extensions/sf62x/002-ci-micro.jpg?20240802" class="ci-micro_image"/> JP, Regal Businessman				<span class="badge badge-success">x<span id="number_card_12830">1</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+            	</ul>
+	<script>
+	$(document).ready(function()
+	{
+	    	});
+	</script>
+	            </ul>
+        </div>
+        <div class="type_card_foundation">
+            <h4>Foundation <small>(40 cards)</small></h4>
+            <ul>
+                	<ul>
+	            <li id="deck-card-12842" class="card-list card-list-foundation card-list-small" onclick="$(this).colorbox({'href' : 'card.php?id=12842'});" onmouseover="$('#set_card_12842_0').show(); preview_listing_deck2('sf62x', '014', 'foundation'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12842_0').hide();">
+                <img src="images/extensions/sf62x/014-ci-micro.jpg?20240802" class="ci-micro_image"/> Following in Bison's Footsteps				<span class="badge badge-success">x<span id="number_card_12842">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12843" class="card-list card-list-foundation card-list-small" onclick="$(this).colorbox({'href' : 'card.php?id=12843'});" onmouseover="$('#set_card_12843_0').show(); preview_listing_deck2('sf62x', '015', 'foundation'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12843_0').hide();">
+                <img src="images/extensions/sf62x/015-ci-micro.jpg?20240802" class="ci-micro_image"/> Former Head Financial Manager				<span class="badge badge-success">x<span id="number_card_12843">3</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12847" class="card-list card-list-foundation card-list-small" onclick="$(this).colorbox({'href' : 'card.php?id=12847'});" onmouseover="$('#set_card_12847_0').show(); preview_listing_deck2('sf62x', '019', 'foundation'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12847_0').hide();">
+                <img src="images/extensions/sf62x/019-ci-micro.jpg?20240802" class="ci-micro_image"/> Nothing But a Squawking Crow				<span class="badge badge-success">x<span id="number_card_12847">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12848" class="card-list card-list-foundation" onclick="$(this).colorbox({'href' : 'card.php?id=12848'});" onmouseover="$('#set_card_12848_0').show(); preview_listing_deck2('sf62x', '020', 'foundation'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12848_0').hide();">
+                <img src="images/extensions/sf62x/020-ci-micro.jpg?20240802" class="ci-micro_image"/> Satisfy My Hunger				<span class="badge badge-success">x<span id="number_card_12848">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12353" class="card-list card-list-foundation" onclick="$(this).colorbox({'href' : 'card.php?id=12353'});" onmouseover="$('#set_card_12353_0').show(); preview_listing_deck2('ggs01', '084', 'foundation'); preview_listing_deckB('ggs01', '0');" onmouseout="$('#set_card_12353_0').hide();">
+                <img src="images/extensions/ggs01/084-ci-micro.jpg?20240802" class="ci-micro_image"/> Wolf's Ferocity				<span class="badge badge-success">x<span id="number_card_12353">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-10387" class="card-list card-list-foundation" onclick="$(this).colorbox({'href' : 'card.php?id=10387'});" onmouseover="$('#set_card_10387_0').show(); preview_listing_deck2('ts01', '018', 'foundation'); preview_listing_deckB('ts01', '0');" onmouseout="$('#set_card_10387_0').hide();">
+                <img src="images/extensions/ts01/018-ci-micro.jpg?20240802" class="ci-micro_image"/> Prideless Negotiations				<span class="badge badge-success">x<span id="number_card_10387">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-10555" class="card-list card-list-foundation" onclick="$(this).colorbox({'href' : 'card.php?id=10555'});" onmouseover="$('#set_card_10555_0').show(); preview_listing_deck2('yyhdt', '144', 'foundation'); preview_listing_deckB('yyhdt', '0');" onmouseout="$('#set_card_10555_0').hide();">
+                <img src="images/extensions/yyhdt/144-ci-micro.jpg?20240802" class="ci-micro_image"/> Spirit Beast Puu				<span class="badge badge-success">x<span id="number_card_10555">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="YYH Card">Y</span><span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-10547" class="card-list card-list-foundation" onclick="$(this).colorbox({'href' : 'card.php?id=10547'});" onmouseover="$('#set_card_10547_0').show(); preview_listing_deck2('yyhdt', '133', 'foundation'); preview_listing_deckB('yyhdt', '0');" onmouseout="$('#set_card_10547_0').hide();">
+                <img src="images/extensions/yyhdt/133-ci-micro.jpg?20240802" class="ci-micro_image"/> Invincible Body				<span class="badge badge-success">x<span id="number_card_10547">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="YYH Card">Y</span><span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-10548" class="card-list card-list-foundation" onclick="$(this).colorbox({'href' : 'card.php?id=10548'});" onmouseover="$('#set_card_10548_0').show(); preview_listing_deck2('yyhdt', '134', 'foundation'); preview_listing_deckB('yyhdt', '0');" onmouseout="$('#set_card_10548_0').hide();">
+                <img src="images/extensions/yyhdt/134-ci-micro.jpg?20240802" class="ci-micro_image"/> Settling Old Debts				<span class="badge badge-success">x<span id="number_card_10548">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="YYH Card">Y</span><span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12908" class="card-list card-list-foundation" onclick="$(this).colorbox({'href' : 'card.php?id=12908'});" onmouseover="$('#set_card_12908_0').show(); preview_listing_deck2('ft01', '061', 'foundation'); preview_listing_deckB('ft01', '0');" onmouseout="$('#set_card_12908_0').hide();">
+                <img src="images/extensions/ft01/061-ci-micro.jpg?20240802" class="ci-micro_image"/> Come at Me				<span class="badge badge-success">x<span id="number_card_12908">1</span></span>
+								<span class="badge badge-warning deck-card-format-info" title="Legacy Card">L</span>								            </li>
+                        <li id="deck-card-11930" class="card-list card-list-foundation" onclick="$(this).colorbox({'href' : 'card.php?id=11930'});" onmouseover="$('#set_card_11930_0').show(); preview_listing_deck2('aot03', '185', 'foundation'); preview_listing_deckB('aot03', '0');" onmouseout="$('#set_card_11930_0').hide();">
+                <img src="images/extensions/aot03/185-ci-micro.jpg?20240802" class="ci-micro_image"/> Exploring New Lands				<span class="badge badge-success">x<span id="number_card_11930">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="AoT Card">A</span><span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+            	</ul>
+	<script>
+	$(document).ready(function()
+	{
+	    	});
+	</script>
+	            </ul>
+        </div>
+    </div>
+    <div class="listing_deck_right">
+        <div class="type_card_attack">
+            <h4>Attack <small>(23 cards - speed : 3 - dmg 4.57)</small></h4>
+            <ul>
+                	<ul>
+	            <li id="deck-card-12836" class="card-list card-list-attack" onclick="$(this).colorbox({'href' : 'card.php?id=12836'});" onmouseover="$('#set_card_12836_0').show(); preview_listing_deck2('sf62x', '008', 'attack'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12836_0').hide();">
+                <img src="images/extensions/sf62x/008-ci-micro.jpg?20240802" class="ci-micro_image"/> Psycho Hammer				<span class="badge badge-success">x<span id="number_card_12836">3</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12840" class="card-list card-list-attack" onclick="$(this).colorbox({'href' : 'card.php?id=12840'});" onmouseover="$('#set_card_12840_0').show(); preview_listing_deck2('sf62x', '012', 'attack'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12840_0').hide();">
+                <img src="images/extensions/sf62x/012-ci-micro.jpg?20240802" class="ci-micro_image"/> Unlimited Psycho Crusher				<span class="badge badge-success">x<span id="number_card_12840">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-13012" class="card-list card-list-attack card-list-xsmall" onclick="$(this).colorbox({'href' : 'card.php?id=13012'});" onmouseover="$('#set_card_13012_0').show(); preview_listing_deck2('ft01', '056', 'attack'); preview_listing_deckB('ft01', '0');" onmouseout="$('#set_card_13012_0').hide();">
+                <img src="images/extensions/ft01/056-ci-micro.jpg?20240802" class="ci-micro_image"/> Super Magic Giant: Phantom Mk II				<span class="badge badge-success">x<span id="number_card_13012">4</span></span>
+								<span class="badge badge-warning deck-card-format-info" title="Legacy Card">L</span>								            </li>
+                        <li id="deck-card-12266" class="card-list card-list-attack" onclick="$(this).colorbox({'href' : 'card.php?id=12266'});" onmouseover="$('#set_card_12266_0').show(); preview_listing_deck2('ggs01', '040', 'attack'); preview_listing_deckB('ggs01', '0');" onmouseout="$('#set_card_12266_0').hide();">
+                <img src="images/extensions/ggs01/040-ci-micro.jpg?20240802" class="ci-micro_image"/> Bloodsucking Universe				<span class="badge badge-success">x<span id="number_card_12266">4</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12835" class="card-list card-list-attack" onclick="$(this).colorbox({'href' : 'card.php?id=12835'});" onmouseover="$('#set_card_12835_0').show(); preview_listing_deck2('sf62x', '007', 'attack'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12835_0').hide();">
+                <img src="images/extensions/sf62x/007-ci-micro.jpg?20240802" class="ci-micro_image"/> Knee Press Nightmare				<span class="badge badge-success">x<span id="number_card_12835">3</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12838" class="card-list card-list-attack" onclick="$(this).colorbox({'href' : 'card.php?id=12838'});" onmouseover="$('#set_card_12838_0').show(); preview_listing_deck2('sf62x', '010', 'attack'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12838_0').hide();">
+                <img src="images/extensions/sf62x/010-ci-micro.jpg?20240802" class="ci-micro_image"/> Psycho Punisher				<span class="badge badge-success">x<span id="number_card_12838">2</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12575" class="card-list card-list-attack" onclick="$(this).colorbox({'href' : 'card.php?id=12575'});" onmouseover="$('#set_card_12575_0').show(); preview_listing_deck2('gdz01', '156', 'attack'); preview_listing_deckB('gdz01', '0');" onmouseout="$('#set_card_12575_0').hide();">
+                <img src="images/extensions/gdz01/156-ci-micro.jpg?20240802" class="ci-micro_image"/> Winged Death				<span class="badge badge-success">x<span id="number_card_12575">3</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+            	</ul>
+	<script>
+	$(document).ready(function()
+	{
+	    	});
+	</script>
+	            </ul>
+        </div>
+        <div class="type_card_asset">
+            <h4>Asset <small>(6 cards)</small></h4>
+            <ul>
+                	<ul>
+	            <li id="deck-card-12831" class="card-list card-list-asset" onclick="$(this).colorbox({'href' : 'card.php?id=12831'});" onmouseover="$('#set_card_12831_0').show(); preview_listing_deck2('sf62x', '003', 'asset'); preview_listing_deckB('sf62x', '0');" onmouseout="$('#set_card_12831_0').hide();">
+                <img src="images/extensions/sf62x/003-ci-micro.jpg?20240802" class="ci-micro_image"/> Psycho Power				<span class="badge badge-success">x<span id="number_card_12831">3</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+                        <li id="deck-card-12083" class="card-list card-list-asset" onclick="$(this).colorbox({'href' : 'card.php?id=12083'});" onmouseover="$('#set_card_12083_0').show(); preview_listing_deck2('tmnt01', '034', 'asset'); preview_listing_deckB('tmnt01', '0');" onmouseout="$('#set_card_12083_0').hide();">
+                <img src="images/extensions/tmnt01/034-ci-micro.jpg?20240802" class="ci-micro_image"/> Leo's Katana				<span class="badge badge-success">x<span id="number_card_12083">3</span></span>
+								<span class="badge badge-info deck-card-format-info" title="Standard Card">S</span><span class="badge badge-info deck-card-format-info" title="Retro Card">R</span><span class="badge badge-info deck-card-format-info" title="Rochester Retro Card">r</span><span class="badge badge-info deck-card-format-info" title="Hero Too Card">H</span>								            </li>
+            	</ul>
+	<script>
+	$(document).ready(function()
+	{
+	    	});
+	</script>
+	            </ul>
+        </div>
+        <div class="type_card_action">
+            <h4>Action <small>(0 cards)</small></h4>
+            <ul>
+                	<ul>
+		</ul>
+	<script>
+	$(document).ready(function()
+	{
+	    	});
+	</script>
+	            </ul>
+        </div>
+        <div class="type_card_backup">
+            <h4>Backup <small>(0 cards)</small></h4>
+            <ul>
+                	<ul>
+		</ul>
+	<script>
+	$(document).ready(function()
+	{
+	    	});
+	</script>
+	            </ul>
+        </div>        
+        <div class="type_card_arena">
+            <h4>Arena <small>(0 cards)</small></h4>
+            <ul>
+                	<ul>
+		</ul>
+	<script>
+	$(document).ready(function()
+	{
+	    	});
+	</script>
+	            </ul>
+        </div>        
+	        <div class="type_card_side">
+            <h4>Side <small>(0 cards)</small></h4>
+            <ul>
+                	<ul>
+		</ul>
+	<script>
+	$(document).ready(function()
+	{
+	    	});
+	</script>
+	            </ul>
+        </div>
+	    </div>    </div>
+        <div id="preview_listing_deck"><img src="" alt="" /></div>
+        <div id="preview_listing_deckB"><img src="" alt="" /></div>
+        <div id="actions" style="clear : both;"></div><br />
+    
+
+            <div class="col-sm-10">
+                    <ul class="nav nav-tabs col-sm-10" style="margin-bottom : 0px;">
+                            <li class="active"><a href="#deck-description" data-toggle="tab">Description</a></li>
+                            <li><a href="#deck-graph" data-toggle="tab">Graphs</a></li>
+                            <li><a href="#deck-stat" data-toggle="tab">Stats</a></li>
+                            <li><a href="#deck-risk" data-toggle="tab">Risks</a></li>
+                            <li><a href="#deck-first-hand" data-toggle="tab">First Hand</a></li>
+                            <li><a href="#deck-history" data-toggle="tab">History</a></li>
+                    </ul>
+            </div>
+            <div class="tab-content col-sm-10">
+            <div id="deck-description" class="tab-pane active">
+                            <div class="well well-small">
+                                    <div class="well col-md-8">
+                                            </div>
+                                                                <div class="clear"></div>
+                            </div>
+                            <div class="well well-small">
+                    <div class="well col-md-8" id="deck-comments">
+                        
+<div class="deck-comments-hided"></div><div class="deck-comments-showed">
+			  <div class="deck-no-comment">No comments.</div></div>                                            <div class="clear"></div>
+                    </div>
+                                    <div class="clear"></div>
+                            </div>
+                            <div class="well well-small">
+                                                                                <div class="alert alert-info col-md-8">
+                                                    Log in to comment this deck.
+                                                    <a href="whyregister.php" class="btn btn-sm btn-info">Why Register ?</a>
+                                            </div>
+                                                                                <div class="clear"></div>
+                            </div>
+            </div>
+            <div id="deck-first-hand" class="tab-pane">
+                <div class="well">
+    <a href="#" class="btn btn-info" onclick="$('#deck-first-hand').load('first_hand.php?js&deck=JpSBUGfvtOywBcSrfWNledZLFMYjlx'); return false;">Redraw First Hand</a>
+    <br />
+    <br />
+    <img src="images/extensions/yyhdt/144-mini.jpg?20240802" class="mini_image"/><img src="images/extensions/yyhdt/134-mini.jpg?20240802" class="mini_image"/><img src="images/extensions/aot03/185-mini.jpg?20240802" class="mini_image"/><img src="images/extensions/sf62x/003-mini.jpg?20240802" class="mini_image"/><img src="images/extensions/sf62x/007-mini.jpg?20240802" class="mini_image"/><img src="images/extensions/gdz01/156-mini.jpg?20240802" class="mini_image"/><img src="images/extensions/ft01/056-mini.jpg?20240802" class="mini_image"/></div>            </div>
+            <div id="deck-history" class="tab-pane">
+                            <div class="well well-small list-deck-actions">
+                
+<div class="deck-live-actions"><blockquote>Removed "Tricky Spinner"<small>2026-10-30 23:58:09</small>
+		  </blockquote></div><div class="deck-live-actions"><blockquote>2x [Following in Bison's Footsteps] added to deck<small>2026-10-30 23:57:43</small>
+		  </blockquote></div><div class="deck-live-actions"><blockquote>3x [Winged Death] added to deck<small>2026-10-30 23:56:22</small>
+		  </blockquote></div><div class="btn-group"><a href="#" class="btn btn-info btn-xs deck-actions-show"><i class="caret"></i> Show 14 other actions</a></div><div class="deck-live-actions deck-actions-hided"><blockquote>1x [Psycho Punisher] removed from deck<small>2026-10-30 23:55:57</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>3x [Psycho Punisher] added to deck<small>2026-10-30 23:54:47</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>Removed "Departure"<small>2026-10-30 23:53:50</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>1x [Departure] added to deck<small>2026-10-30 23:51:09</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>1x [Psycho Power] removed from deck<small>2026-10-30 23:48:26</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>2x [Leo's Katana] added to deck<small>2026-10-30 23:47:52</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>Removed "Avoiding Conflict"<small>2026-10-30 23:47:48</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>Main character changed<small>2026-10-30 23:47:31</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>Removed "Nesh"<small>2026-10-30 23:47:07</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>Removed "Code Edits"<small>2026-10-30 23:46:59</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>Removed "Nonagon"<small>2026-10-30 23:46:52</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>1x [JP, Regal Businessman] added to deck<small>2026-10-30 23:46:43</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>Removed "M. Bison, Writhing Evil"<small>2026-10-30 23:46:29</small>
+		  </blockquote></div><div class="deck-live-actions deck-actions-hided"><blockquote>Deck name changed<small>2026-10-30 23:46:23</small>
+		  </blockquote></div>                            </div>
+            </div>
+			<div id="deck-stat" class="tab-pane">
+					<div class="well well-small">
+							<span class="deck-info">Deck Stability <small>(the higher, the better)</small> :</span> 1.76<br />
+
+							<h3>Overall Stats</h3>
+							<table>
+									<tr>
+											<th>
+
+											</th>
+																								<th>
+															Number of cards													</th>
+																								<th>
+															Cards with block													</th>
+																								<th>
+															Average block modifier													</th>
+																								<th>
+															Average difficulty													</th>
+																								<th>
+															Average control													</th>
+																				</tr>
+																		<tr>
+											<td>
+													Total											</td>
+																								<td>
+															69													</td>
+																										<td>
+															69													</td>
+																										<td>
+															2.17													</td>
+																										<td>
+															2.46													</td>
+																										<td>
+															4.33													</td>
+																						</tr>
+																				<tr>
+											<td>
+													Attack											</td>
+																								<td>
+															23													</td>
+																										<td>
+															23													</td>
+																										<td>
+															1.7													</td>
+																										<td>
+															4.87													</td>
+																										<td>
+															3													</td>
+																						</tr>
+																				<tr>
+											<td>
+													Foundation											</td>
+																								<td>
+															40													</td>
+																										<td>
+															40													</td>
+																										<td>
+															2.63													</td>
+																										<td>
+															1.23													</td>
+																										<td>
+															5													</td>
+																						</tr>
+																				<tr>
+											<td>
+													Asset											</td>
+																								<td>
+															6													</td>
+																										<td>
+															6													</td>
+																										<td>
+															1													</td>
+																										<td>
+															1.5													</td>
+																										<td>
+															5													</td>
+																						</tr>
+																				<tr>
+											<td>
+													Action											</td>
+																								<td>
+															0													</td>
+																										<td>
+															0													</td>
+																										<td>
+															-													</td>
+																										<td>
+															-													</td>
+																										<td>
+															-													</td>
+																						</tr>
+																				<tr>
+											<td>
+													Character											</td>
+																								<td>
+															0													</td>
+																										<td>
+															0													</td>
+																										<td>
+															-													</td>
+																										<td>
+															-													</td>
+																										<td>
+															-													</td>
+																						</tr>
+																				<tr>
+											<td>
+													Backup											</td>
+																								<td>
+															0													</td>
+																										<td>
+															0													</td>
+																										<td>
+															-													</td>
+																										<td>
+															-													</td>
+																										<td>
+															-													</td>
+																						</tr>
+																				<tr>
+											<td>
+													Arena											</td>
+																								<td>
+															0													</td>
+																										<td>
+															0													</td>
+																										<td>
+															-													</td>
+																										<td>
+															-													</td>
+																										<td>
+															-													</td>
+																						</tr>
+														
+							</table>
+
+							<h3>Blocks</h3>
+							<table>
+								<tr>
+									<th>
+
+									</th>
+									<th>
+										Total
+									</th>
+									<th>
+										Average Block Modifier
+									</th>
+																			<th>
+										0										</th>
+																		</tr>
+								<tr>
+									<td>
+											High
+									</td>
+									<td>
+											16									</td>
+									<td>
+											1.81									</td>
+																		<td>
+									0									</td>
+																	</tr>
+								<tr>
+									<td>
+											Mid
+									</td>
+									<td>
+											34									</td>
+									<td>
+											2.41									</td>
+																		<td>
+									0									</td>
+									
+								</tr>
+								<tr>
+									<td>
+											Low
+									</td>
+									<td>
+											19									</td>
+									<td>
+											2.05									</td>
+																		<td>
+									0									</td>
+									
+								</tr>
+							</table>
+					</div>
+			</div>
+                    <div id="deck-graph" class="tab-pane" style="width: 850px;">
+                            <div class="well well-small">
+                                    <div id="placeholder_type" style="float : left; width:400px;height:250px;"></div>
+                                    <div id="placeholder_difficulty" style="float : left; width:400px;height:250px;"></div>
+                                    <div id="placeholder_check" style="float : left; width:400px;height:250px;"></div>
+                                    <div id="placeholder_block_zone" style="float : left; width:400px;height:250px;"></div>
+                                    <div id="placeholder_block_modifier" style="float : left; width:400px;height:250px;"></div>
+                                    <div id="placeholder_attack_zone" style="float : left; width:400px;height:250px;"></div>
+                                    <div id="placeholder_attack_damage" style="float : left; width:400px;height:250px;"></div>
+                                    <div id="placeholder_attack_speed" style="float : left; width:400px;height:250px;"></div>
+                                    <div id="placeholder_compare_check" style="float : left; width:400px;height:250px;"></div>
+                                    <div class="clear"></div>
+                            </div>
+                    </div>
+                    <div id="deck-risk" class="tab-pane">
+                            <div class="well well-small">
+                                    <h3>Risks of commiting X foundations</h3>
+                                    <table class="table">
+                                            <thead>                                                    <tr>
+                                                                                                                                <th>Difficulty / Commited fundation</th>
+                                                                                                                                                        <th>0</th>
+                                                                                                                                                <th>1</th>
+                                                                                                                                                <th>2</th>
+                                                                                                                                                <th>3</th>
+                                                                                                                                                <th>4</th>
+                                                                                                                                                <th>5</th>
+                                                                                                                                                <th>6</th>
+                                                                                                                                </tr>
+                                                    </thead>                                                    <tr>
+                                                                                                                                <td>2</td>
+                                                                                                                                                <td>100%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                                                <td>3</td>
+                                                                                                                                                <td>100%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                                                <td>4</td>
+                                                                                                                                                <td>66.67%</td>
+                                                                                                                                        <td>33.33%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                                                <td>5</td>
+                                                                                                                                                <td>60.87%</td>
+                                                                                                                                        <td>5.8%</td>
+                                                                                                                                        <td>33.33%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                                                <td>6</td>
+                                                                                                                                                <td>5.8%</td>
+                                                                                                                                        <td>55.07%</td>
+                                                                                                                                        <td>5.8%</td>
+                                                                                                                                        <td>33.33%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                                                <td>7</td>
+                                                                                                                                                <td>0%</td>
+                                                                                                                                        <td>5.8%</td>
+                                                                                                                                        <td>55.07%</td>
+                                                                                                                                        <td>5.8%</td>
+                                                                                                                                        <td>33.33%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                                                <td>8</td>
+                                                                                                                                                <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>5.8%</td>
+                                                                                                                                        <td>55.07%</td>
+                                                                                                                                        <td>5.8%</td>
+                                                                                                                                        <td>33.33%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                        </tr>
+                                                                                                        <tr>
+                                                                                                                                <td>9</td>
+                                                                                                                                                <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>0%</td>
+                                                                                                                                        <td>5.8%</td>
+                                                                                                                                        <td>55.07%</td>
+                                                                                                                                        <td>5.8%</td>
+                                                                                                                                        <td>33.33%</td>
+                                                                                                                        </tr>
+                                                                                        </table>
+                            </div>
+                    </div>
+            </div>
+
+
+        <script id="source" language="javascript" type="text/javascript">
+        var chart;
+    $(document).ready(function() {
+    /**
+     * Grid theme for Highcharts JS
+     * @author Torstein HÃ¸nsi
+     */
+
+    Highcharts.theme = {
+       colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4'],
+       chart: {
+          backgroundColor: {
+             linearGradient: [0, 0, 500, 500],
+             stops: [
+                [0, 'rgb(255, 255, 255)'],
+                [1, 'rgb(240, 240, 255)']
+             ]
+          }
+    ,
+          borderWidth: 2,
+          plotBackgroundColor: 'rgba(255, 255, 255, .9)',
+          plotShadow: true,
+          plotBorderWidth: 1
+       },
+       title: {
+          style: { 
+             color: '#000',
+             font: 'bold 16px "Trebuchet MS", Verdana, sans-serif'
+          }
+       },
+       subtitle: {
+          style: { 
+             color: '#666666',
+             font: 'bold 12px "Trebuchet MS", Verdana, sans-serif'
+          }
+       },
+       xAxis: {
+          gridLineWidth: 1,
+          lineColor: '#000',
+          tickColor: '#000',
+          labels: {
+             style: {
+                color: '#000',
+                font: '11px Trebuchet MS, Verdana, sans-serif'
+             }
+          },
+          title: {
+             style: {
+                color: '#333',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+
+             }            
+          }
+       },
+       yAxis: {
+          minorTickInterval: 'auto',
+          lineColor: '#000',
+          lineWidth: 1,
+          tickWidth: 1,
+          tickColor: '#000',
+          labels: {
+             style: {
+                color: '#000',
+                font: '11px Trebuchet MS, Verdana, sans-serif'
+             }
+          },
+          title: {
+             style: {
+                color: '#333',
+                fontWeight: 'bold',
+                fontSize: '12px',
+                fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+             }            
+          }
+       },
+       legend: {
+          itemStyle: {         
+             font: '9pt Trebuchet MS, Verdana, sans-serif',
+             color: 'black'
+
+          },
+          itemHoverStyle: {
+             color: '#039'
+          },
+          itemHiddenStyle: {
+             color: 'gray'
+          }
+       },
+       labels: {
+          style: {
+             color: '#99b'
+          }
+       }
+    };
+
+    // Apply the theme
+    var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
+
+    chart_type = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_type',
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false
+          },
+          title: {
+             text: 'Cards types'
+          },
+          tooltip: {
+             formatter: function() {
+                return '<b>'+ this.point.name +'</b>: '+ this.percentage + ' %';
+             }
+          },
+          plotOptions: {
+             pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                   enabled: true,
+                   color: Highcharts.theme.textColor || '#000000',
+                   connectorColor: Highcharts.theme.textColor || '#000000',
+                   formatter: function() {
+                      return '<b>'+ this.point.name +'</b>: '+ this.y;
+                   }
+                }
+             }
+          },
+           series: [{
+             type: 'pie',
+             name: 'Browser share',
+             data: [
+                 ['action',0], ['arena',0], ['asset',6], ['attack',23], ['backup',0], ['character',0], ['foundation',40]             ]
+          }]
+       });
+    chart_block_modifier = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_block_modifier',
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false
+          },
+          title: {
+             text: 'Block Modifier'
+          },
+          tooltip: {
+             formatter: function() {
+                return '<b>'+ this.point.name +'</b>: '+ this.y;
+             }
+          },
+          plotOptions: {
+             pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                   enabled: true,
+                   color: Highcharts.theme.textColor || '#000000',
+                   connectorColor: Highcharts.theme.textColor || '#000000',
+                   formatter: function() {
+                      return '<b>'+ this.point.name +'</b>: '+ this.y;
+                   }
+                }
+             }
+          },
+           series: [{
+             type: 'pie',
+             name: 'Browser share',
+             data: [
+                 ['1',13], ['2',35], ['3',17], ['4',4], ['none',0]             ]
+          }]
+       });
+    chart_block_zone = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_block_zone',
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false
+          },
+          title: {
+             text: 'Block zone'
+          },
+          tooltip: {
+             formatter: function() {
+                return '<b>'+ this.point.name +'</b>: '+ this.y;
+             }
+          },
+          plotOptions: {
+             pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                   enabled: true,
+                   color: Highcharts.theme.textColor || '#000000',
+                   connectorColor: Highcharts.theme.textColor || '#000000',
+                   formatter: function() {
+                      return '<b>'+ this.point.name +'</b>: '+ this.y;
+                   }
+                }
+             }
+          },
+           series: [{
+             type: 'pie',
+             name: 'Browser share',
+             data: [
+                 ['high',16], ['low',19], ['mid',34], ['none',0]             ]
+          }]
+       });
+    chart_difficulty = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_difficulty',
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false
+          },
+          title: {
+             text: 'Difficulty'
+          },
+          tooltip: {
+             formatter: function() {
+                return '<b>'+ this.point.name +'</b>: '+ this.y;
+             }
+          },
+          plotOptions: {
+             pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                   enabled: true,
+                   color: Highcharts.theme.textColor || '#000000',
+                   connectorColor: Highcharts.theme.textColor || '#000000',
+                   formatter: function() {
+                      return '<b>'+ this.point.name +'</b>: '+ this.y;
+                   }
+                }
+             }
+          },
+           series: [{
+             type: 'pie',
+             name: 'Browser share',
+             data: [
+                 ['0',11], ['1',19], ['2',9], ['3',7], ['4',3], ['5',20]             ]
+          }]
+       });
+    chart_check = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_check',
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false
+          },
+          title: {
+             text: 'Check'
+          },
+          tooltip: {
+             formatter: function() {
+                return '<b>'+ this.point.name +'</b>: '+ this.y;
+             }
+          },
+          plotOptions: {
+             pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                   enabled: true,
+                   color: Highcharts.theme.textColor || '#000000',
+                   connectorColor: Highcharts.theme.textColor || '#000000',
+                   formatter: function() {
+                      return '<b>'+ this.point.name +'</b>: '+ this.y;
+                   }
+                }
+             }
+          },
+           series: [{
+             type: 'pie',
+             name: 'Browser share',
+             data: [
+                 ['3',23], ['4',4], ['5',38], ['6',4]             ]
+          }]
+       });
+    chart_attack_zone = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_attack_zone',
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false
+          },
+          title: {
+             text: 'Attack Zone'
+          },
+          tooltip: {
+             formatter: function() {
+                return '<b>'+ this.point.name +'</b>: '+ this.y;
+             }
+          },
+          plotOptions: {
+             pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                   enabled: true,
+                   color: Highcharts.theme.textColor || '#000000',
+                   connectorColor: Highcharts.theme.textColor || '#000000',
+                   formatter: function() {
+                      return '<b>'+ this.point.name +'</b>: '+ this.y;
+                   }
+                }
+             }
+          },
+           series: [{
+             type: 'pie',
+             name: 'Browser share',
+             data: [
+                 ['high',18], ['low',2], ['mid',3]             ]
+          }]
+       });
+    chart_attack_damage = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_attack_damage',
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false
+          },
+          title: {
+             text: 'Attack Damage'
+          },
+          tooltip: {
+             formatter: function() {
+                return '<b>'+ this.point.name +'</b>: '+ this.y;
+             }
+          },
+          plotOptions: {
+             pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                   enabled: true,
+                   color: Highcharts.theme.textColor || '#000000',
+                   connectorColor: Highcharts.theme.textColor || '#000000',
+                   formatter: function() {
+                      return '<b>'+ this.point.name +'</b>: '+ this.y;
+                   }
+                }
+             }
+          },
+           series: [{
+             type: 'pie',
+             name: 'Browser share',
+             data: [
+                 ['3',4], ['4',7], ['5',7], ['6',5]             ]
+          }]
+       });
+    chart_attack_speed = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_attack_speed',
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false
+          },
+          title: {
+             text: 'Attack Speed'
+          },
+          tooltip: {
+             formatter: function() {
+                return '<b>'+ this.point.name +'</b>: '+ this.y;
+             }
+          },
+          plotOptions: {
+             pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                   enabled: true,
+                   color: Highcharts.theme.textColor || '#000000',
+                   connectorColor: Highcharts.theme.textColor || '#000000',
+                   formatter: function() {
+                      return '<b>'+ this.point.name +'</b>: '+ this.y;
+                   }
+                }
+             }
+          },
+           series: [{
+             type: 'pie',
+             name: 'Browser share',
+             data: [
+                 ['0',3], ['2',2], ['3',7], ['4',11]             ]
+          }]
+       });
+       chart_compare_check = new Highcharts.Chart({
+          chart: {
+             renderTo: 'placeholder_compare_check',
+             defaultSeriesType: 'line',
+             marginRight: 100,
+             marginBottom: 25
+          },
+          title: {
+             text: 'Difficulty / check comparison',
+             x: -20 //center
+          },
+          tooltip: {
+             formatter: function() {
+                       return '<b>'+ this.series.name +'</b><br/>'+
+                   this.x +': '+ this.y;
+             }
+          },
+          legend: {
+             layout: 'vertical',
+             align: 'right',
+             verticalAlign: 'top',
+             x: 0,
+             y: 100,
+             borderWidth: 0
+          },
+          series: [{
+             name: 'Check',
+             data: [
+                 0, 0, 0, 23, 4, 38, 4             ]
+          }, {
+             name: 'Difficulty',
+             data: [
+                 11, 19, 9, 7, 3, 20, 0             ]
+          }],
+          xAxis: {
+             categories: [
+                 0, 1, 2, 3, 4, 5, 6             ]
+          },
+          yAxis: {
+            min : 0
+            }      
+       });
+    });
+    </script>
+    
+<div id="footer">
+
+    <a href="http://www.rochesterccg.com/">Sponsored by <img src="images/RCCG_Logo.jpg" alt="Rochester CCG" style="width: 412px; height: 160px;">
+    </a>
+</div>
+</body>
