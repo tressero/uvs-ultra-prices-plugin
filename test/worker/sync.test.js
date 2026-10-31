@@ -27,8 +27,8 @@ const PRODUCTS = {
 
 const PRICES = {
   results: [
-    { productId: 1, marketPrice: 1.5, lowPrice: 1 },
-    { productId: 2, marketPrice: 620.48, lowPrice: 600 },
+    { productId: 1, midPrice: 1.75, marketPrice: 1.5, lowPrice: 1 },
+    { productId: 2, midPrice: 610, marketPrice: 620.48, lowPrice: 600 },
   ],
 };
 
@@ -76,13 +76,13 @@ describe('syncCatalog', () => {
     expect(group.products).toHaveLength(2);
     // Descriptions and extendedData are dropped; only pricing fields survive.
     expect(Object.keys(group.products[0]).sort()).toEqual([
-      'id', 'low', 'market', 'name', 'number', 'rarity',
+      'id', 'low', 'market', 'mid', 'name', 'number', 'rarity',
     ]);
-    expect(group.products[0]).toMatchObject({ id: 1, number: '7/211', market: 1.5, low: 1 });
+    expect(group.products[0]).toMatchObject({ id: 1, number: '7/211', mid: 1.75, market: 1.5, low: 1 });
 
     const meta = await kv.get('meta', 'json');
     expect(meta).toMatchObject({ stamp: STAMP, products: 2 });
-    expect(meta.groups['24191']).toEqual({ name: group.name, count: 2, stamp: STAMP, schema: 2 });
+    expect(meta.groups['24191']).toEqual({ name: group.name, count: 2, stamp: STAMP, schema: 3 });
   });
 
   it('does nothing when the source has not rebuilt since the last sync', async () => {

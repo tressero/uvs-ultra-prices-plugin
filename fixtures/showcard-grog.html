@@ -1,0 +1,290 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title>UVS Ultra</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="UVSUltra the ultimate UVS search database" />
+		<meta name="keywords" content="UVSUltra, UVS, search, database, ccg, engine, ultimate, fighting, system" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="alternate" type="application/rss+xml" title="UVSUltra News" href="news.rss"/>
+		<link rel="stylesheet" href="css/bootstrap3/css/bootstrap.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/style.css?1.24" type="text/css" />
+		<link rel="stylesheet" href="css/colorbox.css" type="text/css" />
+		<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.9.2.custom.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/jquery.cluetip.css" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="js/skins/simple/style.css" />
+		<link rel="stylesheet" type="text/css" href="js/sets/default/style.css" />
+		<link rel="stylesheet" type="text/css" href="css/messenger.css" />
+		<link rel="stylesheet" type="text/css" href="css/messenger-theme-flat.css" />
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min.js"></script>
+		<script type="text/javascript" src="js/jquery.colorbox-min.js"></script>
+		<script type="text/javascript" src="js/jquery.cluetip.min.js"></script>
+		<script type="text/javascript" src="js/jquery.markitup.js"></script>
+		<!--
+		<script type="text/javascript" src="js/sets/default/set.js"></script>
+		-->
+		<script type="text/javascript" src="js/function.js?20260701-5"></script>
+		<script type="text/javascript" src="js/highcharts.js"></script>
+		<script type="text/javascript" src="js/jquery.chromatable.js"></script>
+		<script type="text/javascript" src="css/bootstrap3/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/messenger.min.js"></script>
+		<script type="text/javascript" src="js/messenger-theme-flat.js"></script>
+		<script type="text/javascript" src="js/jquery-ias.min.js"></script>
+        <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	</head>
+	<body>
+<nav class="navbar navbar-inverse" id="topbar">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+		<a class="navbar-brand" href="index.php">UVS Ultra</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+            <li><a href="index.php"><i class="glyphicon glyphicon-search glyphicon glyphicon-white"></i> Card Search</a></li>
+            <li><a href="live.php"><i class="glyphicon glyphicon-bullhorn glyphicon glyphicon-white"></i> Live</a></li>
+            <!--
+            <li><a href="topdecks.php"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Top decks</a></li>
+            -->
+            <!--
+            <li><a href="user.php?id=6389#!user-folders"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Tournament Decks</a></li>
+            -->
+            <li><a href="folder.php?id=5349"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Tournament Decks</a></li>
+            <!--
+            <li><a href="user.php?id=13768#!user-folders"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> MetaVersus Decks</a></li>
+            -->
+            <li><a href="folder.php?id=5003"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> MetaVersus Decks</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-stats glyphicon glyphicon-white"></i> Stats <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="stats.php">Cards Statistics</a></li>
+                    <!--
+                    <li><a href="tournament_rating.php">Player rating</a></li>
+                    <li><a href="tournament_character.php">Character rating</a></li>
+                    -->
+                </ul>
+            </li>
+                    </ul>
+        <ul class="nav navbar-nav pull-right">
+                        <li><a href="?lang=fr">FR</a></li>                            <li><a href="whyregister.php"><i class="glyphicon glyphicon-question-sign glyphicon glyphicon-white"></i> Why Register ?</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#connectionModal"><i class="glyphicon glyphicon-user glyphicon glyphicon-white"></i> Sign in</a></li>
+                    </ul>
+	</div><!-- /.navbar-collapse -->
+</nav><!-- /navbar -->
+<div id="newDeckModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form mehod="get" class="form-inline deck-form-create">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Create new deck</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="deck_name" id="deck_name" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success deck-save-name" value="Create" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="newFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form mehod="get" class="form-inline folder-form-create">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Create new folder</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="folder_name" id="folder_name" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success folder-save-name" value="Create" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="moveDeckFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form mehod="get" class="form-inline deckfolder-form-move">
+            <div class="modal-content">
+            </div>
+        </form>
+    </div>
+</div>
+<div id="moveFolderFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form mehod="get" class="form-inline folder-form-move">
+            <div class="modal-content">
+            </div>
+        </form>
+    </div>
+</div>
+<div id="importDeckModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form action="import_from_xml.php" method="post" enctype="multipart/form-data">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Import deck</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="deck_name" id="deck_name" /><br />
+					<label>XML File :</label> <input type="file" name="deck_file" id="deck_file" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success" value="Import" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="connectionModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Sign in or Register</h3>
+            </div>
+            <div class="modal-body">
+                <form name="login" method="post" class="form-horizontal well well-sm">
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 controls col-sm-7">
+                            <div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input class="form-control" type="text" id="login" name="login" placeholder="Login">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 controls col-sm-7">
+                            <div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                <input class="form-control" type="password" id="password" name="password" placeholder="Password">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+						<div class="col-sm-offset-4 col-sm-3">
+		                    <input type="submit" class="btn btn-primary" value="Sign in" />
+						</div>
+                    </div>
+                    <div class="form-group">
+						<div class="col-sm-offset-3 col-sm-4">
+							<label><input type="checkbox" name="new" /> Create new account</label>
+						</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+				<a href="whyregister.php" class="btn btn-info btn-sm pull-left">Why Register ?</a>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="deckModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="modal-header-mydeck">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">
+					My decks<br />
+					<small class="list-mydeck-display-by">
+						Display type :
+						<!--
+							<a href="menu_list_user_deck.php?mddisplaytype=folder&mdorderby=date_created&js" rel="DESC" class="label label-default label-info">Folder View</a>
+-->
+							<a href="menu_list_user_deck.php?mddisplaytype=folder&js" rel="DESC" class="label label-default label-info">Folder View</a>
+							<!--
+							<a href="menu_list_user_deck.php?mddisplaytype=flat&mdorderby=date_created&js" rel="DESC" class="label label-default">Flat View</a>
+-->
+							<a href="menu_list_user_deck.php?mddisplaytype=flat&js" rel="DESC" class="label label-default">Flat View</a>
+												</small><br />
+					<small class="list-mydeck-sort-by">
+						Order by :
+						<!--
+							<a href="menu_list_user_deck.php?mdorderby=date_created&mddisplaytype=folder&js" rel="DESC" class="label label-default label-info">Date Created<i class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=date_created&js" rel="DESC" class="label label-default label-info">Date Created<i class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a>
+							<!--
+							<a href="menu_list_user_deck.php?mdorderby=date_modified&mddisplaytype=folder&js" rel="DESC" class="label label-default">Date modified</a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=date_modified&js" rel="DESC" class="label label-default">Date modified</a>
+							<!--
+							<a href="menu_list_user_deck.php?mdorderby=name&mddisplaytype=folder&js" rel="ASC" class="label label-default">Name</a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=name&js" rel="ASC" class="label label-default">Name</a>
+												</small>
+				</h3>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary pull-left" data-toggle="modal" data-target="#newDeckModal" onclick="$('#deckModal').modal('hide');">Create new deck</a>
+                <a href="#" class="btn btn-info pull-left" data-toggle="modal" data-target="#newFolderModal" onclick="$('#deckModal').modal('hide');">Create new folder</a>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="reportModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Report an error</h3>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card_image">
+	<img src="images/extensions/cr02/007-preview.jpg?20240802" class="preview_image"/></div>
+<div class="card_infos">
+    <div class="card_title">
+	<h1>Grog Strongjaw, Mighty Half-Giant</h1>
+    </div>
+    <div class="card_division cd1">
+        Set 62 - Critical Role: Heroes of Exandria #7<br />
+        Character<br />
+        Uncommon<br />
+        Hero Too - Rochester Retro - Retro - Standard - Legacy<br />
+<!--
+        <a href="http://www.coolstuffinc.com/p/Universal+Fighting+System/Grog Strongjaw, Mighty Half-Giant">View on coolstuffinc</a><br />
+-->
+                <span class="glyphicon glyphicon-star"></span> <a target = '_blank' href="https://www.rochesterccg.com/advanced_search?utf8=%E2%9C%93&search%5Bfuzzy_search%5D=%2BGrog+Strongjaw%2C+Mighty+Half-Giant&search%5Btags_name_eq%5D=&search%5Bsell_price_gte%5D=&search%5Bsell_price_lte%5D=&search%5Bbuy_price_gte%5D=&search%5Bbuy_price_lte%5D=&search%5Bin_stock%5D=0&buylist_mode=0&search%5Bcategory_ids_with_descendants%5D%5B%5D=&search%5Bcategory_ids_with_descendants%5D%5B%5D=1519&search%5Bwith_descriptor_values%5D%5B1259%5D=&search%5Bwith_descriptor_values%5D%5B1261%5D=&search%5Bwith_descriptor_values%5D%5B1262%5D=&search%5Bwith_descriptor_values%5D%5B1266%5D=&search%5Bwith_descriptor_values%5D%5B1269%5D=&search%5Bwith_descriptor_values%5D%5B1270%5D=&search%5Bwith_descriptor_values%5D%5B1493%5D=&search%5Bwith_descriptor_values%5D%5B1503%5D=&search%5Bwith_descriptor_values%5D%5B1513%5D=&search%5Bwith_descriptor_values%5D%5B1523%5D=&search%5Bwith_descriptor_values%5D%5B1533%5D=&search%5Bwith_descriptor_values%5D%5B1543%5D=&search%5Bwith_descriptor_values%5D%5B1553%5D=&search%5Bwith_descriptor_values%5D%5B1883%5D=&search%5Bwith_descriptor_values%5D%5B1893%5D=&search%5Bwith_descriptor_values%5D%5B2132%5D=&search%5Bwith_descriptor_values%5D%5B2133%5D=&search%5Bwith_descriptor_values%5D%5B2134%5D=&search%5Bwith_descriptor_values%5D%5B2135%5D=&search%5Bwith_descriptor_values%5D%5B2136%5D=&search%5Bvariants_with_identifier%5D%5B2054%5D%5B%5D=&search%5Bsort%5D=name&search%5Bdirection%5D=ascend&commit=Search&search%5Bcatalog_group_id_eq%5D=">View on RochesterCCG</a><br />
+		<a href="deck_with_card.php?id=11619">List of decks with this card</a><br />
+				<a href="showcard.php?id=11619">Direct link</a>
+		    </div>
+    <div class="card_division cd2">
+        <strong>Brawler</strong> - <strong>Brute</strong> - <strong>Vox Machina</strong><br />        <div id="text">
+            If an attack deals damage, add 1 Rage counter to this card.<br />
+<br />
+<strong>Response: </strong>Before you would take damage from an unblocked attack, reduce that damage by 2 (min. 1).<br />
+<br />
+<strong>Enhance </strong>Remove 1 Rage counter from this card: Draw 1 card. Your attack gets +3 damage.        </div>
+        <a href="" onclick="$('#text').load('text.php?id=11619&type=original'); return false;">text original</a> - <a href="" onclick="$('#text').load('text.php?id=11619&type=errata'); return false;">text errata</a>
+    </div>
+    <div class="card_division cd3">
+        <img src="images/icons/death.png?20230902" alt="death" /> <img src="images/icons/earth.png?20230902" alt="earth" /> <img src="images/icons/fire.png?20230902" alt="fire" /><br />
+        Difficulty : <br />
+        Control : <br />
+        Block : + <br />
+        Attack :   / <br />
+        Hand size : 5<br />Vitality : 31<br />    </div>
+</div>
+<div class="clear"></div>

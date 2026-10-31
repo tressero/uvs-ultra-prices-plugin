@@ -58,6 +58,7 @@ for (const groupId of groupIds) {
       name: product.name,
       number: numberField ? numberField.value : null, // e.g. "10/211"
       rarity: rarityField ? rarityField.value : null,
+      mid: price?.midPrice ?? null,
       market: price?.marketPrice ?? null,
       low: price?.lowPrice ?? null,
     });

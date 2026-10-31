@@ -1,7 +1,13 @@
-/** Popup: settings and the state of the pricing service. */
+/** Popup: settings, the state of the pricing service, and the build version. */
+import { DEFAULT_METRIC, normalizeMetric } from '../../../shared/metrics.js';
 
 const METRIC_KEY = 'metric';
 const UNMATCHED_KEY = 'showUnmatched';
+
+// Baked in by build.mjs. The typeof guards keep the file usable unbundled.
+const APP_VERSION_LABEL = typeof __APP_VERSION_LABEL__ !== 'undefined' ? __APP_VERSION_LABEL__ : 'dev';
+const GIT_COMMIT = typeof __GIT_COMMIT__ !== 'undefined' ? __GIT_COMMIT__ : 'unknown';
+const GIT_COMMIT_URL = typeof __GIT_COMMIT_URL__ !== 'undefined' ? __GIT_COMMIT_URL__ : '';
 
 function $(selector) {
   return document.querySelector(selector);
@@ -23,11 +29,21 @@ function hostOf(url) {
   }
 }
 
+function renderVersion() {
+  const link = $('#app-version');
+  if (!link) return;
+  link.textContent = `v${APP_VERSION_LABEL}`;
+  link.title = `Built from commit ${GIT_COMMIT}`;
+  if (GIT_COMMIT_URL) link.href = GIT_COMMIT_URL;
+  else link.removeAttribute('href');
+}
+
 async function render() {
-  const settings = await chrome.storage.local.get({ metric: 'market', showUnmatched: true });
-  for (const input of document.querySelectorAll('input[name="metric"]')) {
-    input.checked = input.value === settings.metric;
-  }
+  const settings = await chrome.storage.local.get({
+    metric: DEFAULT_METRIC,
+    showUnmatched: true,
+  });
+  $('#metric').value = normalizeMetric(settings.metric);
   $('#show-unmatched').checked = Boolean(settings.showUnmatched);
 
   const status = await send({ type: 'service-status' });
@@ -65,17 +81,15 @@ function flashSaved() {
   flashSaved.timer = setTimeout(() => saved.classList.remove('popup-saved--visible'), 900);
 }
 
-for (const input of document.querySelectorAll('input[name="metric"]')) {
-  input.addEventListener('change', async () => {
-    if (!input.checked) return;
-    await chrome.storage.local.set({ [METRIC_KEY]: input.value });
-    flashSaved();
-  });
-}
+$('#metric').addEventListener('change', async (event) => {
+  await chrome.storage.local.set({ [METRIC_KEY]: normalizeMetric(event.target.value) });
+  flashSaved();
+});
 
 $('#show-unmatched').addEventListener('change', async (event) => {
   await chrome.storage.local.set({ [UNMATCHED_KEY]: event.target.checked });
   flashSaved();
 });
 
+renderVersion();
 render();

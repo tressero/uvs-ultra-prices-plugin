@@ -1,7 +1,9 @@
 /** User settings, persisted in chrome.storage.local. */
+import { DEFAULT_METRIC, normalizeMetric } from '../../../shared/metrics.js';
+
 export const DEFAULTS = {
-  /** 'market' | 'low' — which TCGplayer number drives the total. */
-  metric: 'market',
+  /** 'mid' | 'market' | 'low' — which TCGplayer number drives the total. */
+  metric: DEFAULT_METRIC,
   /** Show rows with no match as "n/a" (dashed outline) instead of hiding them. */
   showUnmatched: true,
   /** Pricing worker base URL; empty means "use the URL baked in at build time". */
@@ -11,7 +13,7 @@ export const DEFAULTS = {
 export async function loadSettings() {
   try {
     const stored = await chrome.storage.local.get(DEFAULTS);
-    return { ...DEFAULTS, ...stored };
+    return { ...DEFAULTS, ...stored, metric: normalizeMetric(stored.metric) };
   } catch {
     return { ...DEFAULTS };
   }

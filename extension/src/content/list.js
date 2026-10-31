@@ -6,18 +6,19 @@
  * fetch, so nothing is priced until the card is near the viewport. Results are
  * cached per deck for 12 hours, and at most two decks are in flight at once.
  *
- * Cards with no TCGplayer price get a placeholder based on rarity; decks where
+ * Cards with no TCGplayer price get an estimate based on rarity; decks where
  * some rarities are still unknown show "≥" instead of "≈".
  */
 import { parseDeckList, DECK_CARD_SELECTOR } from '../shared/list.js';
 import { parseDeckCards } from '../shared/parse.js';
 import { loadSettings, onSettingsChanged } from '../shared/settings.js';
-import { money, shortDate } from '../shared/format.js';
+import { money, moneyWhole, shortDate } from '../shared/format.js';
 import { estimateTotals, needsRarity } from '../../../shared/estimate.js';
+import { normalizeMetric } from '../../../shared/metrics.js';
 import { resolveRarities } from './rarities.js';
 
 const CHIP_CLASS = 'uvsp-list-price';
-const CACHE_PREFIX = 'deckprice:';
+const CACHE_PREFIX = 'deckprice:v2:';
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 const CONCURRENCY = 2;
 const OBSERVE_MARGIN = '300px'; // start before the card is actually on screen
@@ -88,10 +89,11 @@ async function fetchQuote(deckId) {
 function summarize(quote) {
   const est = estimateTotals(quote.items, {
     rarityFor: (item) => item.match?.rarity ?? state.rarities.get(item.card.cardId) ?? null,
-    realTotal: quote.totals[state.metric] ?? 0,
+    realTotal: quote.totals[state.metric] ?? quote.totals.market ?? 0,
   });
 
   return {
+    mid: quote.totals.mid ?? null,
     market: quote.totals.market,
     low: quote.totals.low,
     pricedCards: quote.totals.pricedCards,
@@ -117,7 +119,7 @@ function chipFor(card, value) {
   chip.className = CHIP_CLASS;
 
   const priced = value.pricedCards > 0;
-  const total = value.combined ?? (state.metric === 'low' ? value.low : value.market);
+  const total = value.combined ?? value[state.metric] ?? value.market;
 
   if (!priced && !value.estimated) {
     chip.classList.add(`${CHIP_CLASS}--none`);
@@ -126,7 +128,7 @@ function chipFor(card, value) {
     return chip;
   }
 
-  // ≈ means the total includes placeholders, ≥ means some cards are still
+  // ≈ means the total includes estimates, ≥ means some cards are still
   // excluded, so the number is only a floor.
   const prefix = value.unknown ? '≥ ' : value.estimated ? '≈ ' : '';
   chip.textContent = `${prefix}${money(total)}`;
@@ -134,7 +136,7 @@ function chipFor(card, value) {
   if (value.estimated) chip.classList.add(`${CHIP_CLASS}--estimated`);
 
   const parts = [`TCGplayer ${state.metric} ${money(value.combined)}`];
-  if (value.estimated) parts.push(`${money(value.estimated)} of it is placeholder`);
+  if (value.estimated) parts.push(`${moneyWhole(value.estimated)} of it is estimate`);
   parts.push(`${value.pricedCards} of ${value.totalUnique} cards priced`);
   if (value.unknown) parts.push(`${value.unknown} cards still unpriced`);
   if (value.source === 'worker' && value.updatedAt) parts.push(`synced ${shortDate(value.updatedAt)}`);
@@ -273,7 +275,7 @@ function rescan() {
 }
 
 function start(settings) {
-  state.metric = settings.metric === 'low' ? 'low' : 'market';
+  state.metric = normalizeMetric(settings.metric);
 
   state.observer = new IntersectionObserver(
     (entries) => {
@@ -305,7 +307,7 @@ function start(settings) {
 
   onSettingsChanged((patch) => {
     if (!patch.metric) return;
-    state.metric = patch.metric === 'low' ? 'low' : 'market';
+    state.metric = normalizeMetric(patch.metric);
     rescan();
   });
 }

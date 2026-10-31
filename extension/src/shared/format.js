@@ -10,6 +10,20 @@ export function money(value) {
   });
 }
 
+/**
+ * Whole-dollar money for the rarity estimates and their sums. Estimates are
+ * always whole values ($1, $15, $30), so ".00" is noise in a tight chip.
+ */
+export function moneyWhole(value) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return '—';
+  return value.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
+
 export function confidenceLabel(confidence) {
   switch (confidence) {
     case 'exact':

@@ -8,6 +8,8 @@
  *   /deck.php?deck=grog|jp|lucy
  *   /deck_card_list.php?js&deck=<id>     (the three saved decks only)
  *   /topdecks.php     /folder.php?id=1297     /index.php
+ *   POST /listing_cards.php              (search results for "Grog")
+ *   /card.php?id=11619   /showcard.php?id=11619
  */
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -53,6 +55,17 @@ function resolvePath(url) {
   if (pathname === '/topdecks.php') return { file: join(ROOT, 'fixtures', 'topdecks.html') };
   if (pathname === '/folder.php') return { file: join(ROOT, 'fixtures', 'folder-decks.html') };
   if (pathname === '/index.php' || pathname === '/') return { file: join(ROOT, 'fixtures', 'index.html') };
+
+  // Search results: the real site POSTs the form to this endpoint.
+  if (pathname === '/listing_cards.php') return { file: join(ROOT, 'fixtures', 'search-grog.html') };
+
+  // One card page, used by both the colorbox and the direct-link page.
+  if (pathname === '/card.php' && searchParams.get('id') === '11619') {
+    return { file: join(ROOT, 'fixtures', 'card-grog.html') };
+  }
+  if (pathname === '/showcard.php' && searchParams.get('id') === '11619') {
+    return { file: join(ROOT, 'fixtures', 'showcard-grog.html') };
+  }
 
   return null;
 }

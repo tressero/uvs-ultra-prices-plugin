@@ -1,7 +1,7 @@
 /**
- * Totals that include placeholder values for cards TCGplayer cannot price.
+ * Totals that include estimates for cards TCGplayer cannot price.
  *
- * The real total and the placeholder total are kept apart so the UI can show
+ * The real total and the estimate total are kept apart so the UI can show
  * both and never present an estimate as a quote.
  */
 import { placeholderFor } from './rarity.js';

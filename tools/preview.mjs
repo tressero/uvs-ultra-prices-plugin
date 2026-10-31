@@ -74,10 +74,18 @@ try {
     const summary = await page.evaluate(() => {
       const panel = document.querySelector('#uvsp-panel');
       const chips = [...document.querySelectorAll('.uvsp-chip')];
+      const buy = panel.querySelector('.uvsp-buy');
       return {
         total: panel.querySelector('.uvsp-total')?.textContent,
         sub: panel.querySelector('.uvsp-sub')?.textContent,
         notes: [...panel.querySelectorAll('.uvsp-panel-note')].map((n) => n.textContent),
+        buy: buy
+          ? {
+              text: buy.textContent,
+              title: buy.title,
+              note: panel.querySelector('.uvsp-buy-note')?.textContent,
+            }
+          : null,
         chips: chips.length,
         unpriced: chips.filter((c) => c.classList.contains('uvsp-chip--none')).length,
         unsure: chips.filter((c) => c.classList.contains('uvsp-chip--unsure')).length,
@@ -116,6 +124,94 @@ try {
     await page.screenshot({ path: join(OUT, 'uvsp-topdecks.png') });
     console.log('\n=== topdecks (lazy list totals) ===');
     console.log(JSON.stringify(list, null, 2));
+    await page.close();
+  }
+  // Buy guard: a deck with unpriced cards lists them before opening TCGplayer.
+  {
+    const page = await context.newPage();
+    await page.goto(`http://localhost:${PORT}/deck.php?deck=lucy`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#uvsp-panel', { timeout: 15000 });
+    await page.waitForTimeout(1500);
+    await page.click('#uvsp-panel .uvsp-buy');
+    await page.waitForSelector('#uvsp-buy-modal', { timeout: 5000 });
+
+    const dialog = await page.evaluate(() => ({
+      title: document.querySelector('#uvsp-buy-title')?.textContent,
+      intro: document.querySelector('.uvsp-buy-intro')?.textContent,
+      excluded: [...document.querySelectorAll('.uvsp-buy-card')].map((el) => el.textContent),
+      reasons: [...document.querySelectorAll('.uvsp-buy-reason')].map((el) => el.textContent),
+      summary: document.querySelector('.uvsp-buy-summary')?.textContent,
+      continueButton: document.querySelector('.uvsp-buy-go')?.textContent ?? null,
+    }));
+    await page.screenshot({ path: join(OUT, 'uvsp-buy-guard.png') });
+    console.log('\n=== buy guard ===');
+    console.log(JSON.stringify(dialog, null, 2));
+    await page.click('.uvsp-buy-cancel');
+    await page.close();
+  }
+
+  // Page-only metric selector: changing it does not touch the saved default.
+  {
+    const page = await context.newPage();
+    await page.goto(`http://localhost:${PORT}/deck.php?deck=grog`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('#uvsp-panel', { timeout: 15000 });
+    await page.waitForTimeout(1000);
+    const before = await page.evaluate(() => ({
+      label: document.querySelector('.uvsp-label')?.textContent,
+      total: document.querySelector('.uvsp-total')?.textContent,
+    }));
+    await page.selectOption('#uvsp-panel .uvsp-metric-select', 'mid');
+    await page.waitForFunction(
+      () => document.querySelector('.uvsp-label')?.textContent === 'TCGplayer Mid',
+      { timeout: 10000 },
+    );
+    const mid = await page.evaluate(() => ({
+      label: document.querySelector('.uvsp-label')?.textContent,
+      total: document.querySelector('.uvsp-total')?.textContent,
+      note: document.querySelector('.uvsp-metric-note')?.textContent,
+    }));
+    console.log('\n=== page-only metric ===');
+    console.log(JSON.stringify({ before, mid }, null, 2));
+    await page.screenshot({ path: join(OUT, 'uvsp-metric.png') });
+    await page.close();
+  }
+
+  // Search results and the card popup, both on index.php.
+  {
+    const page = await context.newPage();
+    const errors = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+    page.on('pageerror', (error) => errors.push(String(error)));
+
+    await page.goto(`http://localhost:${PORT}/index.php`, { waitUntil: 'domcontentloaded' });
+    await page.fill('#name', 'Grog');
+    await page.click('#search button[type="submit"]');
+    await page.waitForSelector('#content .uvsp-chip', { timeout: 15000 });
+
+    const search = await page.evaluate(() => ({
+      results: document.querySelectorAll('#content .card').length,
+      chips: [...document.querySelectorAll('#content .uvsp-chip')].map((c) => ({
+        text: c.textContent,
+        title: (c.title || '').slice(0, 80),
+      })),
+    }));
+    await page.screenshot({ path: join(OUT, 'uvsp-search.png') });
+    console.log('\n=== search results ===');
+    console.log(JSON.stringify(search, null, 2));
+
+    // Clicking a row opens card.php in a colorbox; the price line lands there.
+    await page.click('#content .card .card_title h1');
+    await page.waitForSelector('#cboxLoadedContent .uvsp-cardprice .uvsp-chip', { timeout: 15000 });
+    const detail = await page.evaluate(() => {
+      const chip = document.querySelector('#cboxLoadedContent .uvsp-cardprice .uvsp-chip');
+      return { text: chip.textContent, title: chip.title, href: chip.getAttribute('href') };
+    });
+    await page.screenshot({ path: join(OUT, 'uvsp-card.png') });
+    console.log('\n=== card popup ===');
+    console.log(JSON.stringify(detail, null, 2));
+    if (errors.length) console.log('console errors:', errors);
     await page.close();
   }
 } finally {

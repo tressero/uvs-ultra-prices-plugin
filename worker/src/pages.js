@@ -40,9 +40,10 @@ cards on <a href="https://uvsultra.online">uvsultra.online</a>. This page explai
 exactly what it sends, where, and what is kept.</p>
 
 <h2>What the extension does with your data</h2>
-<p><strong>The deck you are looking at.</strong> When you open a deck page or a deck
-list, the extension reads the cards on that page (card names, set, collector number
-and quantity) and sends that list to its pricing service to look up prices:</p>
+<p><strong>The cards you are looking at.</strong> When you open a deck page, a deck
+list, a search result or a card page, the extension reads the cards shown there
+(card names, set, collector number and quantity) and sends that list to its pricing
+service to look up prices:</p>
 <pre>https://uvs-ultra-prices.marc-ee2.workers.dev</pre>
 <p>That request contains only card data — no account, no identifier, no browsing
 history, no IP-based profile beyond what any web request carries.</p>
@@ -55,9 +56,13 @@ uninstall the extension.</p>
 <ul>
   <li>No accounts, sign-in, or personal information.</li>
   <li>No analytics, telemetry, crash reporting, advertising, or tracking pixels.</li>
-  <li>No reading of pages other than <code>uvsultra.online</code> deck pages and deck lists.</li>
+  <li>No reading of pages other than <code>uvsultra.online</code> deck, deck-list,
+      search and card pages.</li>
   <li>No selling, sharing, or transferring of data to third parties.</li>
   <li>No remote code: the extension downloads price data only, never scripts.</li>
+  <li>The "Buy deck on TCGplayer" button is an ordinary link. The extension sends no
+      data to TCGplayer; your browser opens TCGplayer's Mass Entry page with the card
+      list in the URL only when you click it.</li>
 </ul>
 
 <h2>The pricing service</h2>
@@ -112,16 +117,17 @@ syncs the public catalog once a day and serves trimmed JSON.</p>
 <div class="card">
 <h2 style="margin-top:0">Endpoints</h2>
 <ul>
-  <li><code>POST /v1/quote</code> — <code>{ cards, metric }</code> → priced deck</li>
+  <li><code>POST /v1/quote</code> — <code>{ cards, metric: "mid"|"market"|"low" }</code> → priced deck</li>
   <li><code>GET /v1/health</code> — catalog status</li>
   <li><code>GET /privacy</code> — privacy policy</li>
 </ul>
 <p>Live status: <a href="${worker}">${worker}</a></p>
 </div>
 
-<p>The extension itself: install it from the Chrome Web Store and open any deck on
-<a href="https://uvsultra.online">uvsultra.online</a>. Prices appear next to each
-card, with a total for the deck and for every deck in a list.</p>
+<p>The extension itself: install it from the Chrome Web Store and open any deck,
+search result or card page on <a href="https://uvsultra.online">uvsultra.online</a>.
+Prices appear next to each card, with a total for the deck and for every deck in a
+list. Market, listed-median (mid) and low prices are available.</p>
 
 <p>Not affiliated with UVS Ultra, Jasco Games, or TCGplayer. Prices are
 informational.</p>

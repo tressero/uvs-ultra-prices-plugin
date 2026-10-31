@@ -1,9 +1,9 @@
 {
   "name": "uvs-ultra-prices-plugin",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "Chrome extension that shows TCGplayer prices on UVS Ultra decks",
+  "description": "Chrome extension that shows TCGplayer prices on UVS Ultra decks and cards, with deck totals and Mass Entry buy links",
   "scripts": {
     "build": "node build.mjs",
     "build:dev": "node build.mjs --dev",
@@ -25,7 +25,8 @@
     "check:live": "node tools/check-live.mjs",
     "worker:prime": "node tools/prime-worker.mjs",
     "screenshots": "node tools/store-shots.mjs",
-    "package": "node build.mjs && node tools/package.mjs"
+    "package": "node build.mjs && node tools/package.mjs",
+    "release": "node tools/release.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",

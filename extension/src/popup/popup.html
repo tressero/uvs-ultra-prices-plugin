@@ -12,21 +12,23 @@
     </header>
 
     <section class="popup-section">
-      <h2>Headline price</h2>
-      <label class="popup-radio">
-        <input type="radio" name="metric" value="market" />
-        <span>
-          <strong>Market</strong>
-          <small>What the deck is worth — TCGplayer's market price</small>
-        </span>
+      <h2>Default price</h2>
+      <label class="popup-field" for="metric">
+        <span>Price basis</span>
+        <select id="metric" class="popup-select">
+          <option value="mid">Mid — typical current listing</option>
+          <option value="market">Market — recent sold prices</option>
+          <option value="low">Low — cheapest listing</option>
+        </select>
       </label>
-      <label class="popup-radio">
-        <input type="radio" name="metric" value="low" />
-        <span>
-          <strong>Low</strong>
-          <small>Cheapest listings — cost to actually buy the deck</small>
-        </span>
-      </label>
+      <p class="popup-hint">
+        Applies to every UVS Ultra page. On a deck page, the price selector changes
+        that page only.
+      </p>
+      <p class="popup-hint">
+        Prices are cached from TCGplayer once a day and may differ from the live
+        price you see on TCGplayer.
+      </p>
     </section>
 
     <section class="popup-section">
@@ -47,7 +49,10 @@
 
     <footer class="popup-footer">
       <span class="popup-note">Prices from TCGplayer via tcgcsv</span>
-      <span id="saved" class="popup-saved">Saved</span>
+      <span class="popup-footer-right">
+        <a id="app-version" class="popup-version" target="_blank" rel="noopener noreferrer">v—</a>
+        <span id="saved" class="popup-saved">Saved</span>
+      </span>
     </footer>
 
     <script src="popup.js"></script>

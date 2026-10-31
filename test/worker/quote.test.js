@@ -12,6 +12,7 @@ const CR02 = {
       id: 1,
       name: 'Grog Strongjaw, Mighty Half-Giant',
       number: '7/211',
+      mid: 1.75,
       market: 1.5,
       low: 1,
       url: 'https://www.tcgplayer.com/product/1',
@@ -76,8 +77,31 @@ describe('POST /v1/quote', () => {
     expect(body.items[0].match.name).toBe('Grog Strongjaw, Mighty Half-Giant');
     expect(body.items[0].line).toBe(6);
     expect(body.totals.market).toBe(6);
+    expect(body.totals.mid).toBe(7);
     expect(body.totals.complete).toBe(true);
     expect(body.updatedAt).toBe('2026-10-30T20:30:00.000Z');
+  });
+
+  it('prices the mid metric and accepts an unknown metric as market', async () => {
+    for (const [metric, total] of [
+      ['mid', 7],
+      ['market', 6],
+      ['low', 4],
+      ['nonsense', 6],
+    ]) {
+      const response = await worker.fetch(
+        post('/v1/quote', {
+          cards: [{ name: 'Grog Strongjaw, Mighty Half-Giant', setCode: 'cr02', numberInt: 7, qty: 4 }],
+          metric,
+        }),
+        seeded(),
+        fakeCtx(),
+      );
+      const body = await response.json();
+      expect(response.status).toBe(200);
+      expect(body.totals.metric).toBe(metric === 'nonsense' ? 'market' : metric);
+      expect(body.totals[body.totals.metric]).toBe(total);
+    }
   });
 
   it('answers 503 and warms the sets it needs when nothing is synced yet', async () => {
