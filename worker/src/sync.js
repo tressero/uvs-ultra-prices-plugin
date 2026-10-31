@@ -1,0 +1,131 @@
+/**
+ * Sync the TCGplayer catalog through tcgcsv into KV.
+ *
+ * tcgcsv asks for: one sync per day, a real User-Agent, spaced requests, and
+ * no calls from user-facing apps. All of that is why this runs here instead of
+ * in the extension.
+ *
+ * KV layout:
+ *   meta            -> { stamp, syncedAt, groups: { [id]: { name, count } }, products }
+ *   group:<groupId> -> { name, products: [{ id, name, number, market, low, url }] }
+ */
+import setMap from '../../data/set-map.json';
+
+const GROUP_PREFIX = 'group:';
+const META_KEY = 'meta';
+const REQUEST_GAP_MS = 150; // tcgcsv: "include a time.sleep(100ms) in your update loop"
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Every TCGplayer group the set map points at. */
+export function mappedGroupIds() {
+  const ids = new Set();
+  for (const entry of Object.values(setMap)) {
+    if (entry?.groupId) ids.add(String(entry.groupId));
+  }
+  return [...ids];
+}
+
+export function groupKey(groupId) {
+  return `${GROUP_PREFIX}${groupId}`;
+}
+
+export async function readMeta(env) {
+  return env.PRICING.get(META_KEY, 'json');
+}
+
+async function fetchJson(url, userAgent) {
+  const response = await fetch(url, {
+    headers: { 'user-agent': userAgent, accept: 'application/json' },
+  });
+  if (!response.ok) throw new Error(`${response.status} ${url}`);
+  return response.json();
+}
+
+/** Keep only what the quote endpoint needs; the source rows are ~10x larger. */
+function buildGroup(group, products, prices) {
+  const priceOf = new Map(prices.results.map((row) => [row.productId, row]));
+  const rows = [];
+  for (const product of products.results) {
+    if (!product.name) continue;
+    const price = priceOf.get(product.productId);
+    const number = (product.extendedData || []).find((entry) => entry.name === 'Number');
+    rows.push({
+      id: product.productId,
+      name: product.name,
+      number: number ? number.value : null,
+      market: price?.marketPrice ?? null,
+      low: price?.lowPrice ?? null,
+      url: product.url ?? null,
+    });
+  }
+  return { name: group.name ?? null, products: rows };
+}
+
+/**
+ * @param env worker env (PRICING binding, SOURCE_BASE, CATALOG_CATEGORY, USER_AGENT)
+ * @param options {{ groups?: string[], force?: boolean }}
+ */
+export async function syncCatalog(env, options = {}) {
+  const base = (env.SOURCE_BASE ?? 'https://tcgcsv.com').replace(/\/$/, '');
+  const category = env.CATALOG_CATEGORY ?? '25';
+  const userAgent = env.USER_AGENT ?? 'UVSUltraPrices/0.1.0';
+  const requested = (options.groups ?? mappedGroupIds()).map(String);
+
+  const meta = (await readMeta(env)) ?? { stamp: null, syncedAt: null, groups: {}, products: 0 };
+  const groups = { ...meta.groups };
+
+  let stamp = meta.stamp;
+  try {
+    const response = await fetch(`${base}/last-updated.txt`, { headers: { 'user-agent': userAgent } });
+    if (response.ok) stamp = (await response.text()).trim();
+  } catch {
+    // Keep the previous stamp; a failed check is not a reason to skip.
+  }
+
+  const missing = requested.filter((groupId) => !groups[groupId]);
+  if (!options.force && stamp && stamp === meta.stamp && missing.length === 0) {
+    return { skipped: true, stamp, syncedAt: meta.syncedAt, groups: Object.keys(groups) };
+  }
+
+  const groupList = await fetchJson(`${base}/tcgplayer/${category}/groups`, userAgent);
+  const names = new Map(groupList.results.map((group) => [String(group.groupId), group.name]));
+
+  const failures = [];
+  let products = 0;
+
+  for (const groupId of requested) {
+    try {
+      const [productRows, priceRows] = await Promise.all([
+        fetchJson(`${base}/tcgplayer/${category}/${groupId}/products`, userAgent),
+        fetchJson(`${base}/tcgplayer/${category}/${groupId}/prices`, userAgent),
+      ]);
+      const built = buildGroup({ name: names.get(groupId) ?? groups[groupId]?.name ?? null }, productRows, priceRows);
+      await env.PRICING.put(groupKey(groupId), JSON.stringify(built));
+      groups[groupId] = { name: built.name, count: built.products.length };
+      products += built.products.length;
+      await sleep(REQUEST_GAP_MS);
+    } catch (err) {
+      // Keep whatever is already stored for this group.
+      failures.push({ groupId, error: err instanceof Error ? err.message : String(err) });
+    }
+  }
+
+  const nextMeta = {
+    stamp,
+    syncedAt: new Date().toISOString(),
+    groups,
+    products: Object.values(groups).reduce((sum, group) => sum + (group.count ?? 0), 0),
+  };
+
+  await env.PRICING.put(META_KEY, JSON.stringify(nextMeta));
+
+  return {
+    skipped: false,
+    stamp,
+    syncedAt: nextMeta.syncedAt,
+    groups: requested,
+    products,
+    failures,
+  };
+}

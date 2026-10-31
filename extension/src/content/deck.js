@@ -32,7 +32,7 @@ async function requestQuote(cards, metric) {
   // Dev/preview fallback: price in-page against the bundled snapshot.
   if (__DEV__) {
     const [{ priceDeck }, { loadBundledCatalog }] = await Promise.all([
-      import('../shared/match.js'),
+      import('../../../shared/match.js'),
       import('../shared/catalog.js'),
     ]);
     const catalog = loadBundledCatalog();

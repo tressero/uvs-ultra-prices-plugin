@@ -14,8 +14,7 @@
  * The Grog Strongjaw case is why order matters: base $1, serial numbered $620,
  * both at `7/211`.
  */
-import { baseName, editDistance, namesMatch, normalizeName } from './text.js';
-import { collectorNumberInt } from './parse.js';
+import { baseName, collectorNumberInt, editDistance, namesMatch, normalizeName } from './text.js';
 
 export const CONFIDENCE = {
   EXACT: 'exact', // name matched, exactly one candidate

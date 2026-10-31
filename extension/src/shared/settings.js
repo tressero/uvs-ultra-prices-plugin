@@ -4,6 +4,8 @@ export const DEFAULTS = {
   metric: 'market',
   /** Show rows with no match as "n/a" (dashed outline) instead of hiding them. */
   showUnmatched: true,
+  /** Pricing worker base URL; empty means "use the URL baked in at build time". */
+  workerUrl: '',
 };
 
 export async function loadSettings() {

@@ -11,7 +11,7 @@ import { mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { normalizeName } from '../extension/src/shared/text.js';
+import { normalizeName } from '../shared/text.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CACHE = '/tmp/opencode/tcgcsv';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { baseName, editDistance, namesMatch, normalizeName, stripVariants } from '../../extension/src/shared/text.js';
-import { CONFIDENCE, REASON, priceDeck, resolveCard } from '../../extension/src/shared/match.js';
+import { baseName, editDistance, namesMatch, normalizeName, stripVariants } from '../../shared/text.js';
+import { CONFIDENCE, REASON, priceDeck, resolveCard } from '../../shared/match.js';
 import { loadBundledCatalog } from '../../extension/src/shared/catalog.js';
 import { parseDeckCards } from '../../extension/src/shared/parse.js';
 import { loadFixture } from '../helpers/fixtures.js';

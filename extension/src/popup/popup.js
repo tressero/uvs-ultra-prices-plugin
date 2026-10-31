@@ -1,4 +1,4 @@
-/** Popup: settings and the state of the price data. */
+/** Popup: settings and the state of the pricing service. */
 
 const METRIC_KEY = 'metric';
 const UNMATCHED_KEY = 'showUnmatched';
@@ -15,6 +15,14 @@ async function send(message) {
   }
 }
 
+function hostOf(url) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url || 'not configured';
+  }
+}
+
 async function render() {
   const settings = await chrome.storage.local.get({ metric: 'market', showUnmatched: true });
   for (const input of document.querySelectorAll('input[name="metric"]')) {
@@ -22,14 +30,31 @@ async function render() {
   }
   $('#show-unmatched').checked = Boolean(settings.showUnmatched);
 
-  const info = await send({ type: 'catalog-info' });
-  const status = $('#status');
-  if (info?.ok && info.updatedAt) {
-    status.textContent = `${info.products.toLocaleString()} TCGplayer listings · updated ${info.updatedAt}`;
-    status.classList.add('popup-status--ok');
+  const status = await send({ type: 'service-status' });
+  const line = $('#service-state');
+  const detail = $('#service-detail');
+
+  if (!status) {
+    line.textContent = 'Extension not responding';
+    line.className = 'popup-state popup-state--bad';
+    return;
+  }
+
+  $('#service-host').textContent = hostOf(status.workerUrl);
+
+  if (status.ok) {
+    line.textContent = 'Live';
+    line.className = 'popup-state popup-state--ok';
+    const updated = status.updatedAt ? new Date(status.updatedAt) : null;
+    detail.textContent = [
+      `${Number(status.products ?? 0).toLocaleString()} prices`,
+      `${status.sets ?? 0} sets`,
+      updated ? `synced ${updated.toISOString().slice(0, 10)}` : 'never synced',
+    ].join(' · ');
   } else {
-    status.textContent = 'No price data loaded';
-    status.classList.add('popup-status--warn');
+    line.textContent = 'Unreachable';
+    line.className = 'popup-state popup-state--bad';
+    detail.textContent = status.error ?? 'no response from the pricing service';
   }
 }
 

@@ -54,9 +54,15 @@ const context = await chromium.launchPersistentContext('', {
 });
 
 try {
+  const workerHits = [];
+  context.on('request', (request) => {
+    if (/\/v1\/(quote|health)/.test(request.url())) workerHits.push(request.url());
+  });
+
   for (const [slug, note] of DECKS) {
     const page = await context.newPage();
     const errors = [];
+    const before = workerHits.length;
     page.on('console', (message) => {
       if (message.type() === 'error') errors.push(message.text());
     });
@@ -85,6 +91,7 @@ try {
 
     await page.screenshot({ path: join(OUT, `uvsp-${slug}.png`), fullPage: false });
     console.log(`\n=== ${slug} (${note}) ===`);
+    console.log(`worker requests: ${workerHits.length - before}`);
     console.log(JSON.stringify(summary, null, 2));
     if (errors.length) console.log('console errors:', errors);
     await page.close();

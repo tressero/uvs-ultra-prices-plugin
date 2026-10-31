@@ -93,12 +93,43 @@ body {
   font-size: 10.5px;
 }
 
-.popup-status--ok {
+.popup-note {
+  font-size: 10.5px;
+}
+
+.popup-service {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.popup-state {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.popup-state--ok {
   color: #2c6b3f;
 }
 
-.popup-status--warn {
+.popup-state--bad {
   color: #8a4b00;
+}
+
+.popup-host {
+  overflow: hidden;
+  max-width: 190px;
+  color: var(--muted);
+  font: 10.5px ui-monospace, monospace;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popup-detail {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 10.5px;
 }
 
 .popup-saved {

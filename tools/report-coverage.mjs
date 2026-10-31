@@ -6,7 +6,7 @@
  *   node tools/report-coverage.mjs
  */
 import { createRequire } from 'node:module';
-import { priceDeck } from '../extension/src/shared/match.js';
+import { priceDeck } from '../shared/match.js';
 import { parseDeckCards } from '../extension/src/shared/parse.js';
 import { loadFixture } from '../test/helpers/fixtures.js';
 

@@ -249,14 +249,25 @@ fixtures/           saved deck pages, deck_card_list fragments, tcgcsv payloads
 
 | Phase | Scope | Est. |
 | --- | --- | --- |
-| **M0** | Repo + MV3 skeleton, deck-page parser, hardcoded price table, chips + total render | 1 d |
-| **M1** | Worker + daily tcgcsv sync, matcher, set map (~100 sets), quote endpoint | 2–3 d |
+| **M0** ✅ | Repo + MV3 skeleton, deck-page parser, hardcoded price table, chips + total render | 1 d |
+| **M1** ✅ | Worker + daily tcgcsv sync, matcher, set map (~100 sets), quote endpoint | 2–3 d |
 | **M2** | Top Decks lazy totals, caching layers, unpriced UX | 1–2 d |
 | **M3** | Settings popup, overrides, contract tests, icons, polish | 1–2 d |
 | **M4** | CWS listing, privacy policy, CI packaging, optional affiliate-API migration | 1–2 d |
 
 **Run in parallel from day one**: TCGplayer affiliate/Impact application; the nightly contract
 test (before there is anything to break).
+
+### M1 notes (built)
+
+- Sync is scoped to the groups `data/set-map.json` points at (12 today), not all 61
+  UniVersus groups. Widening it is a one-line change in `worker/src/sync.js`.
+- `compatibility_date` is `2026-05-03`: Wrangler 4.86 (newest that runs on Node 20) ships
+  an older workerd. Bump both together.
+- The extension still bundles the snapshot as an offline fallback, so it works before the
+  worker is reachable. The worker wins whenever it has data.
+- Local end-to-end check: `wrangler dev` + `WORKER_URL=http://localhost:8789 npm run build:dev`
+  + `npm run preview` — one quote request per deck, totals identical to the snapshot.
 
 ---
 

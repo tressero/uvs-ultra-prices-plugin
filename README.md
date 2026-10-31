@@ -7,13 +7,15 @@ Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
 
 ## Status
 
-**M0 — deck page, pricing from a committed snapshot.** Working end to end:
-every card row gets a price chip, the deck header gets a total, and cards with
-no TCGplayer listing degrade to `n/a` instead of `$0.00`.
+**M1 — live prices from a Cloudflare Worker.** The extension asks a pricing
+worker for a deck quote; the worker serves a trimmed TCGplayer catalog it
+syncs from tcgcsv once a day. Verified end to end against `wrangler dev`.
 
-Not built yet: Top Decks totals (M2) and the pricing worker (M1). Until the
-worker exists, prices come from `data/prices.snapshot.json`, generated from
-tcgcsv and committed — so they are as fresh as the last `npm run prices`.
+Also working: per-card chips, the deck total, `n/a` for anything unpriced, a
+12-hour quote cache, and a snapshot fallback so the extension still works
+before the worker is reachable.
+
+Not built yet: Top Decks totals (M2), store submission (M4).
 
 ## Quick start
 
@@ -25,6 +27,8 @@ npm run preview          # loads it in Chromium against local fixtures
 
 `npm run preview` starts a local server over the saved fixtures, loads the
 extension with Playwright, and writes screenshots to `/tmp/opencode/uvsp-*.png`.
+With `WORKER_URL=http://localhost:8789` it will exercise the real worker path
+(see below).
 
 ### Load it in your own browser
 
@@ -42,29 +46,75 @@ deck.php DOM ──► parse.js ──► {name, setCode, number, qty}
                                      │
                                      ▼
                           background service worker
-                          (sw.js → match.js + catalog)
+                    (cache → pricing worker → snapshot)
                                      │
                                      ▼
                     chips + summary panel (content/deck.js)
+
+pricing worker ── daily cron ──► tcgcsv ──► KV (12 groups)
+       ▲
+       └── POST /v1/quote  { cards, metric }
 ```
 
 - `extension/src/shared/parse.js` — reads set code, collector number, name and
   quantity out of each `li[id^="deck-card-"]`. All of it is already in the
   markup, so no extra request per card.
-- `extension/src/shared/match.js` — resolves a card to a TCGplayer product:
-  set map → name (variant suffixes stripped) → collector number → fuzzy.
-  Base printings win over `(Alternate Art)` / `(Serial Numbered)`.
-- `extension/src/background/sw.js` — owns the price source. Content scripts
-  ask over `chrome.runtime`.
-- `extension/src/content/deck.js` — renders, and never invents a number: a card
-  with no price shows `n/a`, and a deck with unpriced cards says so.
+- `shared/match.js` — resolves a card to a TCGplayer product: set map → name
+  (variant suffixes stripped) → collector number → fuzzy. Base printings win
+  over `(Alternate Art)` / `(Serial Numbered)`. Shared by the worker and the
+  extension's offline fallback, so both always agree.
+- `extension/src/background/sw.js` — owns the price source: 12 h quote cache,
+  then the worker, then a stale cache, then the bundled snapshot.
+- `worker/src/sync.js` — pulls tcgcsv once a day into KV, trimmed to
+  `{id, name, number, market, low, url}` per product.
+- `extension/src/content/deck.js` — renders, and never invents a number.
+
+## Deploying the pricing worker
+
+One-time setup (needs the Cloudflare account that will own the worker):
+
+```bash
+npx wrangler login                                   # browser OAuth, once
+npm run worker:kv                                    # prints a namespace id
+# paste that id into worker/wrangler.jsonc (id and preview_id), then:
+npx wrangler secret put ADMIN_TOKEN --config worker/wrangler.jsonc
+npm run worker:deploy
+```
+
+After the first deploy, prime the catalog (otherwise the first extension visit
+waits for the daily cron):
+
+```bash
+curl -X POST https://uvs-ultra-prices.<your-subdomain>.workers.dev/v1/admin/sync \
+  -H "Authorization: Bearer <the ADMIN_TOKEN you set>"
+```
+
+Then point the extension at it — one file, two consequences (the default URL in
+the service worker and the manifest host permission):
+
+```bash
+# config/worker.json -> { "url": "https://uvs-ultra-prices.<your-subdomain>.workers.dev" }
+npm run build
+```
+
+Local development of the worker needs no account:
+
+```bash
+npm run worker:dev                                   # http://localhost:8789
+curl -X POST localhost:8789/v1/admin/sync -H "Authorization: Bearer dev-token"
+WORKER_URL=http://localhost:8789 npm run build:dev
+npm run preview
+```
+
+`worker/.dev.vars` (git-ignored) holds `ADMIN_TOKEN=dev-token` for local runs.
 
 ## Data
 
 | File | What it is |
 | --- | --- |
 | `data/set-map.json` | UVS set code → TCGplayer group, scored by card-name overlap (`npm run set-map`) |
-| `data/prices.snapshot.json` | Trimmed products + prices for the mapped sets (`npm run prices`) |
+| `data/prices.snapshot.json` | Offline fallback, trimmed products + prices for the mapped sets (`npm run prices`) |
+| `config/worker.json` | The deployed pricing worker URL (single source for the manifest and the client) |
 | `fixtures/` | Saved pages so tests never touch the network (`npm run fixtures`) |
 
 Regenerate the data when TCGplayer adds sets:
@@ -74,9 +124,10 @@ npm run fixtures && npm run set-map && npm run prices
 npm test
 ```
 
-`npm test` covers the parser, matcher and totals (25 tests, no network).
-`node tools/report-coverage.mjs` prints per-deck coverage and every unpriced card
-with its reason — the fastest way to spot a matcher regression.
+`npm test` covers the parser, matcher, totals, the worker's routes and the
+sync (41 tests, no network). `npm run coverage` prints per-deck coverage and
+every unpriced card with its reason — the fastest way to spot a matcher
+regression.
 
 ## Known limits
 
@@ -84,5 +135,7 @@ with its reason — the fastest way to spot a matcher regression.
   `n/a` for most rows; that is correct, not a bug.
 - Sets TCGplayer does not carry (some UFS-era and JP-only printings) have no
   mapping and show `n/a`.
-- Prices are only as fresh as `data/prices.snapshot.json` until the worker
-  lands.
+- The worker syncs only the 12 TCGplayer groups the set map currently points
+  at. Adding sets means updating `data/set-map.json`, then redeploying.
+- `compatibility_date` is pinned to `2026-05-03`, the newest the installed
+  Wrangler's runtime supports on Node 20. Raise it together with Wrangler.

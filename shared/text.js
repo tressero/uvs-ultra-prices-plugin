@@ -64,3 +64,13 @@ export function editDistance(a, b, max = 3) {
   }
   return prev[b.length];
 }
+
+/**
+ * "010" -> 10, "7/211" -> 7. UVS Ultra prints zero-padded numbers, TCGplayer
+ * prints "number/setSize", so both sides are reduced to the integer.
+ * Returns null when there is no leading number.
+ */
+export function collectorNumberInt(value) {
+  const match = String(value ?? '').match(/^0*(\d+)/);
+  return match ? Number.parseInt(match[1], 10) : null;
+}

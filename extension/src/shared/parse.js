@@ -83,11 +83,10 @@ function typeOf(li) {
   return null;
 }
 
-/** "010" -> 10, "7/211" -> 7. Returns null when there is no leading number. */
-export function collectorNumberInt(value) {
-  const match = String(value ?? '').match(/^0*(\d+)/);
-  return match ? Number.parseInt(match[1], 10) : null;
-}
+/** "010" -> 10, "7/211" -> 7. Re-exported from shared/text.js for callers here. */
+import { collectorNumberInt } from '../../../shared/text.js';
+
+export { collectorNumberInt };
 
 /** One card row -> plain object. Throws away anything unparseable. */
 export function parseCardRow(li) {

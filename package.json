@@ -15,6 +15,11 @@
     "preview": "node tools/preview.mjs",
     "shots": "node tools/crop-preview.mjs",
     "coverage": "node tools/report-coverage.mjs",
+    "popup": "node tools/inspect-popup.mjs",
+    "worker:dev": "wrangler dev --config worker/wrangler.jsonc --test-scheduled",
+    "worker:deploy": "wrangler deploy --config worker/wrangler.jsonc",
+    "worker:tail": "wrangler tail --config worker/wrangler.jsonc",
+    "worker:kv": "wrangler kv namespace create PRICING --config worker/wrangler.jsonc",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -22,6 +27,7 @@
     "esbuild": "^0.25.0",
     "jsdom": "^26.0.0",
     "playwright": "^1.50.0",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "wrangler": "^4.86.0"
   }
 }
