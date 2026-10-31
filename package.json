@@ -13,6 +13,8 @@
     "prices": "node tools/build-mock-prices.mjs",
     "serve": "node tools/serve-fixtures.mjs",
     "preview": "node tools/preview.mjs",
+    "shots": "node tools/crop-preview.mjs",
+    "coverage": "node tools/report-coverage.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },
