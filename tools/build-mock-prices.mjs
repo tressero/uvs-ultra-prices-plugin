@@ -49,12 +49,15 @@ for (const groupId of groupIds) {
   const rows = [];
   for (const product of products.results) {
     if (!product.name) continue;
+    const extended = product.extendedData || [];
     const price = priceOf.get(product.productId);
-    const numberField = (product.extendedData || []).find((e) => e.name === 'Number');
+    const numberField = extended.find((e) => e.name === 'Number');
+    const rarityField = extended.find((e) => e.name === 'Rarity');
     rows.push({
       id: product.productId,
       name: product.name,
       number: numberField ? numberField.value : null, // e.g. "10/211"
+      rarity: rarityField ? rarityField.value : null,
       market: price?.marketPrice ?? null,
       low: price?.lowPrice ?? null,
     });

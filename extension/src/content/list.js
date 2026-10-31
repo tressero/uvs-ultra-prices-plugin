@@ -5,17 +5,23 @@
  * A user page can hold 800 deck cards, and each total costs one deck-card-list
  * fetch, so nothing is priced until the card is near the viewport. Results are
  * cached per deck for 12 hours, and at most two decks are in flight at once.
+ *
+ * Cards with no TCGplayer price get a placeholder based on rarity; decks where
+ * some rarities are still unknown show "≥" instead of "≈".
  */
 import { parseDeckList, DECK_CARD_SELECTOR } from '../shared/list.js';
 import { parseDeckCards } from '../shared/parse.js';
 import { loadSettings, onSettingsChanged } from '../shared/settings.js';
 import { money, shortDate } from '../shared/format.js';
+import { estimateTotals, needsRarity } from '../../../shared/estimate.js';
+import { resolveRarities } from './rarities.js';
 
 const CHIP_CLASS = 'uvsp-list-price';
 const CACHE_PREFIX = 'deckprice:';
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 const CONCURRENCY = 2;
 const OBSERVE_MARGIN = '300px'; // start before the card is actually on screen
+const MAX_RARITY_LOOKUPS = 25; // per page load, across all decks
 
 const state = {
   metric: 'market',
@@ -24,6 +30,9 @@ const state = {
   inFlight: 0,
   seen: new Set(), // deck ids already queued or rendered this page
   cards: new WeakMap(), // element -> parsed card
+  rarities: new Map(), // cardId -> rarity, resolved during this page load
+  rarityBudget: MAX_RARITY_LOOKUPS,
+  quotes: new Map(), // deckId -> quote, kept so a late rarity can repaint
 };
 
 /* ------------------------------------------------------------------ cache */
@@ -54,7 +63,7 @@ async function writeCache(deckId, metric, value) {
 
 /* ------------------------------------------------------------------ pricing */
 
-async function priceDeckById(deckId) {
+async function fetchQuote(deckId) {
   const response = await fetch(`/deck_card_list.php?js&deck=${encodeURIComponent(deckId)}`, {
     credentials: 'same-origin',
   });
@@ -72,8 +81,17 @@ async function priceDeckById(deckId) {
     deckId,
   });
   if (!quote?.ok) throw new Error(quote?.error ?? 'quote failed');
+  return quote;
+}
 
-  const value = {
+/** Summarise a quote into the numbers the chip needs. */
+function summarize(quote) {
+  const est = estimateTotals(quote.items, {
+    rarityFor: (item) => item.match?.rarity ?? state.rarities.get(item.card.cardId) ?? null,
+    realTotal: quote.totals[state.metric] ?? 0,
+  });
+
+  return {
     market: quote.totals.market,
     low: quote.totals.low,
     pricedCards: quote.totals.pricedCards,
@@ -82,9 +100,10 @@ async function priceDeckById(deckId) {
     totalUnique: quote.items.length,
     updatedAt: quote.updatedAt ?? null,
     source: quote.source ?? null,
+    estimated: est.estimated,
+    unknown: est.unknownCards,
+    combined: est.combined,
   };
-  await writeCache(deckId, state.metric, value);
-  return value;
 }
 
 /* ------------------------------------------------------------------ render */
@@ -98,20 +117,26 @@ function chipFor(card, value) {
   chip.className = CHIP_CLASS;
 
   const priced = value.pricedCards > 0;
-  const total = state.metric === 'low' ? value.low : value.market;
+  const total = value.combined ?? (state.metric === 'low' ? value.low : value.market);
 
-  if (!priced) {
+  if (!priced && !value.estimated) {
     chip.classList.add(`${CHIP_CLASS}--none`);
     chip.textContent = 'n/a';
     chip.title = 'No TCGplayer prices for this deck yet';
     return chip;
   }
 
-  chip.textContent = `${value.unpricedCards ? '≥ ' : ''}${money(total)}`;
-  if (value.unpricedCards) chip.classList.add(`${CHIP_CLASS}--partial`);
+  // ≈ means the total includes placeholders, ≥ means some cards are still
+  // excluded, so the number is only a floor.
+  const prefix = value.unknown ? '≥ ' : value.estimated ? '≈ ' : '';
+  chip.textContent = `${prefix}${money(total)}`;
+  if (value.unknown) chip.classList.add(`${CHIP_CLASS}--partial`);
+  if (value.estimated) chip.classList.add(`${CHIP_CLASS}--estimated`);
 
-  const parts = [`TCGplayer ${state.metric} ${money(total)}`];
+  const parts = [`TCGplayer ${state.metric} ${money(value.combined)}`];
+  if (value.estimated) parts.push(`${money(value.estimated)} of it is placeholder`);
   parts.push(`${value.pricedCards} of ${value.totalUnique} cards priced`);
+  if (value.unknown) parts.push(`${value.unknown} cards still unpriced`);
   if (value.source === 'worker' && value.updatedAt) parts.push(`synced ${shortDate(value.updatedAt)}`);
   if (value.source === 'snapshot') parts.push('offline snapshot');
   chip.title = parts.join(' · ');
@@ -133,6 +158,44 @@ function setLoading(card) {
   mount(card, chip);
 }
 
+/**
+ * Paint a deck's chip, and keep going as rarities arrive.
+ * A deck is only cached once nothing is left unresolved, so a half-known total
+ * never sticks for 12 hours.
+ */
+function paint(card, quote) {
+  state.quotes.set(card.deckId, quote);
+  const value = summarize(quote);
+  mount(card, chipFor(card, value));
+
+  const missing = needsRarity(quote.items).filter((cardId) => !state.rarities.has(cardId));
+  if (!missing.length) {
+    writeCache(card.deckId, state.metric, value);
+    return;
+  }
+
+  const budget = Math.min(missing.length, state.rarityBudget);
+  if (budget <= 0) return;
+  state.rarityBudget -= budget;
+
+  resolveRarities(missing.slice(0, budget), {
+    max: budget,
+    onResolved: (found) => {
+      let changed = false;
+      for (const [cardId, rarity] of found) {
+        if (!state.rarities.has(cardId)) {
+          state.rarities.set(cardId, rarity);
+          changed = true;
+        }
+      }
+      if (!changed) return;
+      const latest = state.quotes.get(card.deckId);
+      if (!latest || !card.element.isConnected) return;
+      paint(card, latest);
+    },
+  });
+}
+
 /* ------------------------------------------------------------------- queue */
 
 function pump() {
@@ -141,8 +204,8 @@ function pump() {
     if (!card.element.isConnected) continue;
 
     state.inFlight++;
-    priceDeckById(card.deckId)
-      .then((value) => mount(card, chipFor(card, value)))
+    fetchQuote(card.deckId)
+      .then((quote) => paint(card, quote))
       .catch(() => {
         const chip = document.createElement('span');
         chip.className = `${CHIP_CLASS} ${CHIP_CLASS}--none`;
@@ -200,6 +263,7 @@ function scan(root = document) {
 function rescan() {
   state.seen.clear();
   state.queue.length = 0;
+  state.rarityBudget = MAX_RARITY_LOOKUPS;
   for (const chip of document.querySelectorAll(`.${CHIP_CLASS}`)) chip.remove();
   for (const element of document.querySelectorAll(DECK_CARD_SELECTOR)) {
     element.dataset.uvspSeen = '';

@@ -26,7 +26,7 @@ function validateCards(value) {
 
   return value.map((card, index) => {
     if (!card || typeof card !== 'object') throw new HttpError(`cards[${index}] must be an object`, 400);
-    const { name, setCode, numberInt, qty } = card;
+    const { name, setCode, numberInt, qty, cardId } = card;
     if (typeof name !== 'string' || !name.trim() || name.length > 200) {
       throw new HttpError(`cards[${index}].name is required`, 400);
     }
@@ -35,6 +35,8 @@ function validateCards(value) {
       throw new HttpError(`cards[${index}].qty must be 1..99`, 400);
     }
     return {
+      // Echoed back so the client can look up a card's rarity for placeholders.
+      cardId: typeof cardId === 'string' && /^[A-Za-z0-9]{1,32}$/.test(cardId) ? cardId : null,
       name: name.trim(),
       setCode: typeof setCode === 'string' && setCode ? setCode.toLowerCase().slice(0, 16) : null,
       numberInt: Number.isInteger(numberInt) ? numberInt : null,

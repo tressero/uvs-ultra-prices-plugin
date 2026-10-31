@@ -38,6 +38,13 @@ for (const [name, kind, url] of PAGES) {
   try {
     if (kind === 'deck') {
       await page.waitForSelector('#uvsp-panel', { timeout: 20000 });
+      // Placeholders need one card page per unpriced card; wait for them to settle.
+      await page
+        .waitForFunction(
+          () => !/checking rarity/.test(document.querySelector('#uvsp-panel')?.textContent ?? ''),
+          { timeout: 15000 },
+        )
+        .catch(() => {});
       const summary = await page.evaluate(() => ({
         total: document.querySelector('.uvsp-total')?.textContent,
         sub: document.querySelector('.uvsp-sub')?.textContent,
@@ -53,7 +60,8 @@ for (const [name, kind, url] of PAGES) {
         return {
           deckCards: document.querySelectorAll('.deck-list-deck').length,
           priced: chips.length,
-          pricedWithNumber: chips.filter((c) => c.textContent.trim().startsWith('$') || c.textContent.trim().startsWith('≥')).length,
+          pricedWithNumber: chips.filter((c) => /^[$≥≈]/.test(c.textContent.trim())).length,
+          withPlaceholders: chips.filter((c) => c.classList.contains('uvsp-list-price--estimated')).length,
           loading: chips.filter((c) => c.classList.contains('uvsp-list-price--loading')).length,
           sample: chips.slice(0, 6).map((c) => c.textContent.trim()),
         };

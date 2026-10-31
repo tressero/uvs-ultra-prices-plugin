@@ -30,12 +30,30 @@ a.uvsp-chip:focus {
 }
 
 /* Unpriced: visible, but obviously not a number we stand behind. */
-.uvsp-chip--none {
+.uvsp-chip.uvsp-chip--none {
   background: rgba(0, 0, 0, 0.2);
   color: #111;
   font-weight: 500;
   font-style: italic;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+/* Placeholder for a card TCGplayer cannot price: dashed ring, muted, "$1(?)".
+   A light chip with dark text reads on every row colour — the deck uses dark
+   blue for characters, orange for attacks and pale grey for foundations. */
+.uvsp-chip.uvsp-chip--est {
+  background: rgba(255, 255, 255, 0.88);
+  color: #262626;
+  font-weight: 600;
+  font-style: italic;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  border: 1px dashed rgba(0, 0, 0, 0.45);
+}
+
+a.uvsp-chip.uvsp-chip--est:hover,
+a.uvsp-chip.uvsp-chip--est:focus {
+  background: #fff;
+  color: #000;
 }
 
 /* Matched by number or fuzzy spelling: dotted underline = "check this one". */
@@ -79,6 +97,11 @@ a.uvsp-chip:focus {
   color: #111;
 }
 
+/* The headline includes placeholder values, so it is an estimate, not a quote. */
+.uvsp-total--estimated {
+  color: #3a3a3a;
+}
+
 /* Partial total: the number is real but only covers priced cards. */
 .uvsp-total--partial::after {
   content: '*';
@@ -100,6 +123,11 @@ a.uvsp-chip:focus {
 
 .uvsp-panel-note--warn {
   color: #8a4b00;
+}
+
+.uvsp-panel-note--estimate {
+  color: #4a4a4a;
+  font-style: italic;
 }
 
 /* --- list pages: a total beside each deck card -------------------------- */
@@ -124,6 +152,14 @@ a.uvsp-chip:focus {
   background: rgba(255, 236, 200, 0.9);
   box-shadow: inset 0 0 0 1px rgba(160, 110, 0, 0.45);
   color: #6b4200;
+}
+
+.uvsp-list-price--estimated {
+  background: rgba(230, 236, 250, 0.95);
+  box-shadow: inset 0 0 0 1px rgba(47, 74, 138, 0.45);
+  color: #22376b;
+  font-weight: 600;
+  border: 1px dashed rgba(47, 74, 138, 0.6);
 }
 
 .uvsp-list-price--none {

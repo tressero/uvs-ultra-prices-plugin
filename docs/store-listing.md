@@ -32,10 +32,13 @@ HOW IT WORKS
   so browsing stays fast.
 
 HONEST NUMBERS
-• A card with no TCGplayer listing shows "n/a" instead of a made-up price.
-• A deck with unpriced cards shows "≥ $X" and says how many cards are missing, so
-  the total is never presented as complete when it is not.
-• Presale sets and cards TCGplayer does not carry are left unpriced.
+• A card with no TCGplayer listing gets a placeholder based on its rarity — $1 for
+  common, uncommon or rare, $15 for ultra rare, $30 for secret rare — always shown
+  with a "(?)" so it is never mistaken for a real price.
+• A deck total that includes placeholders starts with "≈" and says how much of it
+  is estimated. A total with cards still unpriced starts with "≥" instead, so a
+  floor is never presented as the whole picture.
+• Nothing is hidden: every card says where its number came from.
 
 PRIVACY
 No accounts, no analytics, no ads. The deck you are viewing is sent to the

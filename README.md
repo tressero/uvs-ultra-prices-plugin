@@ -9,7 +9,8 @@ Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
 
 **M4 — ready to submit to the Chrome Web Store.**
 
-- Deck pages: a price chip per card and a deck total.
+- Deck pages: a price chip per card and a deck total. Cards TCGplayer cannot
+  price get a marked placeholder (`$1(?)`, `$15(?)`, `$30(?)`) by rarity.
 - List pages (`topdecks.php`, `folder.php`, `user.php`): a total beside each
   deck card, priced only when the card scrolls near the viewport, cached per
   deck for 12 hours.
@@ -133,6 +134,25 @@ placeholder URL or if the manifest version disagrees with `package.json`.
 
 `npm run screenshots` regenerates the three store images (1280×800) from the live
 site using the built extension.
+
+## Placeholder prices
+
+Cards TCGplayer has no listing for would otherwise be invisible in the total — a
+presale deck would read as costing $190 when most of it is unknown. They get a
+placeholder instead, always marked with `(?)`:
+
+| Rarity | Placeholder |
+| --- | --- |
+| common, uncommon, rare | $1 |
+| ultra rare | $15 |
+| secret rare | $30 |
+
+- Rarity comes from the TCGplayer product when one exists, otherwise from the
+  card's page on UVS Ultra (one small request per unpriced card, cached for good).
+- A total that includes placeholders is prefixed `≈` and states how much of it is
+  estimated; a deck with cards whose rarity is still unknown shows `≥`.
+- The table lives in `shared/rarity.js` (`PLACEHOLDER_VALUES`) — one place to
+  change the numbers.
 
 ## Data
 

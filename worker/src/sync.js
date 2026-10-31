@@ -6,13 +6,15 @@
  * in the extension.
  *
  * KV layout:
- *   meta            -> { stamp, syncedAt, groups: { [id]: { name, count } }, products }
- *   group:<groupId> -> { name, products: [{ id, name, number, market, low }] }
+ *   meta            -> { schema, stamp, syncedAt, groups: { [id]: { name, count, stamp } }, products }
+ *   group:<groupId> -> { name, products: [{ id, name, number, rarity, market, low }] }
  */
 import setMap from '../../data/set-map.json';
 
 const GROUP_PREFIX = 'group:';
 const META_KEY = 'meta';
+/** Bump when the stored shape changes; every group is refetched on mismatch. */
+const SCHEMA = 2;
 const REQUEST_GAP_MS = 150; // tcgcsv: "include a time.sleep(100ms) in your update loop"
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -48,12 +50,16 @@ function buildGroup(group, products, prices) {
   const rows = [];
   for (const product of products.results) {
     if (!product.name) continue;
+    const extended = product.extendedData || [];
     const price = priceOf.get(product.productId);
-    const number = (product.extendedData || []).find((entry) => entry.name === 'Number');
+    const number = extended.find((entry) => entry.name === 'Number');
+    const rarity = extended.find((entry) => entry.name === 'Rarity');
     rows.push({
       id: product.productId,
       name: product.name,
       number: number ? number.value : null,
+      // Used to pick a placeholder when the printing has no price.
+      rarity: rarity ? rarity.value : null,
       market: price?.marketPrice ?? null,
       low: price?.lowPrice ?? null,
     });
@@ -77,7 +83,7 @@ export async function syncCatalog(env, options = {}) {
   const requested = (options.groups ?? mappedGroupIds()).map(String);
   const limit = options.limit ?? (options.groups ? options.groups.length : 20);
 
-  const meta = (await readMeta(env)) ?? { stamp: null, syncedAt: null, groups: {}, products: 0 };
+  const meta = (await readMeta(env)) ?? { schema: SCHEMA, stamp: null, syncedAt: null, groups: {}, products: 0 };
   const groups = { ...meta.groups };
 
   let stamp = meta.stamp;
@@ -88,8 +94,11 @@ export async function syncCatalog(env, options = {}) {
     // Keep the previous stamp; a failed check is not a reason to skip.
   }
 
-  // Only sets that are missing or still hold an older build need fetching.
-  const stale = requested.filter((groupId) => options.force || groups[groupId]?.stamp !== stamp);
+  // Only sets that are missing, stale, or stored under an older schema.
+  const stale = requested.filter(
+    (groupId) =>
+      options.force || groups[groupId]?.stamp !== stamp || groups[groupId]?.schema !== SCHEMA,
+  );
   if (!stale.length) {
     return { skipped: true, stamp, syncedAt: meta.syncedAt, groups: Object.keys(groups), remaining: 0 };
   }
@@ -109,7 +118,7 @@ export async function syncCatalog(env, options = {}) {
       ]);
       const built = buildGroup({ name: names.get(groupId) ?? groups[groupId]?.name ?? null }, productRows, priceRows);
       await env.PRICING.put(groupKey(groupId), JSON.stringify(built));
-      groups[groupId] = { name: built.name, count: built.products.length, stamp };
+      groups[groupId] = { name: built.name, count: built.products.length, stamp, schema: SCHEMA };
       products += built.products.length;
       await sleep(REQUEST_GAP_MS);
     } catch (err) {
@@ -119,6 +128,7 @@ export async function syncCatalog(env, options = {}) {
   }
 
   const nextMeta = {
+    schema: SCHEMA,
     stamp,
     syncedAt: new Date().toISOString(),
     groups,

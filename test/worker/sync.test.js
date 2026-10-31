@@ -75,12 +75,14 @@ describe('syncCatalog', () => {
     expect(group.name).toBe('Critical Role: Heroes of Exandria');
     expect(group.products).toHaveLength(2);
     // Descriptions and extendedData are dropped; only pricing fields survive.
-    expect(Object.keys(group.products[0]).sort()).toEqual(['id', 'low', 'market', 'name', 'number']);
+    expect(Object.keys(group.products[0]).sort()).toEqual([
+      'id', 'low', 'market', 'name', 'number', 'rarity',
+    ]);
     expect(group.products[0]).toMatchObject({ id: 1, number: '7/211', market: 1.5, low: 1 });
 
     const meta = await kv.get('meta', 'json');
     expect(meta).toMatchObject({ stamp: STAMP, products: 2 });
-    expect(meta.groups['24191']).toEqual({ name: group.name, count: 2, stamp: STAMP });
+    expect(meta.groups['24191']).toEqual({ name: group.name, count: 2, stamp: STAMP, schema: 2 });
   });
 
   it('does nothing when the source has not rebuilt since the last sync', async () => {
