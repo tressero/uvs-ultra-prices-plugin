@@ -8,7 +8,7 @@
 
 /** Variant suffixes TCGplayer appends to a printing of the same card. */
 const VARIANT_SUFFIX =
-  /\s*\(\s*(?:alternate art|serial numbered|foil|promo|signed|extended art|borderless|full art|stamped|prerelease|showcase)\s*\)\s*$/i;
+  /\s*\(\s*(?:alternate art|serial numbered|foil|promo|signed|extended art|borderless|full art|stamped|prerelease|showcase|box topper|xr|judge|top 8|champion)\s*\)\s*$/i;
 
 /**
  * Remove TCGplayer variant suffixes. Must run on the raw name, before

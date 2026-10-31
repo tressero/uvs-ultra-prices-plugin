@@ -35,8 +35,11 @@ function positive(value) {
   return typeof value === 'number' && value > 0 ? value : null;
 }
 
+/** True when the product is the plain printing, not a variant of the card. */
 function isBasePrinting(productName, cardName) {
-  return baseName(productName) === baseName(cardName);
+  // Compare before stripping suffixes: a "(Box Topper)" has the same base name
+  // as the card, but it is not the base printing.
+  return normalizeName(productName) === baseName(cardName);
 }
 
 /** Cheapest by market (falling back to low) so an alt art never wins a tie. */

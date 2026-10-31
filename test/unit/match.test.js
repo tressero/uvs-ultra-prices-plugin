@@ -19,6 +19,11 @@ describe('name normalization', () => {
     );
   });
 
+  it('strips treatments as well as print variants', () => {
+    expect(baseName('Quick Creation (XR)')).toBe('quick creation');
+    expect(baseName('The Dark Tournament Looms (Box Topper)')).toBe('the dark tournament looms');
+  });
+
   it('strips variant suffixes, including stacked ones', () => {
     expect(baseName('Grog Strongjaw, Mighty Half-Giant (Serial Numbered)')).toBe(
       'grog strongjaw mighty half giant',
@@ -45,6 +50,22 @@ describe('resolveCard', () => {
     expect(match.name).toBe('Grog Strongjaw, Mighty Half-Giant');
     // The serial numbered printing of the same card is hundreds of dollars.
     expect(match.market).toBeLessThan(50);
+  });
+
+  it('prefers the plain printing over a box topper with the same base name', () => {
+    const catalogWithTopper = {
+      setMap: { test: { groupId: 1 } },
+      groups: {
+        1: {
+          products: [
+            { id: 2, name: 'A Card (Box Topper)', number: '5/100', market: 40, low: 35 },
+            { id: 1, name: 'A Card', number: '5/100', market: 3, low: 2 },
+          ],
+        },
+      },
+    };
+    const card = { name: 'A Card', setCode: 'test', numberInt: 5 };
+    expect(resolveCard(card, catalogWithTopper).match.id).toBe(1);
   });
 
   it('reports a set with no TCGplayer group instead of guessing', () => {
