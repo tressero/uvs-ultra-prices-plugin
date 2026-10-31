@@ -216,6 +216,30 @@ describe('human-facing pages', () => {
   });
 });
 
+describe('site verification', () => {
+  it('serves Google verification files byte for byte', async () => {
+    const response = await worker.fetch(
+      new Request('https://prices.test/googlee3b8506c223774f8.html'),
+      ENV(),
+      fakeCtx(),
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/html');
+    expect(await response.text()).toBe(
+      'google-site-verification: googlee3b8506c223774f8.html',
+    );
+  });
+
+  it('does not answer other .html paths', async () => {
+    const response = await worker.fetch(
+      new Request('https://prices.test/anythingelse.html'),
+      ENV(),
+      fakeCtx(),
+    );
+    expect(response.status).toBe(404);
+  });
+});
+
 describe('CORS', () => {
   it('answers preflight', async () => {
     const response = await worker.fetch(

@@ -3,6 +3,7 @@
  *
  *   GET  /                   what this is
  *   GET  /privacy            privacy policy (the URL on the store listing)
+ *   GET  /google<id>.html    site-verification file for Search Console
  *   GET  /v1/health          catalog status (no auth, cheap)
  *   POST /v1/quote           { cards, metric } -> priced deck
  *   POST /v1/admin/sync      force a sync (Authorization: Bearer ADMIN_TOKEN)
@@ -164,6 +165,19 @@ export default {
             'content-type': 'text/html; charset=utf-8',
             'cache-control': 'public, max-age=3600',
             'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; img-src data:",
+          },
+        });
+      }
+
+      // Google Search Console verifies a domain by fetching /google<token>.html,
+      // which must return exactly "google-site-verification: google<token>.html".
+      // The token is the filename, so no upload or file copy is needed.
+      const verification = url.pathname.match(/^\/(google[a-z0-9]{16})\.html$/i);
+      if (verification && request.method === 'GET') {
+        return new Response(`google-site-verification: ${verification[1]}.html`, {
+          headers: {
+            'content-type': 'text/html; charset=utf-8',
+            'cache-control': 'public, max-age=3600',
           },
         });
       }
