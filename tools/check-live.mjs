@@ -8,7 +8,7 @@
 import { chromium } from 'playwright';
 import { resolve } from 'node:path';
 
-const EXT = resolve('dist-dev');
+const EXT = resolve(process.env.EXT ?? 'dist-dev'); // EXT=dist checks the shipping build
 const OUT = '/tmp/opencode';
 
 const PAGES = [
