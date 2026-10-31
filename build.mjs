@@ -39,6 +39,7 @@ await mkdir(outdir, { recursive: true });
 const result = await esbuild.build({
   entryPoints: {
     deck: join(SRC, 'content', 'deck.js'),
+    list: join(SRC, 'content', 'list.js'),
     popup: join(SRC, 'popup', 'popup.js'),
     sw: join(SRC, 'background', 'sw.js'),
   },
@@ -62,6 +63,20 @@ await cp(join(SRC, 'popup', 'popup.html'), join(outdir, 'popup.html'));
 await cp(join(SRC, 'popup', 'popup.css'), join(outdir, 'popup.css'));
 await cp(join(SRC, 'icons'), join(outdir, 'icons'), { recursive: true });
 
+// Offline fallback: one JSON file the service worker loads only if the pricing
+// worker is unreachable, so it never inflates the bundled service worker.
+const snapshot = JSON.parse(await readFile(join(ROOT, 'data', 'prices.snapshot.json'), 'utf8'));
+const setMap = JSON.parse(await readFile(join(ROOT, 'data', 'set-map.json'), 'utf8'));
+await writeFile(
+  join(outdir, 'catalog.json'),
+  JSON.stringify({
+    setMap,
+    groups: snapshot.groups,
+    updatedAt: snapshot.generatedAt ?? null,
+    source: snapshot.source ?? null,
+  }),
+);
+
 const manifest = JSON.parse(await readFile(join(SRC, 'manifest.json'), 'utf8'));
 
 // Only the origin the extension actually talks to gets a host permission.
@@ -69,7 +84,11 @@ const permissions = new Set([...manifest.host_permissions, `${workerOrigin}/*`])
 if (dev) permissions.add('http://localhost:8787/*');
 manifest.host_permissions = [...permissions];
 
-if (dev) manifest.content_scripts[0].matches.push('http://localhost:8787/*');
+if (dev) {
+  for (const entry of manifest.content_scripts) {
+    if (!entry.matches.includes('http://localhost:8787/*')) entry.matches.push('http://localhost:8787/*');
+  }
+}
 
 await writeFile(join(outdir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 

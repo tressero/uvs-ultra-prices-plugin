@@ -101,3 +101,42 @@ a.uvsp-chip:focus {
 .uvsp-panel-note--warn {
   color: #8a4b00;
 }
+
+/* --- list pages: a total beside each deck card -------------------------- */
+
+.uvsp-list-price {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+  color: #111;
+  font: 700 11px/16px arial, sans-serif;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+  white-space: nowrap;
+  cursor: help;
+}
+
+/* A lower bound: the deck has cards with no TCGplayer price. */
+.uvsp-list-price--partial {
+  background: rgba(255, 236, 200, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(160, 110, 0, 0.45);
+  color: #6b4200;
+}
+
+.uvsp-list-price--none {
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  color: #555;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.uvsp-list-price--loading {
+  background: transparent;
+  box-shadow: none;
+  color: #888;
+  font-weight: 400;
+}

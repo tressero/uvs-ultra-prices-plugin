@@ -7,15 +7,16 @@ Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
 
 ## Status
 
-**M1 — live prices from a Cloudflare Worker.** The extension asks a pricing
-worker for a deck quote; the worker serves a trimmed TCGplayer catalog it
-syncs from tcgcsv once a day. Verified end to end against `wrangler dev`.
+**M2 — deck pages and deck lists, priced from a Cloudflare Worker.**
 
-Also working: per-card chips, the deck total, `n/a` for anything unpriced, a
-12-hour quote cache, and a snapshot fallback so the extension still works
-before the worker is reachable.
+- Deck pages: a price chip per card and a deck total.
+- List pages (`topdecks.php`, `folder.php`, `user.php`): a total beside each
+  deck card, priced only when the card scrolls near the viewport, cached per
+  deck for 12 hours.
+- 60 of 105 sets map to a TCGplayer group; everything else shows `n/a` instead
+  of a guessed price.
 
-Not built yet: Top Decks totals (M2), store submission (M4).
+Not built yet: store submission (M4).
 
 ## Quick start
 
@@ -67,7 +68,12 @@ pricing worker ── daily cron ──► tcgcsv ──► KV (12 groups)
   then the worker, then a stale cache, then the bundled snapshot.
 - `worker/src/sync.js` — pulls tcgcsv once a day into KV, trimmed to
   `{id, name, number, market, low, url}` per product.
-- `extension/src/content/deck.js` — renders, and never invents a number.
+- `extension/src/content/deck.js` — renders deck pages, and never invents a number.
+- `extension/src/content/list.js` — prices deck cards on list pages lazily, two
+  at a time, deduped by deck id (topdecks.php repeats the same decks across
+  sections), with a 12 h cache per deck.
+- `tools/build-set-map.mjs` — maps every UVS set code to a TCGplayer group by
+  scoring card-name overlap, and refuses ambiguous or weak matches.
 
 ## Deploying the pricing worker
 
@@ -85,9 +91,12 @@ After the first deploy, prime the catalog (otherwise the first extension visit
 waits for the daily cron):
 
 ```bash
-curl -X POST https://uvs-ultra-prices.<your-subdomain>.workers.dev/v1/admin/sync \
-  -H "Authorization: Bearer <the ADMIN_TOKEN you set>"
+npm run worker:prime
 ```
+
+One invocation can only refresh ~20 sets: Cloudflare's free plan allows 50
+subrequests per request, and each set costs two. `worker:prime` repeats until
+the catalog is complete, which is also why the cron runs three times a day.
 
 Then point the extension at it — one file, two consequences (the default URL in
 the service worker and the manifest host permission):
@@ -135,7 +144,10 @@ regression.
   `n/a` for most rows; that is correct, not a bug.
 - Sets TCGplayer does not carry (some UFS-era and JP-only printings) have no
   mapping and show `n/a`.
-- The worker syncs only the 12 TCGplayer groups the set map currently points
-  at. Adding sets means updating `data/set-map.json`, then redeploying.
+- The worker syncs only the groups `data/set-map.json` points at (47 today).
+  Adding sets means rerunning `npm run set-map`, then `npm run prices` and
+  `npm run worker:prime`.
+- 45 sets are deliberately unmapped: TCGplayer has no singles for them, or the
+  name overlap was too weak to trust. They show `n/a`.
 - `compatibility_date` is pinned to `2026-05-03`, the newest the installed
   Wrangler's runtime supports on Node 20. Raise it together with Wrangler.

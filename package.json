@@ -22,7 +22,8 @@
     "worker:kv": "wrangler kv namespace create PRICING --config worker/wrangler.jsonc",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:live": "node tools/check-live.mjs"
+    "check:live": "node tools/check-live.mjs",
+    "worker:prime": "node tools/prime-worker.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",

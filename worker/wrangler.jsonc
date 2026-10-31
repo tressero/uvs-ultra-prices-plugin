@@ -19,9 +19,10 @@
     }
   ],
 
-  // One sync a day, well after tcgcsv's own daily build.
+  // tcgcsv rebuilds once a day. One run can refresh ~20 sets (free plan: 50
+  // subrequests per invocation), so three runs cover the whole catalog.
   "triggers": {
-    "crons": ["17 4 * * *"]
+    "crons": ["17 4 * * *", "47 4 * * *", "17 5 * * *"]
   },
 
   "vars": {

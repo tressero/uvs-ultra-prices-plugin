@@ -6,7 +6,7 @@
  */
 import { parseDeckCards, DECK_CARD_SELECTOR } from '../shared/parse.js';
 import { loadSettings, onSettingsChanged } from '../shared/settings.js';
-import { money, confidenceLabel, shortDate } from '../shared/format.js';
+import { money, confidenceLabel, productUrl, shortDate } from '../shared/format.js';
 
 const CHIP_CLASS = 'uvsp-chip';
 const PANEL_ID = 'uvsp-panel';
@@ -57,7 +57,7 @@ function chipFor(item, metric) {
   if (item.unit != null) {
     const chip = document.createElement('a');
     chip.className = CHIP_CLASS;
-    chip.href = item.match.url;
+    chip.href = productUrl(item.match);
     chip.target = '_blank';
     chip.rel = 'noopener noreferrer';
     chip.textContent = money(item.unit);
@@ -77,15 +77,16 @@ function chipFor(item, metric) {
   }
 
   // Matched but unpriced, or not matched at all.
+  const link = item.match?.id ? productUrl(item.match) : null;
   const searchable = item.reason !== 'set-not-mapped';
-  const chip = document.createElement(searchable ? 'a' : 'span');
+  const chip = document.createElement(link || searchable ? 'a' : 'span');
   chip.className = `${CHIP_CLASS} uvsp-chip--none`;
   chip.textContent = 'n/a';
-  chip.title = item.match?.url
+  chip.title = link
     ? `${item.match.name} — ${REASON_TEXT[item.reason] ?? 'no price'}`
     : `${REASON_TEXT[item.reason] ?? 'No TCGplayer listing found'}`;
-  if (item.match?.url) {
-    chip.href = item.match.url;
+  if (link) {
+    chip.href = link;
   } else if (searchable) {
     chip.href = tcgSearchUrl(item.card.name);
     chip.title += ' — search TCGplayer';

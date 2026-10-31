@@ -103,7 +103,10 @@ async function authorized(request, env) {
 
 async function handleAdminSync(request, env) {
   if (!(await authorized(request, env))) return error('not found', 404);
-  const result = await syncCatalog(env, { force: true });
+  const limit = Number(new URL(request.url).searchParams.get('limit') ?? 20);
+  // Stale-set driven, not forced: a forced full sync would re-fetch the same
+  // first batch forever, because the batch is chosen by stamp.
+  const result = await syncCatalog(env, { force: false, limit: Math.min(Math.max(limit, 1), 24) });
   console.log(JSON.stringify({ message: 'admin sync', ...summarize(result) }));
   return json({ ok: true, ...result });
 }
@@ -166,8 +169,9 @@ export default {
   },
 
   async scheduled(_event, env, ctx) {
+    // 24 sets max: each costs two subrequests and the plan allows 50 per run.
     ctx.waitUntil(
-      syncCatalog(env, { force: false })
+      syncCatalog(env, { force: false, limit: 20 })
         .then((result) => {
           console.log(JSON.stringify({ message: 'cron sync', ...summarize(result) }));
         })

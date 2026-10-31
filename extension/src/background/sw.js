@@ -21,8 +21,8 @@ const MAX_CACHED_QUOTES = 60;
 
 let catalog = null;
 
-function getCatalog() {
-  if (!catalog) catalog = loadBundledCatalog();
+async function getCatalog() {
+  if (!catalog) catalog = await loadBundledCatalog();
   return catalog;
 }
 
@@ -50,8 +50,8 @@ async function writeCache(key, payload) {
   await chrome.storage.local.set({ [key]: { at: entry.at, payload }, [INDEX_KEY]: next });
 }
 
-function snapshotQuote(cards, metric, reason) {
-  const deck = getCatalog();
+async function snapshotQuote(cards, metric, reason) {
+  const deck = await getCatalog();
   return {
     ok: true,
     ...priceDeck(cards, deck, { metric }),
@@ -83,7 +83,11 @@ async function quote(message) {
   const settings = await loadSettings();
   const url = (settings.workerUrl || __WORKER_URL__).trim();
 
-  const key = `quote:${await sha256Hex(JSON.stringify({ url, metric, cards }))}`;
+  // Deck-list rows quote the same deck repeatedly; keying on the deck id means
+  // the card list never has to be hashed, and a re-sort does not re-request.
+  const key = message.deckId
+    ? `quote:deck:${message.deckId}:${metric}`
+    : `quote:${await sha256Hex(JSON.stringify({ url, metric, cards }))}`;
 
   const cached = await readCache(key);
   if (cached && Date.now() - cached.at < QUOTE_TTL_MS) {
@@ -99,7 +103,7 @@ async function quote(message) {
       }
       if (result.error === 'warming-up') {
         // First request after a deploy: the worker is filling its catalog.
-        return snapshotQuote(cards, metric, 'warming-up');
+        return await snapshotQuote(cards, metric, 'warming-up');
       }
       console.warn('[uvsp] worker quote failed:', result.error);
     } catch (error) {
@@ -108,13 +112,13 @@ async function quote(message) {
   }
 
   if (cached) return { ...cached.payload, cached: true, stale: true };
-  return snapshotQuote(cards, metric, url ? 'worker-unreachable' : 'no-worker-configured');
+  return await snapshotQuote(cards, metric, url ? 'worker-unreachable' : 'no-worker-configured');
 }
 
 async function catalogInfo() {
   const settings = await loadSettings();
   const url = (settings.workerUrl || __WORKER_URL__).trim();
-  const deck = getCatalog();
+  const deck = await getCatalog();
   const products = Object.values(deck.groups).reduce((sum, group) => sum + group.products.length, 0);
   return {
     ok: true,

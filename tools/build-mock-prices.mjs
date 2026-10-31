@@ -57,7 +57,6 @@ for (const groupId of groupIds) {
       number: numberField ? numberField.value : null, // e.g. "10/211"
       market: price?.marketPrice ?? null,
       low: price?.lowPrice ?? null,
-      url: product.url,
     });
   }
 

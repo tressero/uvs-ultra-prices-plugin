@@ -75,12 +75,12 @@ describe('syncCatalog', () => {
     expect(group.name).toBe('Critical Role: Heroes of Exandria');
     expect(group.products).toHaveLength(2);
     // Descriptions and extendedData are dropped; only pricing fields survive.
-    expect(Object.keys(group.products[0]).sort()).toEqual(['id', 'low', 'market', 'name', 'number', 'url']);
+    expect(Object.keys(group.products[0]).sort()).toEqual(['id', 'low', 'market', 'name', 'number']);
     expect(group.products[0]).toMatchObject({ id: 1, number: '7/211', market: 1.5, low: 1 });
 
     const meta = await kv.get('meta', 'json');
     expect(meta).toMatchObject({ stamp: STAMP, products: 2 });
-    expect(meta.groups['24191']).toEqual({ name: group.name, count: 2 });
+    expect(meta.groups['24191']).toEqual({ name: group.name, count: 2, stamp: STAMP });
   });
 
   it('does nothing when the source has not rebuilt since the last sync', async () => {
@@ -108,6 +108,24 @@ describe('syncCatalog', () => {
 
     expect(result.failures).toHaveLength(1);
     expect(await kv.get('group:24191', 'json')).toEqual(before);
+  });
+
+  it('refreshes a few sets at a time and reports what is left', async () => {
+    // Three groups, two per run: the free plan's 50-subrequest cap makes this
+    // necessary, so each run must make progress without starting over.
+    stubSource();
+    const kv = fakeKV();
+
+    const first = await syncCatalog(env(kv), { groups: ['24191', '24583', '24209'], limit: 2 });
+    expect(first.groups).toHaveLength(2);
+    expect(first.remaining).toBe(1);
+
+    const second = await syncCatalog(env(kv), { groups: ['24191', '24583', '24209'], limit: 2 });
+    expect(second.groups).toEqual(['24209']);
+    expect(second.remaining).toBe(0);
+
+    const third = await syncCatalog(env(kv), { groups: ['24191', '24583', '24209'], limit: 2 });
+    expect(third.skipped).toBe(true);
   });
 
   it('sends a User-Agent, as tcgcsv requires', async () => {

@@ -251,12 +251,30 @@ fixtures/           saved deck pages, deck_card_list fragments, tcgcsv payloads
 | --- | --- | --- |
 | **M0** ✅ | Repo + MV3 skeleton, deck-page parser, hardcoded price table, chips + total render | 1 d |
 | **M1** ✅ | Worker + daily tcgcsv sync, matcher, set map (~100 sets), quote endpoint | 2–3 d |
-| **M2** | Top Decks lazy totals, caching layers, unpriced UX | 1–2 d |
+| **M2** ✅ | Top Decks lazy totals, caching layers, unpriced UX | 1–2 d |
 | **M3** | Settings popup, overrides, contract tests, icons, polish | 1–2 d |
 | **M4** | CWS listing, privacy policy, CI packaging, optional affiliate-API migration | 1–2 d |
 
 **Run in parallel from day one**: TCGplayer affiliate/Impact application; the nightly contract
 test (before there is anything to break).
+
+### M2 notes (built)
+
+- List totals render on `topdecks.php`, `folder.php` and `user.php`, which all
+  share the `.deck-list-deck` template. `topdecks.php` repeats decks across
+  sections (60 cards, 32 unique decks), so rows are deduped by deck id.
+- Nothing is priced until a card is within 300px of the viewport, two decks are
+  in flight at a time, and each result is cached per deck for 12 hours.
+- `topdecks.php` is no longer linked from the site nav; `folder.php` and
+  `user.php` are where decks actually live.
+- The set map was rebuilt from the site's own set dropdown (107 sets, 50 card
+  names each) and now maps 60 codes to 47 TCGplayer groups. Matches need either
+  half the set's names or a clear margin plus agreeing set numbers, so
+  "SoulCalibur 3" is not filed under "SoulCalibur VI".
+- Cloudflare's free plan allows 50 subrequests per invocation and a set costs
+  two, so a full refresh is batched: 20 sets per run, three cron runs a day.
+- The offline snapshot moved out of the service worker into `catalog.json`,
+  loaded only when the worker is unreachable (bundle went from 2.4 MB to 6 KB).
 
 ### M1 notes (built)
 

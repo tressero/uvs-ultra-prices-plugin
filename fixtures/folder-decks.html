@@ -1,0 +1,853 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title>UVS Ultra</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="UVSUltra the ultimate UVS search database" />
+		<meta name="keywords" content="UVSUltra, UVS, search, database, ccg, engine, ultimate, fighting, system" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="alternate" type="application/rss+xml" title="UVSUltra News" href="news.rss"/>
+		<link rel="stylesheet" href="css/bootstrap3/css/bootstrap.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/style.css?1.24" type="text/css" />
+		<link rel="stylesheet" href="css/colorbox.css" type="text/css" />
+		<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.9.2.custom.min.css" type="text/css" />
+		<link rel="stylesheet" href="css/jquery.cluetip.css" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="js/skins/simple/style.css" />
+		<link rel="stylesheet" type="text/css" href="js/sets/default/style.css" />
+		<link rel="stylesheet" type="text/css" href="css/messenger.css" />
+		<link rel="stylesheet" type="text/css" href="css/messenger-theme-flat.css" />
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min.js"></script>
+		<script type="text/javascript" src="js/jquery.colorbox-min.js"></script>
+		<script type="text/javascript" src="js/jquery.cluetip.min.js"></script>
+		<script type="text/javascript" src="js/jquery.markitup.js"></script>
+		<!--
+		<script type="text/javascript" src="js/sets/default/set.js"></script>
+		-->
+		<script type="text/javascript" src="js/function.js?20260701-5"></script>
+		<script type="text/javascript" src="js/highcharts.js"></script>
+		<script type="text/javascript" src="js/jquery.chromatable.js"></script>
+		<script type="text/javascript" src="css/bootstrap3/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/messenger.min.js"></script>
+		<script type="text/javascript" src="js/messenger-theme-flat.js"></script>
+		<script type="text/javascript" src="js/jquery-ias.min.js"></script>
+        <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
+	</head>
+	<body>
+<nav class="navbar navbar-inverse" id="topbar">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+		<a class="navbar-brand" href="index.php">UVS Ultra</a>
+    </div>
+    <div class="collapse navbar-collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+            <li><a href="index.php"><i class="glyphicon glyphicon-search glyphicon glyphicon-white"></i> Card Search</a></li>
+            <li><a href="live.php"><i class="glyphicon glyphicon-bullhorn glyphicon glyphicon-white"></i> Live</a></li>
+            <!--
+            <li><a href="topdecks.php"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Top decks</a></li>
+            -->
+            <!--
+            <li><a href="user.php?id=6389#!user-folders"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Tournament Decks</a></li>
+            -->
+            <li><a href="folder.php?id=5349"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> Tournament Decks</a></li>
+            <!--
+            <li><a href="user.php?id=13768#!user-folders"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> MetaVersus Decks</a></li>
+            -->
+            <li><a href="folder.php?id=5003"><i class="glyphicon glyphicon-star glyphicon glyphicon-white"></i> MetaVersus Decks</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-stats glyphicon glyphicon-white"></i> Stats <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="stats.php">Cards Statistics</a></li>
+                    <!--
+                    <li><a href="tournament_rating.php">Player rating</a></li>
+                    <li><a href="tournament_character.php">Character rating</a></li>
+                    -->
+                </ul>
+            </li>
+                    </ul>
+        <ul class="nav navbar-nav pull-right">
+                        <li><a href="?lang=fr">FR</a></li>                            <li><a href="whyregister.php"><i class="glyphicon glyphicon-question-sign glyphicon glyphicon-white"></i> Why Register ?</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#connectionModal"><i class="glyphicon glyphicon-user glyphicon glyphicon-white"></i> Sign in</a></li>
+                    </ul>
+	</div><!-- /.navbar-collapse -->
+</nav><!-- /navbar -->
+<div id="newDeckModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form mehod="get" class="form-inline deck-form-create">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Create new deck</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="deck_name" id="deck_name" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success deck-save-name" value="Create" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="newFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form mehod="get" class="form-inline folder-form-create">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Create new folder</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="folder_name" id="folder_name" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success folder-save-name" value="Create" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="moveDeckFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form mehod="get" class="form-inline deckfolder-form-move">
+            <div class="modal-content">
+            </div>
+        </form>
+    </div>
+</div>
+<div id="moveFolderFolderModal" class="modal fade" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form mehod="get" class="form-inline folder-form-move">
+            <div class="modal-content">
+            </div>
+        </form>
+    </div>
+</div>
+<div id="importDeckModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+			<form action="import_from_xml.php" method="post" enctype="multipart/form-data">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 id="myModalLabel">Import deck</h3>
+				</div>
+				<div class="modal-body">
+					<label>Name :</label> <input type="text" name="deck_name" id="deck_name" /><br />
+					<label>XML File :</label> <input type="file" name="deck_file" id="deck_file" /><br />
+				</div>
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-default btn-success" value="Import" />
+				</div>
+			</form>
+        </div>
+    </div>
+</div>
+<div id="connectionModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Sign in or Register</h3>
+            </div>
+            <div class="modal-body">
+                <form name="login" method="post" class="form-horizontal well well-sm">
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 controls col-sm-7">
+                            <div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                <input class="form-control" type="text" id="login" name="login" placeholder="Login">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 controls col-sm-7">
+                            <div class="input-group">
+								<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                <input class="form-control" type="password" id="password" name="password" placeholder="Password">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+						<div class="col-sm-offset-4 col-sm-3">
+		                    <input type="submit" class="btn btn-primary" value="Sign in" />
+						</div>
+                    </div>
+                    <div class="form-group">
+						<div class="col-sm-offset-3 col-sm-4">
+							<label><input type="checkbox" name="new" /> Create new account</label>
+						</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+				<a href="whyregister.php" class="btn btn-info btn-sm pull-left">Why Register ?</a>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="deckModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="modal-header-mydeck">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">
+					My decks<br />
+					<small class="list-mydeck-display-by">
+						Display type :
+						<!--
+							<a href="menu_list_user_deck.php?mddisplaytype=folder&mdorderby=date_created&js" rel="DESC" class="label label-default label-info">Folder View</a>
+-->
+							<a href="menu_list_user_deck.php?mddisplaytype=folder&js" rel="DESC" class="label label-default label-info">Folder View</a>
+							<!--
+							<a href="menu_list_user_deck.php?mddisplaytype=flat&mdorderby=date_created&js" rel="DESC" class="label label-default">Flat View</a>
+-->
+							<a href="menu_list_user_deck.php?mddisplaytype=flat&js" rel="DESC" class="label label-default">Flat View</a>
+												</small><br />
+					<small class="list-mydeck-sort-by">
+						Order by :
+						<!--
+							<a href="menu_list_user_deck.php?mdorderby=date_created&mddisplaytype=folder&js" rel="DESC" class="label label-default label-info">Date Created<i class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=date_created&js" rel="DESC" class="label label-default label-info">Date Created<i class="glyphicon glyphicon-sort-by-alphabet-alt"></i></a>
+							<!--
+							<a href="menu_list_user_deck.php?mdorderby=date_modified&mddisplaytype=folder&js" rel="DESC" class="label label-default">Date modified</a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=date_modified&js" rel="DESC" class="label label-default">Date modified</a>
+							<!--
+							<a href="menu_list_user_deck.php?mdorderby=name&mddisplaytype=folder&js" rel="ASC" class="label label-default">Name</a>
+-->
+							<a href="menu_list_user_deck.php?mdorderby=name&js" rel="ASC" class="label label-default">Name</a>
+												</small>
+				</h3>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary pull-left" data-toggle="modal" data-target="#newDeckModal" onclick="$('#deckModal').modal('hide');">Create new deck</a>
+                <a href="#" class="btn btn-info pull-left" data-toggle="modal" data-target="#newFolderModal" onclick="$('#deckModal').modal('hide');">Create new folder</a>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="reportModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Report an error</h3>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+	<div class="page-header">
+		<h1>"2022-06-05 RLE Las Vegas" Folder</h1>
+		<span class="small" style="display: block">By <span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389#!user-folders">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389#!user-folders" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					<span class="small" style="display: block">In <a href="folder.php?id=1286"> <img style="" src="images/icons/folder-16.png" /> 2022</a></span>
+			</div>
+
+		<h3>Decks</h3>
+	<div class="deck-list">
+
+	<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				508 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=NEAxGPTaRHNEnvAigVbecYkKrIcyDk" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/037-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=NEAxGPTaRHNEnvAigVbecYkKrIcyDk"><img src="images/icons/fire.png?20230902" alt="fire" /> 01 - Tim Keefe (Fumikage Tokoyami)</a></span>
+			<span><span class="label label-warning">Rocretro <i class="glyphicon glyphicon-remove glyphicon glyphicon-white" title="This deck is not valid. Standard/Spotlight Formats = (1 shared symbol, 60 cards minimum, 0 or 10 card sideboard, and 1 main character defined). Other Formats = (60 cards minimum, 0 or 10 card sideboard, and 1 main character defined)."></i></span> <span class="label label-info">65 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				382 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=QbvsahTQOeBsRJyvXpBjdMvqfvYWrr" class="deck-list-deck-image">
+				<img src="images/extensions/mha02/028-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=QbvsahTQOeBsRJyvXpBjdMvqfvYWrr"><img src="images/icons/all.png?20230902" alt="all" /> 02 - Zach Pasley (Mei Hatsume)</a></span>
+			<span><span class="label label-success">Legacy <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">82 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				343 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=AvXnATgFaknQSVqTkfpYypXKqCTGLv" class="deck-list-deck-image">
+				<img src="images/extensions/mha02/028-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=AvXnATgFaknQSVqTkfpYypXKqCTGLv"><img src="images/icons/life.png?20230902" alt="life" /> Top 04 - Garett Brett (Mei Hatsume)</a></span>
+			<span><span class="label label-success">Rocretro <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">83 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				322 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=aFlnfyEgiONnmajlwbSVCTIsxbrRem" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/091-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=aFlnfyEgiONnmajlwbSVCTIsxbrRem"><img src="images/icons/air.png?20230902" alt="air" /> Top 04 - Marquis McKinney (Kyoka Jiro)</a></span>
+			<span><span class="label label-success">Legacy <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">77 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				384 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=sAtQwxIiWLJuMGqnDwSLFFrUKkDwgA" class="deck-list-deck-image">
+				<img src="images/extensions/mha02/085-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=sAtQwxIiWLJuMGqnDwSLFFrUKkDwgA"><img src="images/icons/life.png?20230902" alt="life" /> Top 08 - Christopher Bromley (Himiko Toga)</a></span>
+			<span><span class="label label-success">Rocretro <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">75 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				276 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=EcrAKnAYctkTmneCgPSKPRJMZtYZps" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/223-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=EcrAKnAYctkTmneCgPSKPRJMZtYZps"><img src="images/icons/death.png?20230902" alt="death" /> Top 08 - Colby Cram (Ochaco Uraraka2)</a></span>
+			<span><span class="label label-warning">Mhaonly <i class="glyphicon glyphicon-remove glyphicon glyphicon-white" title="This deck is not valid. Standard/Spotlight Formats = (1 shared symbol, 60 cards minimum, 0 or 10 card sideboard, and 1 main character defined). Other Formats = (60 cards minimum, 0 or 10 card sideboard, and 1 main character defined)."></i></span> <span class="label label-info">67 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				358 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=TmumYPTEBqEsFSbUbjsynMMCDjZcZD" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/223-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=TmumYPTEBqEsFSbUbjsynMMCDjZcZD"><img src="images/icons/death.png?20230902" alt="death" /> Top 08 - David Pena (Ochaco Uraraka2)</a></span>
+			<span><span class="label label-success">Mhaonly <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">76 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				300 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=nwTyGcCbsKswkgcaHZsCKADmxgPyWN" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/127-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=nwTyGcCbsKswkgcaHZsCKADmxgPyWN"><img src="images/icons/life.png?20230902" alt="life" /> Top 08 - Kevin Broberg (Ochaco Uraraka)</a></span>
+			<span><span class="label label-success">Rocretro <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">73 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				310 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=SWWTquHZagsJCZOCyKbKYBgHtsrFkJ" class="deck-list-deck-image">
+				<img src="images/extensions/mha02/094-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=SWWTquHZagsJCZOCyKbKYBgHtsrFkJ"><img src="images/icons/water.png?20230902" alt="water" /> Top 16 - Andrew Dovale (Minoru Mineta2)</a></span>
+			<span><span class="label label-success">Rocretro <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">75 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				350 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=YCOHEKugGsBePDefnCDZYlaNQMrNYI" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/028-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=YCOHEKugGsBePDefnCDZYlaNQMrNYI"><img src="images/icons/void.png?20230902" alt="void" /> Top 16 - Daniel Nelson (Eraser Head)</a></span>
+			<span><span class="label label-success">Mhaonly <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">76 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				266 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=WYyLlcpQamftklpEEwTfVTWBSDjWGy" class="deck-list-deck-image">
+				<img src="images/extensions/mha02/094-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=WYyLlcpQamftklpEEwTfVTWBSDjWGy"><img src="images/icons/water.png?20230902" alt="water" /> Top 16 - Emil Menzies (Minoru Mineta2)</a></span>
+			<span><span class="label label-success">Rocretro <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">75 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				346 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=axPjMJiOQvlrAayqwtDENGepMChADA" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/028-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=axPjMJiOQvlrAayqwtDENGepMChADA"><img src="images/icons/void.png?20230902" alt="void" /> Top 16 - Jacob Johnson (Eraser Head)</a></span>
+			<span><span class="label label-success">Mhaonly <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">77 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				348 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=MjlGsDWfjqZhYLHjngJEWZUIeregag" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/163-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=MjlGsDWfjqZhYLHjngJEWZUIeregag"><img src="images/icons/life.png?20230902" alt="life" /> Top 16 - Jeffrey Lina (Tsuyu Asui)</a></span>
+			<span><span class="label label-warning">Rocretro <i class="glyphicon glyphicon-remove glyphicon glyphicon-white" title="This deck is not valid. Standard/Spotlight Formats = (1 shared symbol, 60 cards minimum, 0 or 10 card sideboard, and 1 main character defined). Other Formats = (60 cards minimum, 0 or 10 card sideboard, and 1 main character defined)."></i></span> <span class="label label-info">67 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				302 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=geHeFwcZABLtmbrvpOtRGAstdgNgYZ" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/037-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=geHeFwcZABLtmbrvpOtRGAstdgNgYZ"><img src="images/icons/fire.png?20230902" alt="fire" /> Top 16 - Jon Mendoza (Fumikage Tokoyami)</a></span>
+			<span><span class="label label-warning">Rocretro <i class="glyphicon glyphicon-remove glyphicon glyphicon-white" title="This deck is not valid. Standard/Spotlight Formats = (1 shared symbol, 60 cards minimum, 0 or 10 card sideboard, and 1 main character defined). Other Formats = (60 cards minimum, 0 or 10 card sideboard, and 1 main character defined)."></i></span> <span class="label label-info">66 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				299 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=rRXMyaJHyUOMhkPZGLXlllfZBwqlDY" class="deck-list-deck-image">
+				<img src="images/extensions/mha02/200-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=rRXMyaJHyUOMhkPZGLXlllfZBwqlDY"><img src="images/icons/order.png?20230902" alt="order" /> Top 16 - JP Johnson (Fourth Kind)</a></span>
+			<span><span class="label label-success">Mhaonly <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">75 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		<div class="deck-list-deck">
+					<div class="deck-list-deck-stats">
+				0 <i class="glyphicon glyphicon-thumbs-up"></i><br />
+				0 <i class="glyphicon glyphicon-pencil"></i><br />
+				399 <i class="glyphicon glyphicon-eye-open"></i>
+			</div>
+			<a href="deck.php?deck=yfMFeHLKFQAPOHWZjWtBpxiTrPAcGm" class="deck-list-deck-image">
+				<img src="images/extensions/mha01/220-ci-small.jpg?20240802" class="ci-small_image"/>			</a>
+					<div class="deck-list-deck-info">
+			<span><a href="deck.php?deck=yfMFeHLKFQAPOHWZjWtBpxiTrPAcGm"><img src="images/icons/good.png?20230902" alt="good" /> Top 16 - Tony Hevia (All Might2)</a></span>
+			<span><span class="label label-success">Rocretro <i class="glyphicon glyphicon-ok glyphicon glyphicon-white" title="This deck is valid"></i></span> <span class="label label-info">81 cards</span></span>
+						<span title="Creator"><span class="avatar-popover"><img src="images/avatar/6389.png?1692742367" width="16" height="16" /> <a href="user.php?id=6389">TopCutLists</a>
+                      <span class="avatar-popover-title">
+                              <strong>TopCutLists</strong>
+                              
+                      </span>
+                      <span class="avatar-popover-content popover-content">
+                              <div style="float: left;">
+                                      <div class="thumbnail">
+                                              <img src="images/avatar/6389.png?1692742367" width="30" height="30" />
+                                      </div>
+                              </div>
+                              <div class="col-sm-4 col-sm-offset-1">
+                                      <div class="row">784 Decks</div>
+                                      <div class="row">0 Followers</div>
+                                      <div class="row">0 Following</div>
+                              </div>
+                        <div class="btn-group">
+                                <a href="user.php?id=6389" class="btn btn-info btn-sm">View Profile</a>
+                        </div>
+                      </span>
+                </span></span>
+					</div>
+		<div class="clear"></div>
+	</div>
+		</div>
+	<div class="clear"></div>
+	
+<div id="footer">
+
+    <a href="http://www.rochesterccg.com/">Sponsored by <img src="images/RCCG_Logo.jpg" alt="Rochester CCG" style="width: 412px; height: 160px;">
+    </a>
+</div>
+</body>

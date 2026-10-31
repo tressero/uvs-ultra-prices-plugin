@@ -23,6 +23,7 @@ const DECKS = {
 
 const PAGES = [
   ['topdecks.php', 'topdecks.html'],
+  ['folder.php?id=1297', 'folder-decks.html'], // a folder that holds decks directly
   ['index.php', 'index.html'],
 ];
 

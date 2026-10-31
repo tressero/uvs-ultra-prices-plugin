@@ -42,3 +42,13 @@ export function shortDate(value) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? String(value) : date.toISOString().slice(0, 10);
 }
+
+/**
+ * TCGplayer product link. The canonical URL is `/product/<id>`, so the catalog
+ * does not need to store a URL per product.
+ */
+export function productUrl(match) {
+  if (!match) return null;
+  if (match.url) return match.url; // older snapshots carried the full slug
+  return match.id ? `https://www.tcgplayer.com/product/${match.id}` : null;
+}

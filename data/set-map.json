@@ -1,99 +1,677 @@
 {
+  "4pointpromo": {
+    "groupId": 2363,
+    "name": "Capcom Casual League Kit",
+    "hits": 15,
+    "cards": 50
+  },
+  "5pointpromo": {
+    "groupId": null,
+    "name": "5 Points Promos",
+    "hits": 4,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "6pointpromo": {
+    "groupId": null,
+    "name": "6 Points Promos",
+    "hits": 4,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "7thcross": {
+    "groupId": 2452,
+    "name": "Seventh Cross",
+    "hits": 34,
+    "cards": 50
+  },
   "aot01": {
     "groupId": 23573,
     "name": "Attack on Titan: Battle for Humanity",
-    "hits": 2,
-    "cards": 2,
-    "runnerUpHits": 0
+    "hits": 47,
+    "cards": 50
   },
   "aot02": {
     "groupId": 23791,
     "name": "Attack On Titan: Origins of Power",
-    "hits": 1,
-    "cards": 1,
-    "runnerUpHits": 0
+    "hits": 43,
+    "cards": 50
   },
   "aot03": {
     "groupId": 24209,
     "name": "Attack on Titan: Apocalypse",
-    "hits": 4,
+    "hits": 43,
+    "cards": 50
+  },
+  "battleforpower": {
+    "groupId": 1966,
+    "name": "Mega Man: Battle for Power",
+    "hits": 48,
+    "cards": 50
+  },
+  "bebop": {
+    "groupId": 2168,
+    "name": "Cowboy Bebop",
+    "hits": 44,
+    "cards": 50
+  },
+  "bl01": {
+    "groupId": null,
+    "name": "Borderlands 4 Experience Bundle",
+    "hits": 0,
     "cards": 4,
-    "runnerUpHits": 0
+    "reason": "not-on-tcgplayer"
+  },
+  "bladesoffury": {
+    "groupId": null,
+    "name": "SoulCalibur 3: Blades of Fury",
+    "hits": 3,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "bloodomen": {
+    "groupId": 1970,
+    "name": "Red Horizon: Blood Omen",
+    "hits": 46,
+    "cards": 50
+  },
+  "capcomleaguekit": {
+    "groupId": 2363,
+    "name": "Capcom Casual League Kit",
+    "hits": 48,
+    "cards": 50
   },
   "cb02": {
     "groupId": 23385,
     "name": "Challenger Series: Cowboy Bebop and Trigun Stampede",
-    "hits": 1,
-    "cards": 1,
-    "runnerUpHits": 1
+    "hits": 20,
+    "cards": 21
   },
   "cha03gmm": {
     "groupId": 23503,
     "name": "Challenger Series: Godzilla",
+    "hits": 20,
+    "cards": 22
+  },
+  "cha03krm": {
+    "groupId": 23503,
+    "name": "Challenger Series: Godzilla",
+    "hits": 22,
+    "cards": 22
+  },
+  "championpromos2": {
+    "groupId": null,
+    "name": "Champion Promos 2",
+    "hits": 0,
+    "cards": 5,
+    "reason": "not-on-tcgplayer"
+  },
+  "championpromos3": {
+    "groupId": null,
+    "name": "Champion Promos 3",
     "hits": 2,
-    "cards": 2,
-    "runnerUpHits": 1
+    "cards": 10,
+    "reason": "low-confidence"
+  },
+  "championpromos4": {
+    "groupId": null,
+    "name": "Champion Promos 4",
+    "hits": 2,
+    "cards": 16,
+    "reason": "low-confidence"
+  },
+  "championpromos5": {
+    "groupId": 2564,
+    "name": "UniVersus Promos",
+    "hits": 10,
+    "cards": 12
   },
   "cr02": {
     "groupId": 24191,
     "name": "Critical Role: Heroes of Exandria",
+    "hits": 42,
+    "cards": 50
+  },
+  "crmn": {
+    "groupId": 23393,
+    "name": "Challenger Series: Vox Machina and Mighty Nein",
+    "hits": 17,
+    "cards": 21
+  },
+  "crvm": {
+    "groupId": 23393,
+    "name": "Challenger Series: Vox Machina and Mighty Nein",
+    "hits": 18,
+    "cards": 21
+  },
+  "cuttingedge": {
+    "groupId": null,
+    "name": "SNK: The Cutting Edge",
+    "hits": 0,
+    "cards": 50,
+    "reason": "not-on-tcgplayer"
+  },
+  "darkpath": {
+    "groupId": null,
+    "name": "Street Fighter: The Dark Path",
     "hits": 3,
-    "cards": 4,
-    "runnerUpHits": 0
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "darkstalkers": {
+    "groupId": null,
+    "name": "Darkstalkers (2007)",
+    "hits": 7,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "darkstalkerstin": {
+    "groupId": 1964,
+    "name": "Darkstalkers: Collector's Tins",
+    "hits": 50,
+    "cards": 50
+  },
+  "deadlyground": {
+    "groupId": null,
+    "name": "Street Fighter: Deadly Ground",
+    "hits": 3,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "dlc2020": {
+    "groupId": null,
+    "name": "DLC 2020",
+    "hits": 11,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "domination": {
+    "groupId": null,
+    "name": "Street Fighter: Domination",
+    "hits": 4,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "extremerivals": {
+    "groupId": null,
+    "name": "Street Fighter: Extreme Rivals",
+    "hits": 3,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "fightfor": {
+    "groupId": null,
+    "name": "Street Fighter: Fight For The Future",
+    "hits": 4,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "flamesoffame": {
+    "groupId": null,
+    "name": "SNK: Flames of Fame",
+    "hits": 0,
+    "cards": 50,
+    "reason": "not-on-tcgplayer"
+  },
+  "flashofblades": {
+    "groupId": null,
+    "name": "SoulCalibur 3: Flash of the Blades",
+    "hits": 3,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "fng": {
+    "groupId": null,
+    "name": "SNK: Fortune and Glory",
+    "hits": 1,
+    "cards": 50,
+    "reason": "low-confidence"
   },
   "ft01": {
     "groupId": null,
-    "name": null,
-    "hits": 0,
-    "cards": 14
+    "name": "Fairy Tail: All Fired Up!",
+    "hits": 1,
+    "cards": 50,
+    "reason": "low-confidence"
   },
   "gdz01": {
     "groupId": 24583,
     "name": "Godzilla: Reign of Kaiju",
-    "hits": 6,
-    "cards": 6,
-    "runnerUpHits": 1
+    "hits": 50,
+    "cards": 50
   },
   "ggs01": {
     "groupId": 24482,
     "name": "GUILTY GEAR -STRIVE-",
+    "hits": 49,
+    "cards": 50
+  },
+  "grimmpromo": {
+    "groupId": null,
+    "name": "Grimm in Wonderland Promos",
+    "hits": 0,
+    "cards": 4,
+    "reason": "not-on-tcgplayer"
+  },
+  "highercalibur": {
+    "groupId": null,
+    "name": "SoulCalibur 3: Higher Calibur",
+    "hits": 7,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "indines": {
+    "groupId": 2206,
+    "name": "World of Indines",
+    "hits": 48,
+    "cards": 50
+  },
+  "kf0x": {
+    "groupId": 24505,
+    "name": "Challenger Series: The King of Fighters XV",
+    "hits": 42,
+    "cards": 47
+  },
+  "kingoffighters": {
+    "groupId": null,
+    "name": "SNK: The King of Fighers 2006",
+    "hits": 1,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "kofxiii": {
+    "groupId": null,
+    "name": "The King of Fighters 13",
+    "hits": 1,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "legacypromo": {
+    "groupId": null,
+    "name": "Legacy promos",
+    "hits": 12,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "libra": {
+    "groupId": 2560,
+    "name": "SoulCalibur VI: Libra of Souls",
+    "hits": 44,
+    "cards": 50
+  },
+  "megaman": {
+    "groupId": 1967,
+    "name": "Mega Man: Collector's Tins",
+    "hits": 50,
+    "cards": 50
+  },
+  "mha01": {
+    "groupId": 2623,
+    "name": "UniVersus: My Hero Academia",
+    "hits": 46,
+    "cards": 50
+  },
+  "mha02": {
+    "groupId": 3009,
+    "name": "UniVersus: My Hero Academia: Crimson Rampage",
+    "hits": 45,
+    "cards": 50
+  },
+  "mha03": {
+    "groupId": 17668,
+    "name": "UniVersus: My Hero Academia: Heroes Clash",
+    "hits": 44,
+    "cards": 50
+  },
+  "mha04": {
+    "groupId": 22878,
+    "name": "UniVersus: My Hero Academia: League of Villains",
+    "hits": 43,
+    "cards": 50
+  },
+  "mha05": {
+    "groupId": 23227,
+    "name": "UniVersus: My Hero Academia: Undaunted Raid",
+    "hits": 47,
+    "cards": 50
+  },
+  "mha06": {
+    "groupId": 23302,
+    "name": "UniVersus: My Hero Academia: Jet Burn",
+    "hits": 47,
+    "cards": 50
+  },
+  "mha07": {
+    "groupId": 23472,
+    "name": "UniVersus: My Hero Academia: Girl Power",
+    "hits": 43,
+    "cards": 50
+  },
+  "mha08": {
+    "groupId": 23755,
+    "name": "Challenger Series: My Hero Academia - Dark Hero Arc",
+    "hits": 18,
+    "cards": 20
+  },
+  "mha09": {
+    "groupId": 24681,
+    "name": "Challenger Series: My Hero Academia - Final Battle",
+    "hits": 38,
+    "cards": 41
+  },
+  "mhademo": {
+    "groupId": 2623,
+    "name": "UniVersus: My Hero Academia",
+    "hits": 10,
+    "cards": 19
+  },
+  "mortalkombat": {
+    "groupId": 2272,
+    "name": "Mortal Kombat X",
+    "hits": 49,
+    "cards": 50
+  },
+  "neomax": {
+    "groupId": null,
+    "name": "The King of Fighters 13: NeoMax",
+    "hits": 0,
+    "cards": 50,
+    "reason": "not-on-tcgplayer"
+  },
+  "nextlevel": {
+    "groupId": 1942,
+    "name": "Street Fighter CCG",
+    "hits": 6,
+    "cards": 50
+  },
+  "penny": {
+    "groupId": null,
+    "name": "Penny Arcade",
+    "hits": 0,
+    "cards": 45,
+    "reason": "not-on-tcgplayer"
+  },
+  "platinum": {
+    "groupId": 2086,
+    "name": "Capcom Platinum Series",
+    "hits": 50,
+    "cards": 50
+  },
+  "promo2020": {
+    "groupId": null,
+    "name": "Promo 2020",
+    "hits": 5,
+    "cards": 31,
+    "reason": "low-confidence"
+  },
+  "promo2022": {
+    "groupId": null,
+    "name": "Promo 2022",
+    "hits": 1,
+    "cards": 2,
+    "reason": "low-confidence"
+  },
+  "promo2023": {
+    "groupId": null,
+    "name": "Promo 2023",
+    "hits": 1,
+    "cards": 1,
+    "reason": "low-confidence"
+  },
+  "promo2024": {
+    "groupId": 2564,
+    "name": "UniVersus Promos",
+    "hits": 5,
+    "cards": 5
+  },
+  "promo2025": {
+    "groupId": null,
+    "name": "Promo 2025",
     "hits": 4,
-    "cards": 5,
-    "runnerUpHits": 0
+    "cards": 11,
+    "reason": "low-confidence"
+  },
+  "promo2026": {
+    "groupId": null,
+    "name": "Promo 2026",
+    "hits": 1,
+    "cards": 4,
+    "reason": "low-confidence"
+  },
+  "ptcpromos": {
+    "groupId": 2086,
+    "name": "Capcom Platinum Series",
+    "hits": 3,
+    "cards": 6
+  },
+  "realmofmidnight": {
+    "groupId": null,
+    "name": "Darkstalkers: Realm of Midnight",
+    "hits": 6,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "redhorizon": {
+    "groupId": 1969,
+    "name": "Red Horizon",
+    "hits": 47,
+    "cards": 49
+  },
+  "rh4p": {
+    "groupId": 1970,
+    "name": "Red Horizon: Blood Omen",
+    "hits": 25,
+    "cards": 41
+  },
+  "rhid01": {
+    "groupId": 1969,
+    "name": "Red Horizon",
+    "hits": 18,
+    "cards": 28
+  },
+  "riseofmasters": {
+    "groupId": 1968,
+    "name": "Mega Man: Rise of Masters",
+    "hits": 49,
+    "cards": 50
+  },
+  "rot": {
+    "groupId": null,
+    "name": "The King of Fighters 13: Ruler of Time",
+    "hits": 1,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "ryuvsakuma": {
+    "groupId": null,
+    "name": "Street Fighter: Ryu vs Akuma",
+    "hits": 4,
+    "cards": 44,
+    "reason": "low-confidence"
+  },
+  "scqos": {
+    "groupId": null,
+    "name": "SoulCalibur 4: Quest of Souls",
+    "hits": 4,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "sctos": {
+    "groupId": null,
+    "name": "SoulCalibur 4: Tower of Souls",
+    "hits": 3,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "sf5": {
+    "groupId": 1942,
+    "name": "Street Fighter CCG",
+    "hits": 50,
+    "cards": 50
+  },
+  "sf60x": {
+    "groupId": 24333,
+    "name": "Challenger Series: Street Fighter 6",
+    "hits": 40,
+    "cards": 42
   },
   "sf62x": {
     "groupId": 24889,
     "name": "Challenger Series: Street Fighter 6 - Series 2",
-    "hits": 9,
-    "cards": 10,
-    "runnerUpHits": 0
+    "hits": 41,
+    "cards": 44
+  },
+  "sfvdarkstalkers": {
+    "groupId": null,
+    "name": "Street Fighter vs. Darkstalkers Promo",
+    "hits": 2,
+    "cards": 2,
+    "reason": "low-confidence"
+  },
+  "sfvdarkstarlkers2018": {
+    "groupId": 2358,
+    "name": "Street Fighter vs. Darkstalkers",
+    "hits": 50,
+    "cards": 50
+  },
+  "shadowar": {
+    "groupId": null,
+    "name": "ShadoWar",
+    "hits": 1,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "sl01": {
+    "groupId": 24060,
+    "name": "Challenger Series: Solo Leveling",
+    "hits": 18,
+    "cards": 20
+  },
+  "sleb": {
+    "groupId": null,
+    "name": "Solo Leveling Experience Bundle",
+    "hits": 1,
+    "cards": 9,
+    "reason": "low-confidence"
+  },
+  "snk": {
+    "groupId": null,
+    "name": "SNK",
+    "hits": 0,
+    "cards": 50,
+    "reason": "not-on-tcgplayer"
+  },
+  "soularena": {
+    "groupId": null,
+    "name": "SoulCalibur 3: Soul Arena",
+    "hits": 2,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "soulcalibur3": {
+    "groupId": null,
+    "name": "SoulCalibur 3",
+    "hits": 7,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "soulcalibur6": {
+    "groupId": 2413,
+    "name": "SoulCalibur VI",
+    "hits": 47,
+    "cards": 50
+  },
+  "stk0x": {
+    "groupId": 23596,
+    "name": "Challenger Series: Star Trek: Lower Decks",
+    "hits": 45,
+    "cards": 50
+  },
+  "streetfighter": {
+    "groupId": 1942,
+    "name": "Street Fighter CCG",
+    "hits": 10,
+    "cards": 50
+  },
+  "taleofswords": {
+    "groupId": null,
+    "name": "SoulCalibur 3: A Tale of Swords & Souls",
+    "hits": 5,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "tekken6": {
+    "groupId": null,
+    "name": "Tekken 6",
+    "hits": 3,
+    "cards": 50,
+    "reason": "low-confidence"
+  },
+  "tk801": {
+    "groupId": 23773,
+    "name": "TEKKEN 8: Clash Decks",
+    "hits": 32,
+    "cards": 42
   },
   "tk802": {
     "groupId": 24715,
     "name": "TEKKEN 8",
-    "hits": 1,
-    "cards": 1,
-    "runnerUpHits": 0
+    "hits": 47,
+    "cards": 50
   },
   "tmnt01": {
     "groupId": 24301,
     "name": "Teenage Mutant Ninja Turtles",
-    "hits": 2,
-    "cards": 3,
-    "runnerUpHits": 0
+    "hits": 43,
+    "cards": 50
+  },
+  "tov": {
+    "groupId": 1971,
+    "name": "Red Horizon: Tides of Vengeance",
+    "hits": 48,
+    "cards": 49
   },
   "ts01": {
     "groupId": 23385,
     "name": "Challenger Series: Cowboy Bebop and Trigun Stampede",
-    "hits": 1,
+    "hits": 20,
+    "cards": 21
+  },
+  "unmarkedpromo": {
+    "groupId": null,
+    "name": "Unmarked Promos",
+    "hits": 0,
     "cards": 1,
-    "runnerUpHits": 0
+    "reason": "not-on-tcgplayer"
+  },
+  "warriorsdream": {
+    "groupId": 1942,
+    "name": "Street Fighter CCG",
+    "hits": 7,
+    "cards": 50
+  },
+  "warriorsofthenight": {
+    "groupId": 1965,
+    "name": "Darkstalkers: Warriors of the Night",
+    "hits": 48,
+    "cards": 50
+  },
+  "worldwarriors": {
+    "groupId": 1942,
+    "name": "Street Fighter CCG",
+    "hits": 13,
+    "cards": 50
+  },
+  "yyh": {
+    "groupId": 2491,
+    "name": "Yu Yu Hakusho",
+    "hits": 50,
+    "cards": 50
   },
   "yyhdt": {
     "groupId": 23386,
     "name": "Yu Yu Hakusho: Dark Tournament",
-    "hits": 7,
-    "cards": 7,
-    "runnerUpHits": 1
+    "hits": 47,
+    "cards": 50
   }
 }

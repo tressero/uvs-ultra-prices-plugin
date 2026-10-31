@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { baseName, editDistance, namesMatch, normalizeName, stripVariants } from '../../shared/text.js';
 import { CONFIDENCE, REASON, priceDeck, resolveCard } from '../../shared/match.js';
-import { loadBundledCatalog } from '../../extension/src/shared/catalog.js';
 import { parseDeckCards } from '../../extension/src/shared/parse.js';
 import { loadFixture } from '../helpers/fixtures.js';
+import { readFileSync } from 'node:fs';
 
-const catalog = loadBundledCatalog();
+// The runtime loads this lazily (it is ~600 KB); tests read it directly.
+const readJson = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
+const catalog = {
+  setMap: readJson('../../data/set-map.json'),
+  groups: readJson('../../data/prices.snapshot.json').groups,
+};
 
 describe('name normalization', () => {
   it('reduces TCGplayer clean names and UVS names to the same key', () => {

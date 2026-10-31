@@ -23,6 +23,16 @@
       "js": ["deck.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://uvsultra.online/topdecks.php*",
+        "https://uvsultra.online/folder.php*",
+        "https://uvsultra.online/user.php*"
+      ],
+      "js": ["list.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
     }
   ],
   "action": {

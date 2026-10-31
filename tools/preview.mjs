@@ -96,6 +96,28 @@ try {
     if (errors.length) console.log('console errors:', errors);
     await page.close();
   }
+
+  // Deck list pages: totals next to each deck card, priced only when visible.
+  {
+    const page = await context.newPage();
+    await page.goto(`http://localhost:${PORT}/topdecks.php`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('.uvsp-list-price', { timeout: 20000 });
+    await page.waitForTimeout(2500);
+
+    const list = await page.evaluate(() => {
+      const chips = [...document.querySelectorAll('.uvsp-list-price')];
+      return {
+        deckCards: document.querySelectorAll('.deck-list-deck').length,
+        priced: chips.length,
+        loading: chips.filter((c) => c.classList.contains('uvsp-list-price--loading')).length,
+        sample: chips.slice(0, 5).map((c) => c.textContent),
+      };
+    });
+    await page.screenshot({ path: join(OUT, 'uvsp-topdecks.png') });
+    console.log('\n=== topdecks (lazy list totals) ===');
+    console.log(JSON.stringify(list, null, 2));
+    await page.close();
+  }
 } finally {
   await context.close();
   server.kill();

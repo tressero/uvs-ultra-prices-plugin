@@ -7,7 +7,7 @@
  *
  * KV layout:
  *   meta            -> { stamp, syncedAt, groups: { [id]: { name, count } }, products }
- *   group:<groupId> -> { name, products: [{ id, name, number, market, low, url }] }
+ *   group:<groupId> -> { name, products: [{ id, name, number, market, low }] }
  */
 import setMap from '../../data/set-map.json';
 
@@ -56,7 +56,6 @@ function buildGroup(group, products, prices) {
       number: number ? number.value : null,
       market: price?.marketPrice ?? null,
       low: price?.lowPrice ?? null,
-      url: product.url ?? null,
     });
   }
   return { name: group.name ?? null, products: rows };
@@ -64,13 +63,19 @@ function buildGroup(group, products, prices) {
 
 /**
  * @param env worker env (PRICING binding, SOURCE_BASE, CATALOG_CATEGORY, USER_AGENT)
- * @param options {{ groups?: string[], force?: boolean }}
+ * @param options {{ groups?: string[], force?: boolean, limit?: number }}
+ *
+ * The free plan allows 50 subrequests per invocation, and one set costs two
+ * (products + prices), so a full refresh cannot happen in one request. Each run
+ * refreshes at most `limit` sets that are still on an older stamp; the next run
+ * picks up the rest.
  */
 export async function syncCatalog(env, options = {}) {
   const base = (env.SOURCE_BASE ?? 'https://tcgcsv.com').replace(/\/$/, '');
   const category = env.CATALOG_CATEGORY ?? '25';
   const userAgent = env.USER_AGENT ?? 'UVSUltraPrices/0.1.0';
   const requested = (options.groups ?? mappedGroupIds()).map(String);
+  const limit = options.limit ?? (options.groups ? options.groups.length : 20);
 
   const meta = (await readMeta(env)) ?? { stamp: null, syncedAt: null, groups: {}, products: 0 };
   const groups = { ...meta.groups };
@@ -83,18 +88,20 @@ export async function syncCatalog(env, options = {}) {
     // Keep the previous stamp; a failed check is not a reason to skip.
   }
 
-  const missing = requested.filter((groupId) => !groups[groupId]);
-  if (!options.force && stamp && stamp === meta.stamp && missing.length === 0) {
-    return { skipped: true, stamp, syncedAt: meta.syncedAt, groups: Object.keys(groups) };
+  // Only sets that are missing or still hold an older build need fetching.
+  const stale = requested.filter((groupId) => options.force || groups[groupId]?.stamp !== stamp);
+  if (!stale.length) {
+    return { skipped: true, stamp, syncedAt: meta.syncedAt, groups: Object.keys(groups), remaining: 0 };
   }
 
+  const batch = stale.slice(0, limit);
   const groupList = await fetchJson(`${base}/tcgplayer/${category}/groups`, userAgent);
   const names = new Map(groupList.results.map((group) => [String(group.groupId), group.name]));
 
   const failures = [];
   let products = 0;
 
-  for (const groupId of requested) {
+  for (const groupId of batch) {
     try {
       const [productRows, priceRows] = await Promise.all([
         fetchJson(`${base}/tcgplayer/${category}/${groupId}/products`, userAgent),
@@ -102,7 +109,7 @@ export async function syncCatalog(env, options = {}) {
       ]);
       const built = buildGroup({ name: names.get(groupId) ?? groups[groupId]?.name ?? null }, productRows, priceRows);
       await env.PRICING.put(groupKey(groupId), JSON.stringify(built));
-      groups[groupId] = { name: built.name, count: built.products.length };
+      groups[groupId] = { name: built.name, count: built.products.length, stamp };
       products += built.products.length;
       await sleep(REQUEST_GAP_MS);
     } catch (err) {
@@ -124,8 +131,9 @@ export async function syncCatalog(env, options = {}) {
     skipped: false,
     stamp,
     syncedAt: nextMeta.syncedAt,
-    groups: requested,
+    groups: batch,
     products,
     failures,
+    remaining: stale.length - batch.length,
   };
 }
