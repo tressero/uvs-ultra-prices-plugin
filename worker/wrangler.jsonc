@@ -11,13 +11,11 @@
     "traces": { "enabled": true, "head_sampling_rate": 0.05 }
   },
 
-  // Created with: npx wrangler kv namespace create PRICING
-  // Paste the returned id here (and into preview_id for `wrangler dev --remote`).
+  // Created with `npm run worker:kv` (2026-10-31).
   "kv_namespaces": [
     {
       "binding": "PRICING",
-      "id": "00000000000000000000000000000000",
-      "preview_id": "00000000000000000000000000000000"
+      "id": "54c9c2137b9a4cdabd2ac16c05f29b88"
     }
   ],
 

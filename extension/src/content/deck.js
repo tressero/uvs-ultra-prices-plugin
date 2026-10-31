@@ -6,7 +6,7 @@
  */
 import { parseDeckCards, DECK_CARD_SELECTOR } from '../shared/parse.js';
 import { loadSettings, onSettingsChanged } from '../shared/settings.js';
-import { money, confidenceLabel } from '../shared/format.js';
+import { money, confidenceLabel, shortDate } from '../shared/format.js';
 
 const CHIP_CLASS = 'uvsp-chip';
 const PANEL_ID = 'uvsp-panel';
@@ -160,7 +160,7 @@ function renderPanel(quote, uniqueCards) {
   }
 
   if (quote.updatedAt) {
-    panel.append(noteLine(`Prices from TCGplayer via tcgcsv, updated ${quote.updatedAt}.`));
+    panel.append(noteLine(`Prices from TCGplayer via tcgcsv, updated ${shortDate(quote.updatedAt)}.`));
   }
 
   if (!existing) {

@@ -35,3 +35,10 @@ export function moneyCompact(value) {
   }
   return money(value);
 }
+
+/** ISO timestamp -> 2026-10-31. Falls back to the raw value if it is not a date. */
+export function shortDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? String(value) : date.toISOString().slice(0, 10);
+}

@@ -1,4 +1,4 @@
 {
-  "//": "The deployed pricing worker. Update after `npm run worker:deploy`; the extension's host permission and default URL are generated from this file.",
-  "url": "https://uvs-ultra-prices.example.workers.dev"
+  "//": "The deployed pricing worker. The extension's default URL and manifest host permission are generated from this file at build time.",
+  "url": "https://uvs-ultra-prices.marc-ee2.workers.dev"
 }
