@@ -83,6 +83,32 @@ body {
   margin: 2px 0 0;
 }
 
+.popup-field {
+  display: block;
+}
+
+.popup-field > span {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.popup-select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--ink);
+  font: 12px arial, sans-serif;
+}
+
+.popup-hint {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
 .popup-footer {
   display: flex;
   justify-content: space-between;
@@ -95,6 +121,23 @@ body {
 
 .popup-note {
   font-size: 10.5px;
+}
+
+.popup-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.popup-version {
+  color: var(--accent);
+  font: 10.5px ui-monospace, monospace;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.popup-version:hover {
+  text-decoration: underline;
 }
 
 .popup-service {

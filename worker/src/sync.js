@@ -7,14 +7,14 @@
  *
  * KV layout:
  *   meta            -> { schema, stamp, syncedAt, groups: { [id]: { name, count, stamp } }, products }
- *   group:<groupId> -> { name, products: [{ id, name, number, rarity, market, low }] }
+ *   group:<groupId> -> { name, products: [{ id, name, number, rarity, mid, market, low }] }
  */
 import setMap from '../../data/set-map.json';
 
 const GROUP_PREFIX = 'group:';
 const META_KEY = 'meta';
 /** Bump when the stored shape changes; every group is refetched on mismatch. */
-const SCHEMA = 2;
+const SCHEMA = 3;
 const REQUEST_GAP_MS = 150; // tcgcsv: "include a time.sleep(100ms) in your update loop"
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -60,6 +60,7 @@ function buildGroup(group, products, prices) {
       number: number ? number.value : null,
       // Used to pick a placeholder when the printing has no price.
       rarity: rarity ? rarity.value : null,
+      mid: price?.midPrice ?? null,
       market: price?.marketPrice ?? null,
       low: price?.lowPrice ?? null,
     });

@@ -1,0 +1,165 @@
+﻿
+<div class="debug">
+3 cartes<br />SELECT DISTINCT cards_frontid from (SELECT cards.frontid as cards_frontid, cards.id as cards_id FROM cards  LEFT JOIN (extension) ON (cards.id_extension = extension.id) WHERE 1 AND cards.visible = 1 AND  cards.name LIKE "%Grog%" GROUP BY cards.id  ORDER BY extension.date DESC, id_extension ASC, numero ASC) MainQuery LIMIT 0, 50</div>
+<div class="text-center">
+    <ul class="pagination pagination-sm" id="pagination-top">
+        <li><span>3 Results</span></li>
+    </ul>
+    <ul class="pagination pagination-sm">
+	<li class="disabled">
+	    <span>&laquo;</span>
+	</li>
+	<li class="active">
+	    <span>1</span>
+	</li>
+	<li class="disabled">
+	    <span>&raquo;</span>
+	</li>
+    </ul>
+</div>
+	<div class="card even">
+        <div onmouseover="preview2('cr02', '007', 'character');">
+                <div class="card_image" onclick="$(this).colorbox({'href' : 'card.php?id=11619'});">
+                        <img src="images/extensions/cr02/007-mini.jpg?20240802" class="mini_image"/>                </div>
+                <div class="card_infos">
+                                        <div class="card_title" onclick="$(this).colorbox({'href' : 'card.php?id=11619'});">
+                        <h1>Grog Strongjaw, Mighty Half-Giant</h1>
+                        <div class="card-important-info">
+                            <span class="label lc-label card-list-character">Character</span><br />
+                            Uncommon                        </div>
+                    </div>
+                    <div class="card_division cd1">
+                        Set 62 - <span title="2025-03-07"><a href="extension_pdf.php?id=123" title="Extension PDF for : Critical Role: Heroes of Exandria">Critical Role: Heroes of Exandria</a> #7</span><br />
+                        Critical Role - Block 7<br />
+                        Hero Too - Rochester Retro - Retro - Standard - Legacy<br />
+                        <!--
+                        <span class="glyphicon glyphicon-star"></span> <a href="http://www.rochesterccg.comhttps://www.rochesterccg.com/advanced_search?utf8=%E2%9C%93&search%5Bfuzzy_search%5D=%2BGrog+Strongjaw%2C+Mighty+Half-Giant&search%5Btags_name_eq%5D=&search%5Bsell_price_gte%5D=&search%5Bsell_price_lte%5D=&search%5Bbuy_price_gte%5D=&search%5Bbuy_price_lte%5D=&search%5Bin_stock%5D=0&buylist_mode=0&search%5Bcategory_ids_with_descendants%5D%5B%5D=&search%5Bcategory_ids_with_descendants%5D%5B%5D=1519&search%5Bwith_descriptor_values%5D%5B1259%5D=&search%5Bwith_descriptor_values%5D%5B1261%5D=&search%5Bwith_descriptor_values%5D%5B1262%5D=&search%5Bwith_descriptor_values%5D%5B1266%5D=&search%5Bwith_descriptor_values%5D%5B1269%5D=&search%5Bwith_descriptor_values%5D%5B1270%5D=&search%5Bwith_descriptor_values%5D%5B1493%5D=&search%5Bwith_descriptor_values%5D%5B1503%5D=&search%5Bwith_descriptor_values%5D%5B1513%5D=&search%5Bwith_descriptor_values%5D%5B1523%5D=&search%5Bwith_descriptor_values%5D%5B1533%5D=&search%5Bwith_descriptor_values%5D%5B1543%5D=&search%5Bwith_descriptor_values%5D%5B1553%5D=&search%5Bwith_descriptor_values%5D%5B1883%5D=&search%5Bwith_descriptor_values%5D%5B1893%5D=&search%5Bwith_descriptor_values%5D%5B2132%5D=&search%5Bwith_descriptor_values%5D%5B2133%5D=&search%5Bwith_descriptor_values%5D%5B2134%5D=&search%5Bwith_descriptor_values%5D%5B2135%5D=&search%5Bwith_descriptor_values%5D%5B2136%5D=&search%5Bvariants_with_identifier%5D%5B2054%5D%5B%5D=&search%5Bsort%5D=name&search%5Bdirection%5D=ascend&commit=Search&search%5Bcatalog_group_id_eq%5D=">View on RochesterCCG</a><br />
+-->
+                        <span class="glyphicon glyphicon-star"></span> <a target = '_blank' href="https://www.rochesterccg.com/advanced_search?utf8=%E2%9C%93&search%5Bfuzzy_search%5D=%2BGrog+Strongjaw%2C+Mighty+Half-Giant&search%5Btags_name_eq%5D=&search%5Bsell_price_gte%5D=&search%5Bsell_price_lte%5D=&search%5Bbuy_price_gte%5D=&search%5Bbuy_price_lte%5D=&search%5Bin_stock%5D=0&buylist_mode=0&search%5Bcategory_ids_with_descendants%5D%5B%5D=&search%5Bcategory_ids_with_descendants%5D%5B%5D=1519&search%5Bwith_descriptor_values%5D%5B1259%5D=&search%5Bwith_descriptor_values%5D%5B1261%5D=&search%5Bwith_descriptor_values%5D%5B1262%5D=&search%5Bwith_descriptor_values%5D%5B1266%5D=&search%5Bwith_descriptor_values%5D%5B1269%5D=&search%5Bwith_descriptor_values%5D%5B1270%5D=&search%5Bwith_descriptor_values%5D%5B1493%5D=&search%5Bwith_descriptor_values%5D%5B1503%5D=&search%5Bwith_descriptor_values%5D%5B1513%5D=&search%5Bwith_descriptor_values%5D%5B1523%5D=&search%5Bwith_descriptor_values%5D%5B1533%5D=&search%5Bwith_descriptor_values%5D%5B1543%5D=&search%5Bwith_descriptor_values%5D%5B1553%5D=&search%5Bwith_descriptor_values%5D%5B1883%5D=&search%5Bwith_descriptor_values%5D%5B1893%5D=&search%5Bwith_descriptor_values%5D%5B2132%5D=&search%5Bwith_descriptor_values%5D%5B2133%5D=&search%5Bwith_descriptor_values%5D%5B2134%5D=&search%5Bwith_descriptor_values%5D%5B2135%5D=&search%5Bwith_descriptor_values%5D%5B2136%5D=&search%5Bvariants_with_identifier%5D%5B2054%5D%5B%5D=&search%5Bsort%5D=name&search%5Bdirection%5D=ascend&commit=Search&search%5Bcatalog_group_id_eq%5D=">View on RochesterCCG</a><br />
+                                                    <a href="deck_with_card.php?id=11619"><span class="glyphicon glyphicon-list"></span> Decks with this card</a><br />
+                        <a href="showcard.php?id=11619"><span class="glyphicon glyphicon-arrow-right"></span> Direct Link</a>
+                    </div>
+                    <div class="card_division cd2" onclick="$(this).colorbox({'href' : 'card.php?id=11619'});">
+                        <strong>Brawler</strong> - <strong>Brute</strong> - <strong>Vox Machina</strong><br />                        If an attack deals damage, add 1 Rage counter to this card.<br />
+<br />
+<strong>Response: </strong>Before you would take damage from an unblocked attack, reduce that damage by 2 (min. 1).<br />
+<br />
+<strong>Enhance </strong>Remove 1 Rage counter from this card: Draw 1 card. Your attack gets +3 damage.<br />
+                    </div>
+                    <div class="card_division cd3" onclick="$(this).colorbox({'href' : 'card.php?id=11619'});">
+                        <img src="images/icons/death.png?20230902" alt="death" /> <img src="images/icons/earth.png?20230902" alt="earth" /> <img src="images/icons/fire.png?20230902" alt="fire" /><br />
+                        Difficulty : <br />
+                        Control : <br />
+                        Block : -<br />
+                        Attack : -<br />
+                        Hand size : 5<br />Vitality : 31<br />                    </div>
+                                    </div>
+		</div>
+            <div class="clear"></div>
+            
+    	            
+	</div>
+
+		<div class="card odd">
+        <div onmouseover="preview2('cr02', '049', 'foundation');">
+                <div class="card_image" onclick="$(this).colorbox({'href' : 'card.php?id=11712'});">
+                        <img src="images/extensions/cr02/049-mini.jpg?20240802" class="mini_image"/>                </div>
+                <div class="card_infos">
+                                        <div class="card_title" onclick="$(this).colorbox({'href' : 'card.php?id=11712'});">
+                        <h1>Soothing Grog's Rage</h1>
+                        <div class="card-important-info">
+                            <span class="label lc-label card-list-foundation">Foundation</span><br />
+                            Uncommon                        </div>
+                    </div>
+                    <div class="card_division cd1">
+                        Set 62 - <span title="2025-03-07"><a href="extension_pdf.php?id=123" title="Extension PDF for : Critical Role: Heroes of Exandria">Critical Role: Heroes of Exandria</a> #49</span><br />
+                        Critical Role - Block 7<br />
+                        Hero Too - Rochester Retro - Retro - Standard - Legacy<br />
+                        <!--
+                        <span class="glyphicon glyphicon-star"></span> <a href="http://www.rochesterccg.comhttps://www.rochesterccg.com/advanced_search?utf8=%E2%9C%93&search%5Bfuzzy_search%5D=%2BSoothing+Grog%27s+Rage&search%5Btags_name_eq%5D=&search%5Bsell_price_gte%5D=&search%5Bsell_price_lte%5D=&search%5Bbuy_price_gte%5D=&search%5Bbuy_price_lte%5D=&search%5Bin_stock%5D=0&buylist_mode=0&search%5Bcategory_ids_with_descendants%5D%5B%5D=&search%5Bcategory_ids_with_descendants%5D%5B%5D=1519&search%5Bwith_descriptor_values%5D%5B1259%5D=&search%5Bwith_descriptor_values%5D%5B1261%5D=&search%5Bwith_descriptor_values%5D%5B1262%5D=&search%5Bwith_descriptor_values%5D%5B1266%5D=&search%5Bwith_descriptor_values%5D%5B1269%5D=&search%5Bwith_descriptor_values%5D%5B1270%5D=&search%5Bwith_descriptor_values%5D%5B1493%5D=&search%5Bwith_descriptor_values%5D%5B1503%5D=&search%5Bwith_descriptor_values%5D%5B1513%5D=&search%5Bwith_descriptor_values%5D%5B1523%5D=&search%5Bwith_descriptor_values%5D%5B1533%5D=&search%5Bwith_descriptor_values%5D%5B1543%5D=&search%5Bwith_descriptor_values%5D%5B1553%5D=&search%5Bwith_descriptor_values%5D%5B1883%5D=&search%5Bwith_descriptor_values%5D%5B1893%5D=&search%5Bwith_descriptor_values%5D%5B2132%5D=&search%5Bwith_descriptor_values%5D%5B2133%5D=&search%5Bwith_descriptor_values%5D%5B2134%5D=&search%5Bwith_descriptor_values%5D%5B2135%5D=&search%5Bwith_descriptor_values%5D%5B2136%5D=&search%5Bvariants_with_identifier%5D%5B2054%5D%5B%5D=&search%5Bsort%5D=name&search%5Bdirection%5D=ascend&commit=Search&search%5Bcatalog_group_id_eq%5D=">View on RochesterCCG</a><br />
+-->
+                        <span class="glyphicon glyphicon-star"></span> <a target = '_blank' href="https://www.rochesterccg.com/advanced_search?utf8=%E2%9C%93&search%5Bfuzzy_search%5D=%2BSoothing+Grog%27s+Rage&search%5Btags_name_eq%5D=&search%5Bsell_price_gte%5D=&search%5Bsell_price_lte%5D=&search%5Bbuy_price_gte%5D=&search%5Bbuy_price_lte%5D=&search%5Bin_stock%5D=0&buylist_mode=0&search%5Bcategory_ids_with_descendants%5D%5B%5D=&search%5Bcategory_ids_with_descendants%5D%5B%5D=1519&search%5Bwith_descriptor_values%5D%5B1259%5D=&search%5Bwith_descriptor_values%5D%5B1261%5D=&search%5Bwith_descriptor_values%5D%5B1262%5D=&search%5Bwith_descriptor_values%5D%5B1266%5D=&search%5Bwith_descriptor_values%5D%5B1269%5D=&search%5Bwith_descriptor_values%5D%5B1270%5D=&search%5Bwith_descriptor_values%5D%5B1493%5D=&search%5Bwith_descriptor_values%5D%5B1503%5D=&search%5Bwith_descriptor_values%5D%5B1513%5D=&search%5Bwith_descriptor_values%5D%5B1523%5D=&search%5Bwith_descriptor_values%5D%5B1533%5D=&search%5Bwith_descriptor_values%5D%5B1543%5D=&search%5Bwith_descriptor_values%5D%5B1553%5D=&search%5Bwith_descriptor_values%5D%5B1883%5D=&search%5Bwith_descriptor_values%5D%5B1893%5D=&search%5Bwith_descriptor_values%5D%5B2132%5D=&search%5Bwith_descriptor_values%5D%5B2133%5D=&search%5Bwith_descriptor_values%5D%5B2134%5D=&search%5Bwith_descriptor_values%5D%5B2135%5D=&search%5Bwith_descriptor_values%5D%5B2136%5D=&search%5Bvariants_with_identifier%5D%5B2054%5D%5B%5D=&search%5Bsort%5D=name&search%5Bdirection%5D=ascend&commit=Search&search%5Bcatalog_group_id_eq%5D=">View on RochesterCCG</a><br />
+                                                    <a href="deck_with_card.php?id=11712"><span class="glyphicon glyphicon-list"></span> Decks with this card</a><br />
+                        <a href="showcard.php?id=11712"><span class="glyphicon glyphicon-arrow-right"></span> Direct Link</a>
+                    </div>
+                    <div class="card_division cd2" onclick="$(this).colorbox({'href' : 'card.php?id=11712'});">
+                        <strong>Spell</strong><br />                        <strong>Enhance </strong>Flip: Remove 1 counter from a rival non-character card or a rival character card with 4 or more counters on it.<br />
+<br />
+<strong>Response </strong>Flip: After you play a block, your next check to play a block gets +1.<br />
+                    </div>
+                    <div class="card_division cd3" onclick="$(this).colorbox({'href' : 'card.php?id=11712'});">
+                        <img src="images/icons/at_chaos.png?20230902" alt="at_chaos" /><br />
+                        Difficulty : 2<br />
+                        Control : 6<br />
+                        Block : +2 <img src="images/icons/blockmid.png?1" title="mid" style="vertical-align : -3px;" /><br />
+                        Attack : -<br />
+                                            </div>
+                                    </div>
+		</div>
+            <div class="clear"></div>
+            
+    	            
+	</div>
+
+		<div class="card even">
+        <div onmouseover="preview2('cr02', '190', 'attack');">
+                <div class="card_image" onclick="$(this).colorbox({'href' : 'card.php?id=11797'});">
+                        <img src="images/extensions/cr02/190-mini.jpg?20240802" class="mini_image"/>                </div>
+                <div class="card_infos">
+                                        <div class="card_title" onclick="$(this).colorbox({'href' : 'card.php?id=11797'});">
+                        <h1>Grog's Rage</h1>
+                        <div class="card-important-info">
+                            <span class="label lc-label card-list-attack">Attack</span><br />
+                            Secret Rare                        </div>
+                    </div>
+                    <div class="card_division cd1">
+                        Set 62 - <span title="2025-03-07"><a href="extension_pdf.php?id=123" title="Extension PDF for : Critical Role: Heroes of Exandria">Critical Role: Heroes of Exandria</a> #190</span><br />
+                        Critical Role - Block 7<br />
+                        Hero Too - Rochester Retro - Retro - Standard - Legacy<br />
+                        <!--
+                        <span class="glyphicon glyphicon-star"></span> <a href="http://www.rochesterccg.comhttps://www.rochesterccg.com/advanced_search?utf8=%E2%9C%93&search%5Bfuzzy_search%5D=%2BGrog%27s+Rage&search%5Btags_name_eq%5D=&search%5Bsell_price_gte%5D=&search%5Bsell_price_lte%5D=&search%5Bbuy_price_gte%5D=&search%5Bbuy_price_lte%5D=&search%5Bin_stock%5D=0&buylist_mode=0&search%5Bcategory_ids_with_descendants%5D%5B%5D=&search%5Bcategory_ids_with_descendants%5D%5B%5D=1519&search%5Bwith_descriptor_values%5D%5B1259%5D=&search%5Bwith_descriptor_values%5D%5B1261%5D=&search%5Bwith_descriptor_values%5D%5B1262%5D=&search%5Bwith_descriptor_values%5D%5B1266%5D=&search%5Bwith_descriptor_values%5D%5B1269%5D=&search%5Bwith_descriptor_values%5D%5B1270%5D=&search%5Bwith_descriptor_values%5D%5B1493%5D=&search%5Bwith_descriptor_values%5D%5B1503%5D=&search%5Bwith_descriptor_values%5D%5B1513%5D=&search%5Bwith_descriptor_values%5D%5B1523%5D=&search%5Bwith_descriptor_values%5D%5B1533%5D=&search%5Bwith_descriptor_values%5D%5B1543%5D=&search%5Bwith_descriptor_values%5D%5B1553%5D=&search%5Bwith_descriptor_values%5D%5B1883%5D=&search%5Bwith_descriptor_values%5D%5B1893%5D=&search%5Bwith_descriptor_values%5D%5B2132%5D=&search%5Bwith_descriptor_values%5D%5B2133%5D=&search%5Bwith_descriptor_values%5D%5B2134%5D=&search%5Bwith_descriptor_values%5D%5B2135%5D=&search%5Bwith_descriptor_values%5D%5B2136%5D=&search%5Bvariants_with_identifier%5D%5B2054%5D%5B%5D=&search%5Bsort%5D=name&search%5Bdirection%5D=ascend&commit=Search&search%5Bcatalog_group_id_eq%5D=">View on RochesterCCG</a><br />
+-->
+                        <span class="glyphicon glyphicon-star"></span> <a target = '_blank' href="https://www.rochesterccg.com/advanced_search?utf8=%E2%9C%93&search%5Bfuzzy_search%5D=%2BGrog%27s+Rage&search%5Btags_name_eq%5D=&search%5Bsell_price_gte%5D=&search%5Bsell_price_lte%5D=&search%5Bbuy_price_gte%5D=&search%5Bbuy_price_lte%5D=&search%5Bin_stock%5D=0&buylist_mode=0&search%5Bcategory_ids_with_descendants%5D%5B%5D=&search%5Bcategory_ids_with_descendants%5D%5B%5D=1519&search%5Bwith_descriptor_values%5D%5B1259%5D=&search%5Bwith_descriptor_values%5D%5B1261%5D=&search%5Bwith_descriptor_values%5D%5B1262%5D=&search%5Bwith_descriptor_values%5D%5B1266%5D=&search%5Bwith_descriptor_values%5D%5B1269%5D=&search%5Bwith_descriptor_values%5D%5B1270%5D=&search%5Bwith_descriptor_values%5D%5B1493%5D=&search%5Bwith_descriptor_values%5D%5B1503%5D=&search%5Bwith_descriptor_values%5D%5B1513%5D=&search%5Bwith_descriptor_values%5D%5B1523%5D=&search%5Bwith_descriptor_values%5D%5B1533%5D=&search%5Bwith_descriptor_values%5D%5B1543%5D=&search%5Bwith_descriptor_values%5D%5B1553%5D=&search%5Bwith_descriptor_values%5D%5B1883%5D=&search%5Bwith_descriptor_values%5D%5B1893%5D=&search%5Bwith_descriptor_values%5D%5B2132%5D=&search%5Bwith_descriptor_values%5D%5B2133%5D=&search%5Bwith_descriptor_values%5D%5B2134%5D=&search%5Bwith_descriptor_values%5D%5B2135%5D=&search%5Bwith_descriptor_values%5D%5B2136%5D=&search%5Bvariants_with_identifier%5D%5B2054%5D%5B%5D=&search%5Bsort%5D=name&search%5Bdirection%5D=ascend&commit=Search&search%5Bcatalog_group_id_eq%5D=">View on RochesterCCG</a><br />
+                                                    <a href="deck_with_card.php?id=11797"><span class="glyphicon glyphicon-list"></span> Decks with this card</a><br />
+                        <a href="showcard.php?id=11797"><span class="glyphicon glyphicon-arrow-right"></span> Direct Link</a>
+                    </div>
+                    <div class="card_division cd2" onclick="$(this).colorbox({'href' : 'card.php?id=11797'});">
+                        <strong>Fury</strong> - <strong><abbr title="E: Discard any number of momentum: For each momentum discarded to pay for this ability’s cost, this Powerful attack gets +X damage."><i>Powerful</i></abbr><strong></strong>: 2</strong> - <strong>Weapon</strong><br />                        <strong>Blitz </strong>Sacrifice 1 foundation: You may remove Rage counters from your character as though you were spending momentum to pay for this attack's Powerful ability.<br />
+<br />
+<strong>Blitz: </strong>Add 1 Rage counter to your character. If there are 5 or more Rage counters on your character, this attack gains Stun: 2.<br />
+                    </div>
+                    <div class="card_division cd3" onclick="$(this).colorbox({'href' : 'card.php?id=11797'});">
+                        <img src="images/icons/death.png?20230902" alt="death" /> <img src="images/icons/earth.png?20230902" alt="earth" /> <img src="images/icons/fire.png?20230902" alt="fire" /><br />
+                        Difficulty : 5<br />
+                        Control : 2<br />
+                        Block : +0 <img src="images/icons/blockmid.png?1" title="mid" style="vertical-align : -3px;" /><br />
+                        Attack : 6 <img src="images/icons/attackhigh.png?1" title="high" style="vertical-align : -3px;" /> / 6<br />
+                                            </div>
+                                    </div>
+		</div>
+            <div class="clear"></div>
+            
+    	            
+	</div>
+
+	<div class="text-center">
+    <ul class="pagination pagination-sm" id="pagination-top">
+        <li><span>3 Results</span></li>
+    </ul>
+    <ul class="pagination pagination-sm">
+	<li class="disabled">
+	    <span>&laquo;</span>
+	</li>
+	<li class="active">
+	    <span>1</span>
+	</li>
+	<li class="disabled">
+	    <span>&raquo;</span>
+	</li>
+    </ul>
+</div>
+<script>
+$(document).ready(function()
+{
+    });
+</script>

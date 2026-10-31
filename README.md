@@ -1,7 +1,8 @@
 # UVS Ultra Deck Prices
 
 A Chrome extension (Manifest V3) that shows TCGplayer prices next to every card
-on a [UVS Ultra](https://uvsultra.online) deck page and totals the deck.
+on a [UVS Ultra](https://uvsultra.online) deck page, search result and card page,
+totals the deck, and sends the priced cards to TCGplayer's Mass Entry.
 
 Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
 
@@ -9,11 +10,19 @@ Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
 
 **M4 — ready to submit to the Chrome Web Store.**
 
-- Deck pages: a price chip per card and a deck total. Cards TCGplayer cannot
-  price get a marked placeholder (`$1(?)`, `$15(?)`, `$30(?)`) by rarity.
+- Deck pages: a price chip per card, a deck total, a **Buy deck on TCGplayer**
+  button that sends only priced cards to Mass Entry, and a warning dialog listing
+  the cards TCGplayer cannot price yet.
+- Search results (`index.php`) and card pages (`showcard.php`, and the card popup
+  opened from a result or a deck row) show the card's TCGplayer price.
 - List pages (`topdecks.php`, `folder.php`, `user.php`): a total beside each
   deck card, priced only when the card scrolls near the viewport, cached per
   deck for 12 hours.
+- Prices can be shown as **Market** (default), **Mid** (listed median) or **Low**;
+  the extension popup sets the default and a deck page can override it for that
+  page only.
+- Cards TCGplayer cannot price get a marked estimate (`$1 (Est.)`,
+  `$15 (Est.)`, `$30 (Est.)`) by rarity.
 - 60 of 105 sets map to a TCGplayer group; everything else shows `n/a` instead
   of a guessed price.
 
@@ -68,14 +77,26 @@ pricing worker ── daily cron ──► tcgcsv ──► KV (12 groups)
   (variant suffixes stripped) → collector number → fuzzy. Base printings win
   over `(Alternate Art)` / `(Serial Numbered)`. Shared by the worker and the
   extension's offline fallback, so both always agree.
+- `shared/metrics.js` — the Mid/Market/Low price points and their fallbacks
+  (`mid → market → low`, and equivalents). Every total equals the chips it
+  renders.
 - `extension/src/background/sw.js` — owns the price source: 12 h quote cache,
   then the worker, then a stale cache, then the bundled snapshot.
 - `worker/src/sync.js` — pulls tcgcsv once a day into KV, trimmed to
-  `{id, name, number, market, low, url}` per product.
+  `{id, name, number, rarity, mid, market, low}` per product.
 - `extension/src/content/deck.js` — renders deck pages, and never invents a number.
+- `extension/src/content/cards.js` — prices search results (`listing_cards.php`
+  loaded into `#content`) and card pages (the colorbox fragment and
+  `showcard.php`); both print set, number and rarity, so one quote covers a page.
 - `extension/src/content/list.js` — prices deck cards on list pages lazily, two
   at a time, deduped by deck id (topdecks.php repeats the same decks across
-  sections), with a 12 h cache per deck.
+  sections), with a 12 h cache per deck and metric.
+- `extension/src/content/buy.js` — lists unpriced cards in a dialog, then opens
+  Mass Entry with only the cards that have a real price.
+- `shared/massentry.js` — splits a deck into priced/unpriced cards and builds
+  the TCGplayer Mass Entry URL from the priced ones: `qty-productId`, joined with
+  `||` and scoped to the `UniVersus` product line. Opening it loads the list into
+  TCGplayer and opens its Item Options dialog, ready for Add to Cart.
 - `tools/build-set-map.mjs` — maps every UVS set code to a TCGplayer group by
   scoring card-name overlap, and refuses ambiguous or weak matches.
 
@@ -124,24 +145,50 @@ npm run preview
 ## Shipping a build
 
 ```bash
-npm test            # 52 tests, no network
-npm run build       # dist/
-npm run package     # dist.zip, manifest at the root, version from package.json
+npm test            # 95 tests, no network
+npm run build       # dist/, plus dist/version.txt
+npm run package     # dist-<label>.zip + dist.zip, manifest at the root
 ```
 
 `npm run package` refuses to build if `config/worker.json` still holds the
-placeholder URL or if the manifest version disagrees with `package.json`.
+placeholder URL, if `VERSION.txt` and `package.json` disagree, or if the manifest
+version does not match `VERSION.txt`. It writes `dist-<version>.<sha>.zip` for
+manual installs and GitHub releases, and `dist.zip` as the stable store-upload
+alias.
 
 `npm run screenshots` regenerates the three store images (1280×800) from the live
 site using the built extension.
 
-## Placeholder prices
+### Versioning and releases
+
+`VERSION.txt` is the SemVer source of truth. The build appends the current commit,
+so `dist/version.txt`, the popup and the release tag all name the same build:
+
+```text
+VERSION.txt          1.1.0
+build label          1.1.0.<7-char-sha>
+popup / dist file    v1.1.0.<sha> / dist-1.1.0.<sha>.zip
+git tag              v1.1.0.<sha>
+```
+
+Tagging a release (the working tree must be clean):
+
+```bash
+npm run release -- --title "Prices everywhere and safer Mass Entry"
+```
+
+That pushes the tag; CI builds `dist-<label>.zip`, attaches it to the GitHub
+release, uploads `dist.zip` to the Chrome Web Store when the store secrets are
+configured, and deploys the pricing worker. The popup links its version label to
+the commit on GitHub.
+
+## Estimated prices
 
 Cards TCGplayer has no listing for would otherwise be invisible in the total — a
-presale deck would read as costing $190 when most of it is unknown. They get a
-placeholder instead, always marked with `(?)`:
+presale deck would read as costing $190 when most of it is unknown. They get an
+estimate instead, always marked `(Est.)`:
 
-| Rarity | Placeholder |
+| Rarity | Estimate |
 | --- | --- |
 | common, uncommon, rare | $1 |
 | ultra rare | $15 |
@@ -149,10 +196,22 @@ placeholder instead, always marked with `(?)`:
 
 - Rarity comes from the TCGplayer product when one exists, otherwise from the
   card's page on UVS Ultra (one small request per unpriced card, cached for good).
-- A total that includes placeholders is prefixed `≈` and states how much of it is
+- A total that includes estimates is prefixed `≈` and states how much of it is
   estimated; a deck with cards whose rarity is still unknown shows `≥`.
 - The table lives in `shared/rarity.js` (`PLACEHOLDER_VALUES`) — one place to
   change the numbers.
+
+## Buying a deck
+
+**Buy deck on TCGplayer** in the deck summary opens
+`tcgplayer.com/massentry` with the cards that have a real TCGplayer price. Cards
+the catalog cannot price — presale, not carried, or listed without a price — are
+listed in a dialog first, with their quantity and the reason, and are **not** sent.
+
+Mass Entry opens its Item Options dialog on load; choose printings and condition,
+then Add to Cart. It is a link, not an API: the extension never adds anything to a
+cart by itself. The line under the button states how many cards are included and
+how many were left out.
 
 ## Data
 
@@ -160,6 +219,7 @@ placeholder instead, always marked with `(?)`:
 | --- | --- |
 | `data/set-map.json` | UVS set code → TCGplayer group, scored by card-name overlap (`npm run set-map`) |
 | `data/prices.snapshot.json` | Offline fallback, trimmed products + prices for the mapped sets (`npm run prices`) |
+| `VERSION.txt` | SemVer core (`1.1.0`); the build label is `1.1.0.<sha>`, the tag `v1.1.0.<sha>` |
 | `config/worker.json` | The deployed pricing worker URL (single source for the manifest and the client) |
 | `fixtures/` | Saved pages so tests never touch the network (`npm run fixtures`) |
 | `store/screenshots/` | Chrome Web Store screenshots (`npm run screenshots`) |
@@ -171,15 +231,18 @@ npm run fixtures && npm run set-map && npm run prices
 npm test
 ```
 
-`npm test` covers the parser, matcher, totals, the worker's routes and the
-sync (41 tests, no network). `npm run coverage` prints per-deck coverage and
-every unpriced card with its reason — the fastest way to spot a matcher
-regression.
+`npm test` covers the parser, matcher, totals, price metrics, Mass Entry links,
+the worker's routes and the sync (95 tests, no network). `npm run coverage` prints
+per-deck coverage and every unpriced card with its reason — the fastest way to
+spot a matcher regression.
 
 ## Known limits
 
 - **Presale sets have no singles on TCGplayer.** The Fairy Tail deck renders
-  `n/a` for most rows; that is correct, not a bug.
+  `n/a` for most rows; that is correct, not a bug, and those cards are left out of
+  Mass Entry.
+- Prices are a once-a-day tcgcsv snapshot. Any displayed number can differ from
+  the live price on TCGplayer; the popup says so.
 - Sets TCGplayer does not carry (some UFS-era and JP-only printings) have no
   mapping and show `n/a`.
 - The worker syncs only the groups `data/set-map.json` points at (47 today).

@@ -1,8 +1,9 @@
 # UVS Ultra Deck Prices — Chrome Extension Plan
 
-Status: **planning complete, implementation not started**
-Decisions locked: prices on **deck page + top decks**, **own proxy worker** for pricing data,
-**market price** as the headline number, **public Chrome Web Store** distribution.
+Status: **v1.0 shipped; v1.1 plan in [`PLAN-v1.1.md`](PLAN-v1.1.md)**
+Decisions locked: prices on **deck page + top decks + search/card pages**, **own proxy worker**
+for pricing data, **market price** as the default headline (Mid/Low selectable), **public Chrome
+Web Store** distribution.
 
 ---
 

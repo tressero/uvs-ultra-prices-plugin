@@ -28,6 +28,9 @@ const state = await page.evaluate(() => ({
   state: document.querySelector('#service-state')?.textContent,
   host: document.querySelector('#service-host')?.textContent,
   detail: document.querySelector('#service-detail')?.textContent,
+  metric: document.querySelector('#metric')?.value,
+  version: document.querySelector('#app-version')?.textContent,
+  versionHref: document.querySelector('#app-version')?.getAttribute('href'),
 }));
 console.log('extension id:', extensionId);
 console.log(JSON.stringify(state, null, 2));

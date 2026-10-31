@@ -13,6 +13,7 @@
  */
 import setMap from '../../data/set-map.json';
 import { priceDeck } from '../../shared/match.js';
+import { normalizeMetric } from '../../shared/metrics.js';
 import { error, HttpError, json, preflight, readJson, secureEquals } from './http.js';
 import { groupKey, mappedGroupIds, readMeta, syncCatalog } from './sync.js';
 import { homePage, privacyPage } from './pages.js';
@@ -55,7 +56,7 @@ async function loadGroups(env, groupIds) {
 async function handleQuote(request, env, ctx) {
   const body = await readJson(request);
   const cards = validateCards(body?.cards);
-  const metric = body?.metric === 'low' ? 'low' : 'market';
+  const metric = normalizeMetric(body?.metric);
 
   const meta = await readMeta(env);
   const needed = [

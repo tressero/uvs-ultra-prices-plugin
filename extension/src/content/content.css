@@ -176,3 +176,201 @@ a.uvsp-chip.uvsp-chip--est:focus {
   color: #888;
   font-weight: 400;
 }
+
+/* --- search results: a chip inside the right-aligned info block --------- */
+
+.uvsp-chip--inline {
+  float: none;
+  display: inline-block;
+  margin: 0 0 0 6px;
+  vertical-align: middle;
+}
+
+/* --- card pages (colorbox and showcard.php): a price line under the set --- */
+
+.uvsp-cardprice {
+  margin-top: 6px;
+}
+
+.uvsp-cardprice-label {
+  margin-right: 5px;
+  color: #555;
+  font: 700 10px/16px arial, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.uvsp-cardprice .uvsp-chip {
+  float: none;
+  display: inline-block;
+  margin: 0;
+}
+
+/* --- deck summary: buy the whole deck through TCGplayer Mass Entry ------ */
+
+.uvsp-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.uvsp-buy {
+  display: inline-block;
+  padding: 4px 11px;
+  border: 0;
+  border-radius: 4px;
+  background: #2f7d32;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+  color: #fff;
+  font: 700 12px/18px arial, sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.uvsp-buy:hover,
+.uvsp-buy:focus {
+  background: #256428;
+  color: #fff;
+  text-decoration: none;
+}
+
+.uvsp-buy-note {
+  font-size: 11px;
+  color: #666;
+}
+
+/* --- deck panel: page-only price basis ---------------------------------- */
+
+.uvsp-metric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  color: #555;
+  font-size: 11px;
+}
+
+.uvsp-metric-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.uvsp-metric-select {
+  padding: 1px 4px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  background: #fff;
+  color: #222;
+  font: 11px/16px arial, sans-serif;
+}
+
+.uvsp-metric-note {
+  color: #777;
+  font-size: 10.5px;
+  font-style: italic;
+}
+
+/* --- Mass Entry guard dialog -------------------------------------------- */
+
+.uvsp-buy-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.uvsp-buy-dialog {
+  width: min(560px, 100%);
+  max-height: 80vh;
+  overflow: auto;
+  padding: 16px 18px;
+  border-radius: 6px;
+  background: #f7f7f7;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  color: #222;
+  font: 13px/1.5 arial, sans-serif;
+}
+
+.uvsp-buy-title {
+  margin: 0 0 6px;
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.uvsp-buy-intro {
+  margin: 0 0 10px;
+  color: #444;
+}
+
+.uvsp-buy-list {
+  max-height: 40vh;
+  margin: 0 0 10px;
+  padding: 0;
+  overflow: auto;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  list-style: none;
+}
+
+.uvsp-buy-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+.uvsp-buy-list li:last-child {
+  border-bottom: 0;
+}
+
+.uvsp-buy-card {
+  display: block;
+  font-weight: 600;
+}
+
+.uvsp-buy-reason {
+  display: block;
+  color: #777;
+  font-size: 11px;
+}
+
+.uvsp-buy-summary {
+  margin: 0 0 12px;
+  color: #555;
+  font-size: 12px;
+}
+
+.uvsp-buy-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.uvsp-buy-cancel,
+.uvsp-buy-go {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font: 700 12px/18px arial, sans-serif;
+  cursor: pointer;
+}
+
+.uvsp-buy-cancel {
+  border: 1px solid #bbb;
+  background: #fff;
+  color: #333;
+}
+
+.uvsp-buy-go {
+  border: 1px solid #2f7d32;
+  background: #2f7d32;
+  color: #fff;
+}

@@ -18,6 +18,8 @@ import { loadSettings } from '../shared/settings.js';
 const QUOTE_TTL_MS = 12 * 60 * 60 * 1000;
 const INDEX_KEY = 'quoteIndex';
 const MAX_CACHED_QUOTES = 60;
+/** Bump when the quote shape changes so old cached payloads are not reused. */
+const QUOTE_CACHE_VERSION = 'v2';
 
 let catalog = null;
 
@@ -86,8 +88,8 @@ async function quote(message) {
   // Deck-list rows quote the same deck repeatedly; keying on the deck id means
   // the card list never has to be hashed, and a re-sort does not re-request.
   const key = message.deckId
-    ? `quote:deck:${message.deckId}:${metric}`
-    : `quote:${await sha256Hex(JSON.stringify({ url, metric, cards }))}`;
+    ? `quote:${QUOTE_CACHE_VERSION}:deck:${message.deckId}:${metric}`
+    : `quote:${QUOTE_CACHE_VERSION}:${await sha256Hex(JSON.stringify({ url, metric, cards }))}`;
 
   const cached = await readCache(key);
   if (cached && Date.now() - cached.at < QUOTE_TTL_MS) {

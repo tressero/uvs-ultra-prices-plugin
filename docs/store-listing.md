@@ -8,7 +8,7 @@ during the review form.
 | Field | Value |
 | --- | --- |
 | Name | UVS Ultra Deck Prices |
-| Short description (≤132 chars) | See TCGplayer prices on every card in a UVS Ultra deck, plus a total for the deck and for every deck in a list. |
+| Short description (≤132 chars) | See TCGplayer prices on UVS Ultra decks, search results and card pages, plus a total for every deck. |
 | Category | Shopping |
 | Language | English |
 | Homepage URL | https://uvs-ultra-prices.marc-ee2.workers.dev |
@@ -21,27 +21,35 @@ during the review form.
 UVS Ultra Deck Prices adds TCGplayer prices to uvsultra.online.
 
 Open any deck and every card gets a price next to it, with a total for the deck at
-the top. Open Top Decks, a folder, or a player's deck list and each deck shows what
-it costs before you click it.
+the top. "Buy deck on TCGplayer" fills TCGplayer's Mass Entry with the priced
+cards and first shows which cards TCGplayer cannot price yet, so nothing is added
+silently. Search for cards and each result shows its price too; open a card and
+the price is there as well. Open Top Decks, a folder, or a player's deck list and
+each deck shows what it costs before you click it.
 
 HOW IT WORKS
 • Prices come from TCGplayer's public catalog, refreshed daily.
+• Choose Market (recent sold prices), Mid (the middle of current listings) or Low
+  (the cheapest listing). Market is the default; the extension popup sets it for
+  every page, and a deck page can override it for that page only.
 • Cards are matched by set and collector number first, then by name, and the plain
   printing is always preferred over alternate art or serial-numbered versions.
 • Decks are priced only as you scroll to them, and results are cached for 12 hours,
   so browsing stays fast.
 
 HONEST NUMBERS
-• A card with no TCGplayer listing gets a placeholder based on its rarity — $1 for
-  common, uncommon or rare, $15 for ultra rare, $30 for secret rare — always shown
-  with a "(?)" so it is never mistaken for a real price.
-• A deck total that includes placeholders starts with "≈" and says how much of it
-  is estimated. A total with cards still unpriced starts with "≥" instead, so a
-  floor is never presented as the whole picture.
+• A card with no TCGplayer listing gets an estimate based on its rarity — $1 for
+  common, uncommon or rare, $15 for ultra rare, $30 for secret rare — always marked
+  "(Est.)" so it is never mistaken for a real price.
+• A deck total that includes estimates starts with "≈" and says how much of it is
+  estimated. A total with cards still unpriced starts with "≥" instead, so a floor
+  is never presented as the whole picture.
+• Prices are a once-a-day cached snapshot; they can differ from the live price on
+  TCGplayer after you click through.
 • Nothing is hidden: every card says where its number came from.
 
 PRIVACY
-No accounts, no analytics, no ads. The deck you are viewing is sent to the
+No accounts, no analytics, no ads. The cards you are viewing are sent to the
 extension's pricing service to look up prices and nothing else is collected. Full
 policy: https://uvs-ultra-prices.marc-ee2.workers.dev/privacy
 
@@ -52,7 +60,7 @@ always confirm on TCGplayer before buying.
 
 ## Single purpose
 
-> Show TCGplayer prices on UVS Ultra deck pages and deck lists.
+> Show TCGplayer prices on UVS Ultra pages and link a deck to TCGplayer's Mass Entry.
 
 ## Permission justifications
 
@@ -60,14 +68,14 @@ always confirm on TCGplayer before buying.
 re-request them, and remembers the user's price-metric choice (market or lowest).
 
 **Host permission `https://uvsultra.online/*`** — the extension only works on this
-site. It reads the cards of the deck the user is viewing and, for list pages (Top
-Decks, folders, player pages), fetches that site's own `deck_card_list.php` fragment
-for the decks being displayed so it can total them. Without the permission the
-extension cannot know which cards a deck contains.
+site. It reads the cards shown on the deck, search and card pages the user is
+viewing and, for list pages (Top Decks, folders, player pages), fetches that site's
+own `deck_card_list.php` fragment for the decks being displayed so it can total
+them. Without the permission the extension cannot know which cards a deck contains.
 
 **Host permission `https://uvs-ultra-prices.marc-ee2.workers.dev/*`** — sends the
-card list of the deck being viewed to the extension's own pricing service and gets
-prices back. This is the only network destination.
+cards being viewed to the extension's own pricing service and gets prices back.
+This is the only network destination.
 
 No other permissions are requested: no tabs, no scripting, no cookies, no web
 request interception.
@@ -82,9 +90,9 @@ request interception.
 | Uses or transfers data for purposes unrelated to the single purpose | No |
 | Uses or transfers data to determine creditworthiness | No |
 
-Disclosure to include in the listing: the card list of the deck being viewed is sent
-to the extension's pricing service (a Cloudflare Worker) to look up prices. No
-identifiers are attached.
+Disclosure to include in the listing: the cards being viewed are sent to the
+extension's pricing service (a Cloudflare Worker) to look up prices. No identifiers
+are attached.
 
 ## Remote code
 

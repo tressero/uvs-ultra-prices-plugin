@@ -15,6 +15,7 @@
  * both at `7/211`.
  */
 import { baseName, collectorNumberInt, editDistance, namesMatch, normalizeName } from './text.js';
+import { METRICS, METRIC_FIELD, normalizeMetric, unitPrice } from './metrics.js';
 
 export const CONFIDENCE = {
   EXACT: 'exact', // name matched, exactly one candidate
@@ -117,56 +118,44 @@ export function resolveCard(card, catalog) {
 }
 
 /**
- * Pick the number to show for a card.
- *
- * TCGplayer often has a low price but no market price (thin listings). Falling
- * back keeps the card priced instead of showing "—" next to a real listing.
- */
-function unitPrice(match, metric) {
-  if (!match) return { unit: null, source: null };
-  const market = positive(match.market);
-  const low = positive(match.low);
-  if (metric === 'low') {
-    if (low != null) return { unit: low, source: 'low' };
-    if (market != null) return { unit: market, source: 'market' };
-  } else {
-    if (market != null) return { unit: market, source: 'market' };
-    if (low != null) return { unit: low, source: 'low' };
-  }
-  return { unit: null, source: null };
-}
-
-/**
  * Price a deck.
+ *
+ * Every metric gets its own total so the panel can show the alternatives. A
+ * card with only one of the three prices still contributes to all three totals
+ * through the fallback in `unitPrice`, matching what each chip would show.
  *
  * @param cards array of parsed cards
  * @param catalog {{ setMap, groups }}
- * @param options {{ metric?: 'market'|'low' }}
+ * @param options {{ metric?: 'mid'|'market'|'low' }}
  */
 export function priceDeck(cards, catalog, options = {}) {
-  const metric = options.metric === 'low' ? 'low' : 'market';
+  const metric = normalizeMetric(options.metric);
 
   const items = cards.map((card) => {
     const { match, confidence, reason } = resolveCard(card, catalog);
-    const { unit, source } = unitPrice(match, metric);
+    const units = {};
+    for (const name of METRICS) units[name] = unitPrice(match, name);
+    const selected = units[metric];
     const hasProduct = Boolean(match);
     return {
       card,
       match,
       confidence,
-      reason: hasProduct && unit == null ? REASON.NO_PRICE : reason,
-      unit,
-      unitSource: source,
-      /** Priced from the other metric because this one has no value. */
-      estimated: unit != null && source !== metric,
-      line: unit == null ? null : Math.round(unit * card.qty * 100) / 100,
-      marketUnit: match ? positive(match.market) : null,
-      lowUnit: match ? positive(match.low) : null,
+      reason: hasProduct && METRICS.every((name) => units[name].unit == null) ? REASON.NO_PRICE : reason,
+      unit: selected.unit,
+      unitSource: selected.source,
+      /** Priced from a fallback field because the selected metric has no value. */
+      estimated: selected.unit != null && selected.source !== METRIC_FIELD[metric],
+      line: selected.unit == null ? null : Math.round(selected.unit * card.qty * 100) / 100,
+      units,
+      midUnit: units.mid.unit,
+      marketUnit: units.market.unit,
+      lowUnit: units.low.unit,
     };
   });
 
-  const other = metric === 'market' ? 'low' : 'market';
   const totals = {
+    mid: 0,
     market: 0,
     low: 0,
     pricedCards: 0,
@@ -183,16 +172,16 @@ export function priceDeck(cards, catalog, options = {}) {
       totals.unpricedQty += item.card.qty;
       continue;
     }
-    // The headline must equal the sum of the chips the user can see.
-    totals[metric] += item.line;
-    const otherUnit = metric === 'market' ? item.lowUnit : item.marketUnit;
-    totals[other] += (otherUnit ?? item.unit) * item.card.qty;
+    // Every total equals the sum of the chips that metric would render.
+    for (const name of METRICS) {
+      const value = item.units[name].unit;
+      if (value != null) totals[name] += value * item.card.qty;
+    }
     totals.pricedCards += 1;
     if (item.estimated) totals.estimatedCards += 1;
   }
 
-  totals.market = Math.round(totals.market * 100) / 100;
-  totals.low = Math.round(totals.low * 100) / 100;
+  for (const name of METRICS) totals[name] = Math.round(totals[name] * 100) / 100;
   totals.metric = metric;
   totals.complete = totals.unpricedCards === 0;
   totals.coverage = totals.pricedCards / (items.length || 1);

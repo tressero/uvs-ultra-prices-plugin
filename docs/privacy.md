@@ -8,9 +8,10 @@ what it sends, where, and what is kept.
 
 ## What the extension does with your data
 
-**The deck you are looking at.** When you open a deck page or a deck list, the
-extension reads the cards on that page (card names, set, collector number and
-quantity) and sends that list to its pricing service to look up prices:
+**The cards you are looking at.** When you open a deck page, a deck list, a
+search result or a card page, the extension reads the cards shown there (card
+names, set, collector number and quantity) and sends that list to its pricing
+service to look up prices:
 
 ```
 https://uvs-ultra-prices.marc-ee2.workers.dev
@@ -27,9 +28,13 @@ your device and is cleared when you uninstall the extension.
 
 - No accounts, sign-in, or personal information.
 - No analytics, telemetry, crash reporting, advertising, or tracking pixels.
-- No reading of pages other than `uvsultra.online` deck pages and deck lists.
+- No reading of pages other than `uvsultra.online` deck, deck-list, search and
+  card pages.
 - No selling, sharing, or transferring of data to third parties.
 - No remote code: the extension downloads price data only, never scripts.
+- The "Buy deck on TCGplayer" button is an ordinary link. The extension sends no
+  data to TCGplayer; your browser opens TCGplayer's Mass Entry page with the card
+  list in the URL only when you click it.
 
 ## The pricing service
 

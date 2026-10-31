@@ -3,137 +3,33 @@
  *
  * Pricing happens in the background service worker; this script parses the DOM,
  * asks for prices, and renders. Cards TCGplayer has no price for get a clearly
- * marked placeholder based on their rarity, fetched from the card's page.
+ * marked estimate based on their rarity, fetched from the card's page.
  */
 import { parseDeckCards, DECK_CARD_SELECTOR } from '../shared/parse.js';
 import { loadSettings, onSettingsChanged } from '../shared/settings.js';
-import { money, confidenceLabel, productUrl, shortDate } from '../shared/format.js';
-import { placeholderFor } from '../../../shared/rarity.js';
+import { money, moneyWhole, shortDate } from '../shared/format.js';
+import { requestQuote } from '../shared/quote.js';
 import { estimateTotals, needsRarity } from '../../../shared/estimate.js';
+import { selectForMassEntry } from '../../../shared/massentry.js';
+import { FIELD_LABEL, METRICS, METRIC_LABEL, normalizeMetric } from '../../../shared/metrics.js';
+import { chipFor, CHIP_CLASS } from './chip.js';
+import { startBuyFlow } from './buy.js';
 import { resolveRarities } from './rarities.js';
 
-const CHIP_CLASS = 'uvsp-chip';
 const PANEL_ID = 'uvsp-panel';
+
+/** Page-only metric choice. Not persisted; a reload returns to the setting. */
+let metricOverride = null;
+
+/** Guards against a slow quote for the previous metric repainting the page. */
+let renderToken = 0;
 
 /** Rarities resolved this page load, by UVS card id. */
 const placeholders = new Map();
 
-/** Plain object for messaging: DOM nodes cannot cross the runtime boundary. */
-function serialize(cards) {
-  return cards.map(({ element, ...rest }) => rest);
-}
-
-async function requestQuote(cards, metric) {
-  const plain = serialize(cards);
-
-  if (typeof chrome !== 'undefined' && chrome.runtime?.id) {
-    try {
-      const response = await chrome.runtime.sendMessage({ type: 'quote', cards: plain, metric });
-      if (response?.ok) return response;
-      console.warn('[uvsp] quote failed:', response?.error);
-    } catch (error) {
-      console.warn('[uvsp] worker unreachable:', error);
-    }
-  }
-
-  // Dev/preview fallback: price in-page against the bundled snapshot.
-  if (__DEV__) {
-    const [{ priceDeck }, { loadBundledCatalog }] = await Promise.all([
-      import('../../../shared/match.js'),
-      import('../shared/catalog.js'),
-    ]);
-    const catalog = await loadBundledCatalog();
-    return { ok: true, ...priceDeck(plain, catalog, { metric }), updatedAt: catalog.updatedAt };
-  }
-  return { ok: false, error: 'no price source' };
-}
-
-function tcgSearchUrl(name) {
-  return `https://www.tcgplayer.com/search/universus/product?q=${encodeURIComponent(name)}`;
-}
-
-const REASON_TEXT = {
-  'set-not-mapped': 'This set has no TCGplayer singles yet (presale or not carried)',
-  'group-missing': 'No TCGplayer data loaded for this set',
-  'no-product': 'Not found on TCGplayer',
-  'no-price': 'Listed on TCGplayer, but with no price',
-};
-
-/** Placeholder value for an unpriced card, or null when we have no rarity. */
-function placeholderValue(item) {
-  if (item.unit != null) return null;
-  if (item.match?.rarity) return placeholderFor(item.match.rarity);
-  const known = placeholders.get(item.card.cardId);
-  return known ? placeholderFor(known) : null;
-}
-
+/** Placeholder rarity for an unpriced card, or null when we have none. */
 function placeholderRarity(item) {
   return item.match?.rarity ?? placeholders.get(item.card.cardId) ?? null;
-}
-
-function chipFor(item, metric) {
-  // Matched and priced: a real number, linked to the product page.
-  if (item.unit != null) {
-    const chip = document.createElement('a');
-    chip.className = CHIP_CLASS;
-    chip.href = productUrl(item.match);
-    chip.target = '_blank';
-    chip.rel = 'noopener noreferrer';
-    chip.textContent = money(item.unit);
-
-    const title = [`${item.match.name} — TCGplayer`];
-    title.push(`market ${money(item.match.market)}`, `low ${money(item.match.low)}`);
-    if (item.estimated) {
-      title.push(metric === 'market' ? 'no market price, showing lowest' : 'no low price, showing market');
-    }
-    if (item.confidence !== 'exact') title.push(`match: ${confidenceLabel(item.confidence)}`);
-    chip.title = title.filter(Boolean).join(' · ');
-
-    if (item.confidence === 'fuzzy' || item.confidence === 'number') {
-      chip.classList.add('uvsp-chip--unsure');
-    }
-    return chip;
-  }
-
-  const link = item.match?.id ? productUrl(item.match) : null;
-  const searchable = item.reason !== 'set-not-mapped';
-  const rarity = placeholderRarity(item);
-  const value = placeholderValue(item);
-
-  // No price, but we know the rarity: show a placeholder, marked as one.
-  if (value != null) {
-    const chip = document.createElement('a');
-    chip.className = `${CHIP_CLASS} uvsp-chip--est`;
-    chip.textContent = `${money(value)}(?)`;
-    chip.href = link ?? tcgSearchUrl(item.card.name);
-    chip.target = '_blank';
-    chip.rel = 'noopener noreferrer';
-    chip.title = [
-      `Placeholder ${money(value)} — no TCGplayer price`,
-      `${rarity} · ${REASON_TEXT[item.reason] ?? 'not listed'}`,
-      'Click to check TCGplayer',
-    ].join(' · ');
-    return chip;
-  }
-
-  // Matched but unpriced, or not matched at all, and no rarity known yet.
-  const chip = document.createElement(link || searchable ? 'a' : 'span');
-  chip.className = `${CHIP_CLASS} uvsp-chip--none`;
-  chip.textContent = 'n/a';
-  chip.title = link
-    ? `${item.match.name} — ${REASON_TEXT[item.reason] ?? 'no price'}`
-    : `${REASON_TEXT[item.reason] ?? 'No TCGplayer listing found'}`;
-  if (link) {
-    chip.href = link;
-  } else if (searchable) {
-    chip.href = tcgSearchUrl(item.card.name);
-    chip.title += ' — search TCGplayer';
-  }
-  if (chip.tagName === 'A') {
-    chip.target = '_blank';
-    chip.rel = 'noopener noreferrer';
-  }
-  return chip;
 }
 
 function noteLine(text, variant) {
@@ -143,6 +39,69 @@ function noteLine(text, variant) {
   return note;
 }
 
+/**
+ * "Buy deck on TCGplayer": opens Mass Entry with only the cards that have a real
+ * price. Missing cards are listed in a dialog first.
+ */
+function buyAction(items, totalCards) {
+  const { included, excluded } = selectForMassEntry(items);
+  const includedCopies = included.reduce((sum, item) => sum + (Number(item.card?.qty) || 1), 0);
+
+  const row = document.createElement('div');
+  row.className = 'uvsp-panel-actions';
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'uvsp-buy';
+  button.textContent = 'Buy deck on TCGplayer';
+  button.title = includedCopies
+    ? `Opens TCGplayer Mass Entry with ${includedCopies} priced card${includedCopies === 1 ? '' : 's'} — press Add to Cart there.`
+    : 'No card in this deck has a TCGplayer price yet.';
+  button.addEventListener('click', () => startBuyFlow(items));
+
+  const note = document.createElement('span');
+  note.className = 'uvsp-buy-note';
+  note.textContent = excluded.length
+    ? `Mass Entry · ${includedCopies} of ${totalCards} cards · ${excluded.length} left out.`
+    : `Mass Entry · ${totalCards} card${totalCards === 1 ? '' : 's'} — press Add to Cart there.`;
+
+  row.append(button, note);
+  return row;
+}
+
+/** Page-only metric selector. Changing it never writes the saved setting. */
+function metricRow(selected) {
+  const row = document.createElement('div');
+  row.className = 'uvsp-metric';
+
+  const label = document.createElement('label');
+  label.className = 'uvsp-metric-label';
+  label.append('Price ');
+
+  const select = document.createElement('select');
+  select.className = 'uvsp-metric-select';
+  select.title = 'Changes this page only. Set your default in the extension popup.';
+  for (const metric of METRICS) {
+    const option = document.createElement('option');
+    option.value = metric;
+    option.textContent = METRIC_LABEL[metric];
+    select.append(option);
+  }
+  select.value = selected;
+  select.addEventListener('change', () => {
+    metricOverride = normalizeMetric(select.value);
+    render().catch((error) => console.warn('[uvsp] metric change failed:', error));
+  });
+
+  label.append(select);
+  const note = document.createElement('span');
+  note.className = 'uvsp-metric-note';
+  note.textContent = 'This page only';
+
+  row.append(label, note);
+  return row;
+}
+
 function renderPanel(quote, items, uniqueCards, metric, settled) {
   const existing = document.getElementById(PANEL_ID);
   const panel = existing ?? document.createElement('div');
@@ -150,12 +109,13 @@ function renderPanel(quote, items, uniqueCards, metric, settled) {
   panel.className = 'uvsp-panel';
   panel.replaceChildren();
 
+  const selected = normalizeMetric(metric);
+  const others = METRICS.filter((name) => name !== selected);
   const { totals } = quote;
-  const other = metric === 'market' ? 'low' : 'market';
   const priced = totals.pricedCards;
   const est = estimateTotals(items, {
     rarityFor: (item) => item.match?.rarity ?? placeholders.get(item.card.cardId) ?? null,
-    realTotal: totals[metric] ?? 0,
+    realTotal: totals[selected] ?? totals.market ?? 0,
   });
   const { estimated, estimatedCards, estimatedQty, unknownCards, unknownQty, combined, realTotal } = est;
 
@@ -164,7 +124,7 @@ function renderPanel(quote, items, uniqueCards, metric, settled) {
 
   const label = document.createElement('span');
   label.className = 'uvsp-label';
-  label.textContent = metric === 'low' ? 'TCGplayer low' : 'TCGplayer market';
+  label.textContent = `TCGplayer ${METRIC_LABEL[selected]}`;
   const pending = unknownCards > 0 && !settled;
   const estimateReady = estimated > 0 && settled;
 
@@ -182,25 +142,29 @@ function renderPanel(quote, items, uniqueCards, metric, settled) {
   const sub = document.createElement('span');
   sub.className = 'uvsp-sub';
   if (estimateReady) {
-    sub.textContent = `TCGplayer ${money(realTotal)} + ${money(estimated)} placeholder`;
+    sub.textContent = `TCGplayer ${money(realTotal)} + ${moneyWhole(estimated)} estimate`;
   } else if (pending) {
     sub.textContent = `checking rarity for ${unknownCards} unpriced card${unknownCards === 1 ? '' : 's'}…`;
   } else if (!priced) {
     sub.textContent = 'no prices';
   } else if (totals.complete) {
-    sub.textContent = `${other} ${money(totals[other])}`;
+    sub.textContent = others.map((name) => `${METRIC_LABEL[name]} ${money(totals[name])}`).join(' · ');
   } else {
     sub.textContent = `${priced} of ${uniqueCards} cards priced`;
   }
 
   headline.append(label, total, sub);
   panel.append(headline);
+  panel.append(metricRow(selected));
+
+  const buy = buyAction(items, totals.totalCards);
+  if (buy) panel.append(buy);
 
   if (estimateReady) {
     panel.append(
       noteLine(
         `${estimatedCards} card${estimatedCards === 1 ? '' : 's'} (${estimatedQty} cop` +
-          `${estimatedQty === 1 ? 'y' : 'ies'}) had no TCGplayer price and used a placeholder: ` +
+          `${estimatedQty === 1 ? 'y' : 'ies'}) had no TCGplayer price and used an estimate: ` +
           `common/uncommon/rare $1, ultra rare $15, secret rare $30.`,
         'estimate',
       ),
@@ -223,10 +187,18 @@ function renderPanel(quote, items, uniqueCards, metric, settled) {
   }
 
   if (totals.estimatedCards) {
+    const sources = [
+      ...new Set(
+        items
+          .filter((item) => item.estimated)
+          .map((item) => FIELD_LABEL[item.unitSource])
+          .filter(Boolean),
+      ),
+    ];
     panel.append(
       noteLine(
         `${totals.estimatedCards} card${totals.estimatedCards === 1 ? '' : 's'} ` +
-          `used ${other === 'low' ? 'lowest listing' : 'market price'} (no ${metric} price).`,
+          `used ${sources.join(' or ') || 'a fallback price'} (no ${METRIC_LABEL[selected]} price).`,
       ),
     );
   }
@@ -261,7 +233,7 @@ function paint(quote, cards, settings, metric, settled = true) {
     if (!card) return;
     card.element.querySelector(`.${CHIP_CLASS}`)?.remove();
     if (item.unit == null && !settings.showUnmatched) return;
-    card.element.append(chipFor(item, metric));
+    card.element.append(chipFor(item, metric, { rarity: placeholderRarity(item) }));
   });
 
   renderPanel({ ...quote, hint: hintFor(quote.items) }, quote.items, cards.length, metric, settled);
@@ -273,17 +245,18 @@ function paint(quote, cards, settings, metric, settled = true) {
 }
 
 /**
- * Ask for prices, then fill in placeholders for whatever has no listing.
+ * Ask for prices, then fill in estimates for whatever has no listing.
  * Rarities arrive asynchronously, so the page repaints instead of re-quoting.
  */
 async function render() {
   const cards = parseDeckCards(document);
   if (!cards.length) return;
 
+  const token = ++renderToken;
   const settings = await loadSettings();
-  const metric = settings.metric === 'low' ? 'low' : 'market';
+  const metric = metricOverride ?? normalizeMetric(settings.metric);
   const quote = await requestQuote(cards, metric);
-  if (!quote?.ok) return;
+  if (!quote?.ok || token !== renderToken) return;
 
   const missing = needsRarity(quote.items);
 
@@ -292,9 +265,10 @@ async function render() {
   let frame = 0;
 
   const repaint = () => {
-    if (frame) return;
+    if (frame || token !== renderToken) return;
     frame = requestAnimationFrame(() => {
       frame = 0;
+      if (token !== renderToken) return;
       paint(quote, cards, settings, metric, settled);
     });
   };
@@ -315,7 +289,7 @@ async function render() {
 
   // A card page that fails to load must not leave the total in limbo.
   setTimeout(() => {
-    if (settled) return;
+    if (settled || token !== renderToken) return;
     settled = true;
     repaint();
   }, 6000);

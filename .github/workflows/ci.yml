@@ -25,10 +25,14 @@ jobs:
       - name: Package extension
         run: npm run package
 
+      - name: Read build label
+        id: build
+        run: echo "label=$(cat dist/version.txt)" >> "$GITHUB_OUTPUT"
+
       - uses: actions/upload-artifact@v4
         with:
-          name: extension-${{ github.sha }}
-          path: dist.zip
+          name: extension-${{ steps.build.outputs.label }}
+          path: dist-*.zip
           if-no-files-found: error
 
   release:
@@ -48,10 +52,15 @@ jobs:
       - run: npm ci
       - run: npm run package
 
-      - name: Attach the zip to the GitHub release
+      - name: Read build label
+        id: build
+        run: echo "label=$(cat dist/version.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Attach the versioned zip to the GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist.zip
+          files: dist-*.zip
+          generate_release_notes: true
 
       # Optional: publish to the Chrome Web Store on tag.
       # Needs repository secrets CHROME_EXTENSION_ID, CHROME_CLIENT_ID,
@@ -65,7 +74,7 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
         run: |
           npx --yes chrome-webstore-upload-cli@3 upload \
-            --source dist.zip \
+            --source "dist-${{ steps.build.outputs.label }}.zip" \
             --extension-id "$EXTENSION_ID" \
             --client-id "$CLIENT_ID" \
             --client-secret "$CLIENT_SECRET" \

@@ -13,11 +13,19 @@ import * as esbuild from 'esbuild';
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildInfo, readVersion } from './tools/lib/version.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const dev = process.argv.includes('--dev');
 const outdir = join(ROOT, dev ? 'dist-dev' : 'dist');
 const SRC = join(ROOT, 'extension', 'src');
+
+const version = readVersion(ROOT);
+const { label, short, full, commitUrl, dirty } = buildInfo(ROOT);
+const pkg = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
+if (pkg.version !== version) {
+  throw new Error(`package.json is ${pkg.version}, VERSION.txt is ${version} — keep them in sync`);
+}
 
 const workerConfig = JSON.parse(await readFile(join(ROOT, 'config', 'worker.json'), 'utf8'));
 const workerUrl = (process.env.WORKER_URL || workerConfig.url).trim();
@@ -40,6 +48,7 @@ const result = await esbuild.build({
   entryPoints: {
     deck: join(SRC, 'content', 'deck.js'),
     list: join(SRC, 'content', 'list.js'),
+    cards: join(SRC, 'content', 'cards.js'),
     popup: join(SRC, 'popup', 'popup.js'),
     sw: join(SRC, 'background', 'sw.js'),
   },
@@ -50,6 +59,11 @@ const result = await esbuild.build({
   define: {
     __DEV__: JSON.stringify(dev),
     __WORKER_URL__: JSON.stringify(workerUrl),
+    __APP_VERSION__: JSON.stringify(version),
+    __APP_VERSION_LABEL__: JSON.stringify(label),
+    __GIT_COMMIT__: JSON.stringify(short),
+    __GIT_COMMIT_FULL__: JSON.stringify(full || ''),
+    __GIT_COMMIT_URL__: JSON.stringify(commitUrl || ''),
   },
   minify: !dev,
   sourcemap: dev ? 'inline' : false,
@@ -78,8 +92,7 @@ await writeFile(
 );
 
 const manifest = JSON.parse(await readFile(join(SRC, 'manifest.json'), 'utf8'));
-// One source of truth for the version: package.json.
-const { version } = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
+// One source of truth for the version: VERSION.txt (the build label adds the commit).
 manifest.version = version;
 
 // Only the origin the extension actually talks to gets a host permission.
@@ -94,10 +107,13 @@ if (dev) {
 }
 
 await writeFile(join(outdir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+await writeFile(join(outdir, 'version.txt'), `${label}\n`);
 
 const sizes = Object.entries(result.metafile.outputs)
   .filter(([file]) => file.endsWith('.js'))
   .map(([file, info]) => `${file.split('/').pop()} ${(info.bytes / 1024).toFixed(0)} KB`);
 
 console.log(`\nbuilt ${dev ? 'dist-dev' : 'dist'}: ${sizes.join(', ')}`);
+console.log(`version: ${label}${dirty ? ' (dirty tree)' : ''}`);
+if (commitUrl) console.log(`commit:  ${commitUrl}`);
 console.log(`pricing worker: ${workerUrl}`);

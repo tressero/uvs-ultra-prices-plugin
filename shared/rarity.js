@@ -1,9 +1,9 @@
 /**
- * Placeholder values for cards TCGplayer has no price for.
+ * Estimate values for cards TCGplayer has no price for.
  *
  * A card with no listing is better represented by a rough, clearly-marked
  * number than by "n/a" — a presale deck would otherwise read as free. Every
- * placeholder is labelled in the UI; none of them are presented as a quote.
+ * estimate is labelled in the UI; none of them are presented as a quote.
  */
 
 /** One place to change the numbers. */
