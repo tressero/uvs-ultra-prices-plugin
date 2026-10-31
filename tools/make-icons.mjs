@@ -1,11 +1,14 @@
 /**
- * Render the extension icons with a real browser, so the glyph is crisp at
- * every size instead of a hand-plotted bitmap.
+ * Render the extension icons from SVG, so every size is crisp.
  *
  *   node tools/make-icons.mjs
  *
- * Requires Playwright's Chromium (already a dev dependency). The PNGs are
- * committed, so this only needs to run when the mark changes.
+ * The mark: a deck of two cards with a dollar sign on the front one. At 16px
+ * the cards turn into a white blob, so that size falls back to a bold dollar
+ * sign — same background, same weight, still recognisable in a toolbar.
+ *
+ * Requires Playwright's Chromium (a dev dependency). The PNGs are committed, so
+ * this only needs to run when the mark changes.
  */
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -16,30 +19,53 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'extension', 'src', 'icons');
 const SIZES = [16, 32, 48, 128];
 
-/** Sizing is in percentages/em so one document is crisp at every size. */
-function markup(size) {
+function mark(size) {
+  // Small sizes get one card only; the stack needs room to read as two.
+  const simple = size < 32;
+
+  const backCard = simple
+    ? ''
+    : `<g transform="rotate(-14 50 50)" filter="url(#soft)">
+         <rect x="24" y="20" width="42" height="60" rx="6" fill="#b9c7e8" opacity="0.92"/>
+       </g>`;
+
+  // At 16px a card silhouette is a white blob; the dollar sign alone reads.
+  const frontCard = simple
+    ? ''
+    : `<g transform="rotate(6 50 50)" filter="url(#soft)">
+         <rect x="32" y="22" width="42" height="60" rx="6" fill="url(#card)"/>
+       </g>`;
+
+  const dollar = simple
+    ? `<text x="50" y="53" text-anchor="middle" dominant-baseline="central"
+         font-family="DejaVu Sans, Arial, sans-serif" font-weight="700" font-size="64"
+         fill="#ffffff">$</text>`
+    : `<text x="53" y="53" text-anchor="middle" dominant-baseline="central"
+         font-family="DejaVu Sans, Arial, sans-serif" font-weight="700" font-size="30"
+         fill="#2f4a8a" transform="rotate(6 50 50) translate(0 1)">$</text>`;
+
   return `<!doctype html>
-<style>
-  html, body { margin: 0; width: ${size}px; height: ${size}px; background: transparent; }
-  .icon {
-    width: 100%; height: 100%;
-    border-radius: 22%;
-    background:
-      radial-gradient(120% 120% at 20% 0%, #4a6fc4 0%, #2f4a8a 45%, #1b2c55 100%);
-    box-shadow: inset 0 0 0 ${Math.max(1, size * 0.035)}px rgba(255,255,255,0.10);
-    display: flex; align-items: center; justify-content: center;
-    font-family: "DejaVu Sans", "Helvetica Neue", Arial, sans-serif;
-    font-weight: 700;
-    color: #fff;
-    font-size: ${Math.round(size * 0.66)}px;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    text-shadow: 0 ${Math.max(1, size * 0.012)}px ${Math.max(1, size * 0.02)}px rgba(0,0,0,0.35);
-    -webkit-font-smoothing: antialiased;
-  }
-  .icon span { transform: translateY(${size * -0.02}px); }
-</style>
-<div class="icon"><span>$</span></div>`;
+<style>html,body{margin:0;background:transparent}svg{display:block}</style>
+<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4d74cd"/>
+      <stop offset="0.55" stop-color="#2f4a8a"/>
+      <stop offset="1" stop-color="#182848"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e8edf9"/>
+    </linearGradient>
+    <filter id="soft" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="1.6" stdDeviation="1.6" flood-color="#0a1530" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="url(#bg)"/>
+  ${backCard}
+  ${frontCard}
+  ${dollar}
+</svg>`;
 }
 
 await mkdir(OUT, { recursive: true });
@@ -51,14 +77,14 @@ try {
       viewport: { width: size, height: size },
       deviceScaleFactor: 1,
     });
-    await page.setContent(markup(size));
+    await page.setContent(mark(size));
     await page.screenshot({
       path: join(OUT, `icon-${size}.png`),
       omitBackground: true,
       clip: { x: 0, y: 0, width: size, height: size },
     });
     await page.close();
-    console.log(`icon-${size}.png`);
+    console.log(`icon-${size}.png${size < 32 ? ' (dollar only)' : ''}`);
   }
 } finally {
   await browser.close();
