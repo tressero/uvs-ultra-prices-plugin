@@ -157,7 +157,9 @@ async function handleRequest(request, env, ctx) {
       // Human-facing pages. Static HTML, no scripts.
       if ((url.pathname === '/' || url.pathname === '/privacy') && request.method === 'GET') {
         const body =
-          url.pathname === '/privacy' ? privacyPage() : homePage(env.SITE_VERIFICATION);
+          url.pathname === '/privacy'
+            ? privacyPage(env.SITE_VERIFICATION)
+            : homePage(env.SITE_VERIFICATION);
         return new Response(body, {
           headers: {
             'content-type': 'text/html; charset=utf-8',
