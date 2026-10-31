@@ -4,6 +4,13 @@
  * Mirrors docs/privacy.md — that file is the source when the text changes.
  */
 
+/**
+ * Search Console verification files published on this domain. The worker serves
+ * any /google<token>.html; this list only drives the links on the home page, so
+ * adding a new token is one entry.
+ */
+export const SITE_VERIFICATION_FILES = ['googlee3b8506c223774f8'];
+
 const STYLE = `
   :root { color-scheme: light dark; }
   body {
@@ -132,6 +139,11 @@ list. Market, listed-median (mid) and low prices are available.</p>
 <p>Not affiliated with UVS Ultra, Jasco Games, or TCGplayer. Prices are
 informational.</p>
 
-<footer><a href="/privacy">Privacy policy</a></footer>
+<footer>
+  <a href="/privacy">Privacy policy</a>
+  · ${SITE_VERIFICATION_FILES.map(
+    (token) => `<a href="/${token}.html">Site verification file</a>`,
+  ).join(' · ')}
+</footer>
 </body></html>`;
 }

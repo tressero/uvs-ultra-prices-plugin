@@ -206,6 +206,19 @@ describe('human-facing pages', () => {
     expect(body).toContain('No remote code');
   });
 
+  it('links the verification file from the home page, and the link resolves', async () => {
+    const home = await worker.fetch(new Request('https://prices.test/'), ENV(), fakeCtx());
+    const html = await home.text();
+    expect(html).toContain('href="/googlee3b8506c223774f8.html"');
+
+    const file = await worker.fetch(
+      new Request('https://prices.test/googlee3b8506c223774f8.html'),
+      ENV(),
+      fakeCtx(),
+    );
+    expect(file.status).toBe(200);
+  });
+
   it('does not serve pages for other methods', async () => {
     const response = await worker.fetch(
       new Request('https://prices.test/privacy', { method: 'POST', body: '{}' }),
