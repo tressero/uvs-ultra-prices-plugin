@@ -105,11 +105,18 @@ listing points at the current version of this page.</p>
 </body></html>`;
 }
 
-export function homePage() {
+/**
+ * @param {string} [metaToken] Search Console HTML-tag token, if that method is used
+ */
+export function homePage(metaToken) {
   const base = 'https://uvs-ultra-prices.marc-ee2.workers.dev';
   const worker = `${base}/v1/health`;
+  const verificationTag = metaToken
+    ? `<meta name="google-site-verification" content="${String(metaToken).replace(/[^A-Za-z0-9_-]/g, '')}" />`
+    : '';
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
+${verificationTag}
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UVS Ultra Deck Prices</title>
 <style>${STYLE}</style></head>

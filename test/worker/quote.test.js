@@ -219,6 +219,25 @@ describe('human-facing pages', () => {
     expect(file.status).toBe(200);
   });
 
+  it('mirrors GET when asked for HEAD', async () => {
+    for (const path of ['/googlee3b8506c223774f8.html', '/', '/v1/health']) {
+      const head = await worker.fetch(
+        new Request(`https://prices.test${path}`, { method: 'HEAD' }),
+        ENV(),
+        fakeCtx(),
+      );
+      expect(head.status).toBe(200);
+      expect(head.headers.get('content-length')).toBeTruthy();
+    }
+  });
+
+  it('adds the meta verification tag when the token is configured', async () => {
+    const env = { ...ENV(), SITE_VERIFICATION: 'abc123XYZ' };
+    const response = await worker.fetch(new Request('https://prices.test/'), env, fakeCtx());
+    const html = await response.text();
+    expect(html).toContain('<meta name="google-site-verification" content="abc123XYZ" />');
+  });
+
   it('does not serve pages for other methods', async () => {
     const response = await worker.fetch(
       new Request('https://prices.test/privacy', { method: 'POST', body: '{}' }),

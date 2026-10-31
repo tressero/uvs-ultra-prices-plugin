@@ -150,16 +150,14 @@ async function handleHealth(env) {
   });
 }
 
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
+async function handleRequest(request, env, ctx) {
+  const url = new URL(request.url);
 
-    if (request.method === 'OPTIONS') return preflight();
-
-    try {
+  try {
       // Human-facing pages. Static HTML, no scripts.
       if ((url.pathname === '/' || url.pathname === '/privacy') && request.method === 'GET') {
-        const body = url.pathname === '/privacy' ? privacyPage() : homePage();
+        const body =
+          url.pathname === '/privacy' ? privacyPage() : homePage(env.SITE_VERIFICATION);
         return new Response(body, {
           headers: {
             'content-type': 'text/html; charset=utf-8',
@@ -197,7 +195,29 @@ export default {
         }),
       );
       return error('internal error', 500);
+  }
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    if (request.method === 'OPTIONS') return preflight();
+
+    // HEAD must mirror GET. A URL that answers 200 to GET and 404 to HEAD looks
+    // like cloaking to a crawler — which is how a verification check turns into
+    // "your site might have been hacked".
+    if (request.method === 'HEAD') {
+      const response = await handleRequest(
+        new Request(request.url, { method: 'GET', headers: request.headers }),
+        env,
+        ctx,
+      );
+      const body = await response.text();
+      const headers = new Headers(response.headers);
+      headers.set('content-length', String(new TextEncoder().encode(body).byteLength));
+      return new Response(null, { status: response.status, headers });
     }
+
+    return handleRequest(request, env, ctx);
   },
 
   async scheduled(_event, env, ctx) {
