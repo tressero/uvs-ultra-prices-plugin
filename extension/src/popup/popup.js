@@ -33,7 +33,7 @@ function renderVersion() {
   const link = $('#app-version');
   if (!link) return;
   link.textContent = `v${APP_VERSION_LABEL}`;
-  link.title = `Built from commit ${GIT_COMMIT}`;
+  link.title = GIT_COMMIT ? `Built from commit ${GIT_COMMIT}` : `Version ${APP_VERSION_LABEL}`;
   if (GIT_COMMIT_URL) link.href = GIT_COMMIT_URL;
   else link.removeAttribute('href');
 }

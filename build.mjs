@@ -1,27 +1,38 @@
 /**
  * Build the extension.
  *
- *   node build.mjs                 -> dist/      (production)
- *   node build.mjs --dev           -> dist-dev/  (adds localhost matches + in-page fallback)
- *   WORKER_URL=http://localhost:8789 node build.mjs --dev
+ *   node build.mjs                  -> dist/          (Chrome, production)
+ *   node build.mjs --dev            -> dist-dev/      (adds localhost matches + in-page fallback)
+ *   node build.mjs --firefox        -> dist-firefox/  (Firefox/AMO, production)
+ *   node build.mjs --firefox --dev  -> dist-firefox-dev/
  *
  * The pricing worker URL comes from config/worker.json (or the WORKER_URL
  * environment variable) and is baked into two places: the default in the
- * service worker and the host permission in the manifest.
+ * background script and the host permission in the manifest.
+ *
+ * The Firefox build deliberately leaves the commit out of the bundle and
+ * version.txt. AMO rebuilds the submitted source and compares the result, so
+ * the built files must not depend on local git metadata. The commit still
+ * names the GitHub release tag and the zip file.
  */
 import * as esbuild from 'esbuild';
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { composeManifest, hostPermissionsFor } from './tools/lib/manifest.mjs';
 import { buildInfo, readVersion } from './tools/lib/version.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const dev = process.argv.includes('--dev');
-const outdir = join(ROOT, dev ? 'dist-dev' : 'dist');
+const firefox = process.argv.includes('--firefox');
+const outName = firefox ? (dev ? 'dist-firefox-dev' : 'dist-firefox') : dev ? 'dist-dev' : 'dist';
+const outdir = join(ROOT, outName);
 const SRC = join(ROOT, 'extension', 'src');
 
 const version = readVersion(ROOT);
-const { label, short, full, commitUrl, dirty } = buildInfo(ROOT);
+const info = buildInfo(ROOT);
+const label = firefox ? version : info.label;
+const dirty = info.dirty;
 const pkg = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
 if (pkg.version !== version) {
   throw new Error(`package.json is ${pkg.version}, VERSION.txt is ${version} — keep them in sync`);
@@ -55,15 +66,15 @@ const result = await esbuild.build({
   outdir,
   bundle: true,
   format: 'iife',
-  target: ['chrome114'],
+  target: [firefox ? 'firefox140' : 'chrome114'],
   define: {
     __DEV__: JSON.stringify(dev),
     __WORKER_URL__: JSON.stringify(workerUrl),
     __APP_VERSION__: JSON.stringify(version),
     __APP_VERSION_LABEL__: JSON.stringify(label),
-    __GIT_COMMIT__: JSON.stringify(short),
-    __GIT_COMMIT_FULL__: JSON.stringify(full || ''),
-    __GIT_COMMIT_URL__: JSON.stringify(commitUrl || ''),
+    __GIT_COMMIT__: JSON.stringify(firefox ? '' : info.short),
+    __GIT_COMMIT_FULL__: JSON.stringify(firefox ? '' : info.full || ''),
+    __GIT_COMMIT_URL__: JSON.stringify(firefox ? '' : info.commitUrl || ''),
   },
   minify: !dev,
   sourcemap: dev ? 'inline' : false,
@@ -77,8 +88,8 @@ await cp(join(SRC, 'popup', 'popup.html'), join(outdir, 'popup.html'));
 await cp(join(SRC, 'popup', 'popup.css'), join(outdir, 'popup.css'));
 await cp(join(SRC, 'icons'), join(outdir, 'icons'), { recursive: true });
 
-// Offline fallback: one JSON file the service worker loads only if the pricing
-// worker is unreachable, so it never inflates the bundled service worker.
+// Offline fallback: one JSON file the background script loads only if the pricing
+// worker is unreachable, so it never inflates the bundled background script.
 const snapshot = JSON.parse(await readFile(join(ROOT, 'data', 'prices.snapshot.json'), 'utf8'));
 const setMap = JSON.parse(await readFile(join(ROOT, 'data', 'set-map.json'), 'utf8'));
 await writeFile(
@@ -91,14 +102,13 @@ await writeFile(
   }),
 );
 
-const manifest = JSON.parse(await readFile(join(SRC, 'manifest.json'), 'utf8'));
-// One source of truth for the version: VERSION.txt (the build label adds the commit).
-manifest.version = version;
-
-// Only the origin the extension actually talks to gets a host permission.
-const permissions = new Set([...manifest.host_permissions, `${workerOrigin}/*`]);
-if (dev) permissions.add('http://localhost:8787/*');
-manifest.host_permissions = [...permissions];
+const baseManifest = JSON.parse(await readFile(join(SRC, 'manifest.json'), 'utf8'));
+const overlay = firefox
+  ? JSON.parse(await readFile(join(SRC, 'manifest.firefox.json'), 'utf8'))
+  : {};
+const hostPermissions = hostPermissionsFor(baseManifest, { workerOrigin, dev });
+// One source of truth for the version: VERSION.txt (the Chrome build label adds the commit).
+const manifest = composeManifest(baseManifest, overlay, { version, hostPermissions });
 
 if (dev) {
   for (const entry of manifest.content_scripts) {
@@ -113,7 +123,9 @@ const sizes = Object.entries(result.metafile.outputs)
   .filter(([file]) => file.endsWith('.js'))
   .map(([file, info]) => `${file.split('/').pop()} ${(info.bytes / 1024).toFixed(0)} KB`);
 
-console.log(`\nbuilt ${dev ? 'dist-dev' : 'dist'}: ${sizes.join(', ')}`);
+console.log(`\nbuilt ${outName}: ${sizes.join(', ')}`);
+console.log(`target: ${firefox ? 'Firefox 140+' : 'Chrome'}`);
 console.log(`version: ${label}${dirty ? ' (dirty tree)' : ''}`);
-if (commitUrl) console.log(`commit:  ${commitUrl}`);
+if (info.commitUrl) console.log(`commit:  ${info.commitUrl}`);
 console.log(`pricing worker: ${workerUrl}`);
+
