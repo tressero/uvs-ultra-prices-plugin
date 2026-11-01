@@ -180,6 +180,39 @@ stable store-upload aliases.
 `npm run screenshots` regenerates the three store images (1280×800) from the live
 site using the built Chrome extension. The same images are used on AMO.
 
+### Firefox / AMO submission build
+
+AMO requires the source archive because esbuild bundles and minifies the
+extension. Build the add-on and the matching source archive from the same
+checkout:
+
+```bash
+npm ci
+npm run package:firefox   # dist-firefox.zip
+npm run lint:firefox      # 0 errors / 0 warnings
+npm run source:firefox    # uvs-ultra-prices-source-<label>.zip
+```
+
+Upload both files through <https://addons.mozilla.org/developers/>. The source
+archive contains `AMO-BUILD.md`, which tells reviewers to reproduce the build
+with:
+
+```bash
+npm ci
+npm run build-for-amo     # node build.mjs --firefox -> dist-firefox/
+```
+
+It also contains `package-lock.json`; `data/` and `config/` are committed, so the
+build uses no network. Tests, fixtures and `node_modules` are left out.
+
+In the AMO source-code form, select **Code generators or minifiers** and
+**Tools that combine multiple files into a single file**. esbuild is used for
+both; there are no template engines, obfuscation or remote code.
+
+The listing copy, permission justifications and reviewer notes are in
+[`docs/firefox-listing.md`](docs/firefox-listing.md); the full release process is
+in [`docs/releasing.md`](docs/releasing.md).
+
 ### Versioning and releases
 
 `VERSION.txt` is the SemVer source of truth. Chrome builds append the current
