@@ -3,6 +3,7 @@
  *
  *   GET  /                   what this is
  *   GET  /privacy            privacy policy (the URL on the store listing)
+ *   GET  /google<id>.html    site-verification file for Search Console
  *   GET  /v1/health          catalog status (no auth, cheap)
  *   POST /v1/quote           { cards, metric } -> priced deck
  *   POST /v1/admin/sync      force a sync (Authorization: Bearer ADMIN_TOKEN)
@@ -149,21 +150,34 @@ async function handleHealth(env) {
   });
 }
 
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
+async function handleRequest(request, env, ctx) {
+  const url = new URL(request.url);
 
-    if (request.method === 'OPTIONS') return preflight();
-
-    try {
+  try {
       // Human-facing pages. Static HTML, no scripts.
       if ((url.pathname === '/' || url.pathname === '/privacy') && request.method === 'GET') {
-        const body = url.pathname === '/privacy' ? privacyPage() : homePage();
+        const body =
+          url.pathname === '/privacy'
+            ? privacyPage(env.SITE_VERIFICATION)
+            : homePage(env.SITE_VERIFICATION);
         return new Response(body, {
           headers: {
             'content-type': 'text/html; charset=utf-8',
             'cache-control': 'public, max-age=3600',
             'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; img-src data:",
+          },
+        });
+      }
+
+      // Google Search Console verifies a domain by fetching /google<token>.html,
+      // which must return exactly "google-site-verification: google<token>.html".
+      // The token is the filename, so no upload or file copy is needed.
+      const verification = url.pathname.match(/^\/(google[a-z0-9]{16})\.html$/i);
+      if (verification && request.method === 'GET') {
+        return new Response(`google-site-verification: ${verification[1]}.html`, {
+          headers: {
+            'content-type': 'text/html; charset=utf-8',
+            'cache-control': 'public, max-age=3600',
           },
         });
       }
@@ -183,7 +197,29 @@ export default {
         }),
       );
       return error('internal error', 500);
+  }
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    if (request.method === 'OPTIONS') return preflight();
+
+    // HEAD must mirror GET. A URL that answers 200 to GET and 404 to HEAD looks
+    // like cloaking to a crawler — which is how a verification check turns into
+    // "your site might have been hacked".
+    if (request.method === 'HEAD') {
+      const response = await handleRequest(
+        new Request(request.url, { method: 'GET', headers: request.headers }),
+        env,
+        ctx,
+      );
+      const body = await response.text();
+      const headers = new Headers(response.headers);
+      headers.set('content-length', String(new TextEncoder().encode(body).byteLength));
+      return new Response(null, { status: response.status, headers });
     }
+
+    return handleRequest(request, env, ctx);
   },
 
   async scheduled(_event, env, ctx) {

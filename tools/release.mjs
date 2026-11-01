@@ -4,9 +4,10 @@
  *   npm run release -- --title "Prices everywhere and safer Mass Entry"
  *   npm run release -- --title "…" --notes docs/releases/2026-10-31.md
  *
- * Pushing the tag triggers the CI release job, which builds
- * dist-<label>.zip, attaches it to the GitHub release and optionally uploads it
- * to the Chrome Web Store and deploys the worker.
+ * Pushing the tag triggers the CI release job, which builds the Chrome and
+ * Firefox packages, attaches them and the AMO source archive to the GitHub
+ * release, and optionally uploads to the Chrome Web Store and AMO and deploys
+ * the worker.
  */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -60,4 +61,4 @@ const slug =
 console.log(`tagged   ${tag}`);
 console.log(`title    ${message}`);
 console.log(`actions  https://github.com/${slug}/actions`);
-console.log('CI will create the release and attach dist-' + label + '.zip');
+console.log('CI will create the release and attach the Chrome, Firefox and AMO source archives');

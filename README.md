@@ -1,14 +1,16 @@
 # UVS Ultra Deck Prices
 
-A Chrome extension (Manifest V3) that shows TCGplayer prices next to every card
-on a [UVS Ultra](https://uvsultra.online) deck page, search result and card page,
-totals the deck, and sends the priced cards to TCGplayer's Mass Entry.
+A browser extension (Manifest V3) for Chrome and Firefox that shows TCGplayer
+prices next to every card on a [UVS Ultra](https://uvsultra.online) deck page,
+search result and card page, totals the deck, and sends the priced cards to
+TCGplayer's Mass Entry.
 
 Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
 
 ## Status
 
-**M4 — ready to submit to the Chrome Web Store.**
+**M4 — Chrome Web Store submitted; Firefox Add-ons build and submission process
+added.**
 
 - Deck pages: a price chip per card, a deck total, a **Buy deck on TCGplayer**
   button that sends only priced cards to Mass Entry, and a warning dialog listing
@@ -27,16 +29,20 @@ Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
   of a guessed price.
 
 Store assets, listing copy and the submission checklist live in
-[`docs/store-listing.md`](docs/store-listing.md); the policy is
+[`docs/store-listing.md`](docs/store-listing.md) for Chrome and
+[`docs/firefox-listing.md`](docs/firefox-listing.md) for Firefox; the policy is
 [`docs/privacy.md`](docs/privacy.md) and is also served at
-<https://uvs-ultra-prices.marc-ee2.workers.dev/privacy>.
+<https://uvs-ultra-prices.marc-ee2.workers.dev/privacy>. The release runbook is
+[`docs/releasing.md`](docs/releasing.md) and manual installs are covered in
+[`docs/manual-install.md`](docs/manual-install.md).
 
 ## Quick start
 
 ```bash
 npm install
-npm run build:dev        # -> dist-dev/
-npm run preview          # loads it in Chromium against local fixtures
+npm run build:dev          # -> dist-dev/ (Chrome)
+npm run build:firefox:dev  # -> dist-firefox-dev/ (Firefox)
+npm run preview            # loads the Chrome build in Chromium against local fixtures
 ```
 
 `npm run preview` starts a local server over the saved fixtures, loads the
@@ -47,11 +53,20 @@ With `WORKER_URL=http://localhost:8789` it will exercise the real worker path
 ### Load it in your own browser
 
 ```bash
-npm run build            # -> dist/
+npm run build            # -> dist/ (Chrome)
+npm run build:firefox    # -> dist-firefox/ (Firefox)
 ```
 
-`chrome://extensions` → enable Developer mode → **Load unpacked** → pick `dist/`.
-Then open any deck on https://uvsultra.online.
+Chrome: `chrome://extensions` → enable Developer mode → **Load unpacked** → pick
+`dist/`.
+
+Firefox: `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on…** →
+pick `dist-firefox/manifest.json`. A temporary add-on is removed when Firefox
+restarts; permanent installs use the signed store build.
+
+Then open any deck on https://uvsultra.online. Downloadable release builds and
+the full manual-install walkthrough are in
+[`docs/manual-install.md`](docs/manual-install.md).
 
 ## How it works
 
@@ -145,30 +160,39 @@ npm run preview
 ## Shipping a build
 
 ```bash
-npm test            # 95 tests, no network
-npm run build       # dist/, plus dist/version.txt
-npm run package     # dist-<label>.zip + dist.zip, manifest at the root
+npm test                 # no network
+npm run build            # dist/, plus dist/version.txt
+npm run package          # dist-<label>.zip + dist.zip, manifest at the root
+
+npm run build:firefox    # dist-firefox/
+npm run package:firefox  # dist-firefox-<label>.zip + dist-firefox.zip
+npm run lint:firefox     # web-ext lint, warnings are errors
+npm run source:firefox   # source archive required by AMO
 ```
 
-`npm run package` refuses to build if `config/worker.json` still holds the
-placeholder URL, if `VERSION.txt` and `package.json` disagree, or if the manifest
-version does not match `VERSION.txt`. It writes `dist-<version>.<sha>.zip` for
-manual installs and GitHub releases, and `dist.zip` as the stable store-upload
-alias.
+`npm run package` and `npm run package:firefox` refuse to build if
+`config/worker.json` still holds the placeholder URL, if `VERSION.txt` and
+`package.json` disagree, or if the manifest version does not match `VERSION.txt`.
+They write `dist-<version>.<sha>.zip` / `dist-firefox-<version>.<sha>.zip` for
+manual installs and GitHub releases, and `dist.zip` / `dist-firefox.zip` as the
+stable store-upload aliases.
 
 `npm run screenshots` regenerates the three store images (1280×800) from the live
-site using the built extension.
+site using the built Chrome extension. The same images are used on AMO.
 
 ### Versioning and releases
 
-`VERSION.txt` is the SemVer source of truth. The build appends the current commit,
-so `dist/version.txt`, the popup and the release tag all name the same build:
+`VERSION.txt` is the SemVer source of truth. Chrome builds append the current
+commit, so `dist/version.txt`, the popup and the release tag name the same build.
+Firefox builds keep only the SemVer version so an AMO rebuild from the submitted
+source produces identical files; the archive name and tag still carry the commit:
 
 ```text
-VERSION.txt          1.1.0
-build label          1.1.0.<7-char-sha>
-popup / dist file    v1.1.0.<sha> / dist-1.1.0.<sha>.zip
-git tag              v1.1.0.<sha>
+VERSION.txt                    1.1.0
+Chrome build label             1.1.0.<7-char-sha>
+Firefox build label / manifest 1.1.0
+popup (Chrome / Firefox)       v1.1.0.<sha> / v1.1.0
+git tag                        v1.1.0.<sha>
 ```
 
 Tagging a release (the working tree must be clean):
@@ -177,10 +201,13 @@ Tagging a release (the working tree must be clean):
 npm run release -- --title "Prices everywhere and safer Mass Entry"
 ```
 
-That pushes the tag; CI builds `dist-<label>.zip`, attaches it to the GitHub
-release, uploads `dist.zip` to the Chrome Web Store when the store secrets are
-configured, and deploys the pricing worker. The popup links its version label to
-the commit on GitHub.
+That pushes the tag; CI builds both browser packages, attaches
+`dist-<label>.zip`, `dist-firefox-<label>.zip` and the AMO source archive to the
+GitHub release, uploads `dist.zip` to the Chrome Web Store when its secrets are
+configured, submits `dist-firefox.zip` to AMO when `AMO_PUBLISH` and the AMO
+secrets are configured, and deploys the pricing worker. The full runbook is
+[`docs/releasing.md`](docs/releasing.md). The Chrome popup links its version label
+to the commit on GitHub.
 
 ## Estimated prices
 
@@ -219,10 +246,11 @@ how many were left out.
 | --- | --- |
 | `data/set-map.json` | UVS set code → TCGplayer group, scored by card-name overlap (`npm run set-map`) |
 | `data/prices.snapshot.json` | Offline fallback, trimmed products + prices for the mapped sets (`npm run prices`) |
-| `VERSION.txt` | SemVer core (`1.1.0`); the build label is `1.1.0.<sha>`, the tag `v1.1.0.<sha>` |
+| `VERSION.txt` | SemVer core (`1.1.0`); Chrome build label `1.1.0.<sha>`, Firefox label `1.1.0`, tag `v1.1.0.<sha>` |
 | `config/worker.json` | The deployed pricing worker URL (single source for the manifest and the client) |
+| `extension/src/manifest.firefox.json` | Firefox overlay: event page, Gecko ID and data-collection declaration |
 | `fixtures/` | Saved pages so tests never touch the network (`npm run fixtures`) |
-| `store/screenshots/` | Chrome Web Store screenshots (`npm run screenshots`) |
+| `store/screenshots/` | Chrome Web Store and AMO screenshots (`npm run screenshots`) |
 
 Regenerate the data when TCGplayer adds sets:
 
@@ -232,9 +260,9 @@ npm test
 ```
 
 `npm test` covers the parser, matcher, totals, price metrics, Mass Entry links,
-the worker's routes and the sync (95 tests, no network). `npm run coverage` prints
-per-deck coverage and every unpriced card with its reason — the fastest way to
-spot a matcher regression.
+the worker's routes and the sync (no network). `npm run coverage` prints per-deck
+coverage and every unpriced card with its reason — the fastest way to spot a
+matcher regression.
 
 ## Known limits
 
@@ -250,5 +278,8 @@ spot a matcher regression.
   `npm run worker:prime`.
 - 45 sets are deliberately unmapped: TCGplayer has no singles for them, or the
   name overlap was too weak to trust. They show `n/a`.
+- The GitHub Firefox zip is unsigned. Standard Firefox only keeps it for the
+  current session (`about:debugging`); permanent installs come from AMO. AMO also
+  never reuses a version number, including across listed and unlisted channels.
 - `compatibility_date` is pinned to `2026-05-03`, the newest the installed
   Wrangler's runtime supports on Node 20. Raise it together with Wrangler.

@@ -202,13 +202,69 @@ describe('human-facing pages', () => {
     const response = await worker.fetch(new Request('https://prices.test/privacy'), ENV(), fakeCtx());
     const body = await response.text();
     expect(body).toContain('uvs-ultra-prices.marc-ee2.workers.dev');
-    expect(body).toContain('marc@ochsner.me');
+    expect(body).toContain('marcaochsner+uvs@gmail.com');
     expect(body).toContain('No remote code');
+  });
+
+  it('links the verification file from the home page, and the link resolves', async () => {
+    const home = await worker.fetch(new Request('https://prices.test/'), ENV(), fakeCtx());
+    const html = await home.text();
+    expect(html).toContain('href="/googlee3b8506c223774f8.html"');
+
+    const file = await worker.fetch(
+      new Request('https://prices.test/googlee3b8506c223774f8.html'),
+      ENV(),
+      fakeCtx(),
+    );
+    expect(file.status).toBe(200);
+  });
+
+  it('mirrors GET when asked for HEAD', async () => {
+    for (const path of ['/googlee3b8506c223774f8.html', '/', '/v1/health']) {
+      const head = await worker.fetch(
+        new Request(`https://prices.test${path}`, { method: 'HEAD' }),
+        ENV(),
+        fakeCtx(),
+      );
+      expect(head.status).toBe(200);
+      expect(head.headers.get('content-length')).toBeTruthy();
+    }
+  });
+
+  it('adds the meta verification tag when the token is configured', async () => {
+    const env = { ...ENV(), SITE_VERIFICATION: 'abc123XYZ' };
+    const response = await worker.fetch(new Request('https://prices.test/'), env, fakeCtx());
+    const html = await response.text();
+    expect(html).toContain('<meta name="google-site-verification" content="abc123XYZ" />');
   });
 
   it('does not serve pages for other methods', async () => {
     const response = await worker.fetch(
       new Request('https://prices.test/privacy', { method: 'POST', body: '{}' }),
+      ENV(),
+      fakeCtx(),
+    );
+    expect(response.status).toBe(404);
+  });
+});
+
+describe('site verification', () => {
+  it('serves Google verification files byte for byte', async () => {
+    const response = await worker.fetch(
+      new Request('https://prices.test/googlee3b8506c223774f8.html'),
+      ENV(),
+      fakeCtx(),
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/html');
+    expect(await response.text()).toBe(
+      'google-site-verification: googlee3b8506c223774f8.html',
+    );
+  });
+
+  it('does not answer other .html paths', async () => {
+    const response = await worker.fetch(
+      new Request('https://prices.test/anythingelse.html'),
       ENV(),
       fakeCtx(),
     );

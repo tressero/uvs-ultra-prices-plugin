@@ -2,9 +2,9 @@
 
 Last updated: 31 October 2026
 
-UVS Ultra Deck Prices is a Chrome extension that shows TCGplayer prices next to
-cards on [uvsultra.online](https://uvsultra.online). This page explains exactly
-what it sends, where, and what is kept.
+UVS Ultra Deck Prices is a browser extension for Chrome and Firefox that shows
+TCGplayer prices next to cards on [uvsultra.online](https://uvsultra.online).
+This page explains exactly what it sends, where, and what is kept.
 
 ## What the extension does with your data
 
@@ -18,10 +18,13 @@ https://uvs-ultra-prices.marc-ee2.workers.dev
 ```
 
 That request contains only card data — no account, no identifier, no browsing
-history, no IP-based profile beyond what any web request carries.
+history, no IP-based profile beyond what any web request carries. Firefox shows
+this transfer as the **website content** data collection category; it is the page
+content needed to look up prices, not personal information.
 
-**Local cache.** Prices are cached in your browser (`chrome.storage.local`) for
-12 hours so the same deck is not re-requested on every visit. The cache stays on
+**Local cache.** Prices are cached in your browser's extension storage
+(`chrome.storage.local` in Chrome, `browser.storage.local` in Firefox) for 12
+hours so the same deck is not re-requested on every visit. The cache stays on
 your device and is cleared when you uninstall the extension.
 
 ## What the extension does not do
@@ -59,7 +62,7 @@ Prices are informational. Always confirm on TCGplayer before buying.
 
 ## Contact
 
-Email <marc@ochsner.me>.
+Email <marcaochsner+uvs@gmail.com>.
 
 ## Source
 

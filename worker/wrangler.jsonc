@@ -28,6 +28,9 @@
   "vars": {
     "SOURCE_BASE": "https://tcgcsv.com",
     "CATALOG_CATEGORY": "25",
-    "USER_AGENT": "UVSUltraPrices/0.1.0 (Chrome extension)"
+    "USER_AGENT": "UVSUltraPrices/0.1.0 (browser extension)",
+    // Public by design: rendered as a meta tag on the landing page for
+    // Search Console's HTML-tag verification method.
+    "SITE_VERIFICATION": "RSaimRNQeBQ9mML2wXFmU3awMDiCrbLlS_tKmDEPd0s"
   }
 }

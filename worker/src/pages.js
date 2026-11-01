@@ -4,6 +4,13 @@
  * Mirrors docs/privacy.md — that file is the source when the text changes.
  */
 
+/**
+ * Search Console verification files published on this domain. The worker serves
+ * any /google<token>.html; this list only drives the links on the home page, so
+ * adding a new token is one entry.
+ */
+export const SITE_VERIFICATION_FILES = ['googlee3b8506c223774f8'];
+
 const STYLE = `
   :root { color-scheme: light dark; }
   body {
@@ -25,9 +32,11 @@ const STYLE = `
   footer { margin-top: 3rem; font-size: 0.85rem; opacity: 0.6; }
 `;
 
-export function privacyPage() {
+export function privacyPage(metaToken) {
+  const verificationTag = metaVerification(metaToken);
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
+${verificationTag}
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Privacy — UVS Ultra Deck Prices</title>
 <style>${STYLE}</style></head>
@@ -35,9 +44,9 @@ export function privacyPage() {
 <h1>UVS Ultra Deck Prices — Privacy Policy</h1>
 <p class="sub">Last updated: 31 October 2026</p>
 
-<p>UVS Ultra Deck Prices is a Chrome extension that shows TCGplayer prices next to
-cards on <a href="https://uvsultra.online">uvsultra.online</a>. This page explains
-exactly what it sends, where, and what is kept.</p>
+<p>UVS Ultra Deck Prices is a browser extension for Chrome and Firefox that shows
+TCGplayer prices next to cards on <a href="https://uvsultra.online">uvsultra.online</a>.
+This page explains exactly what it sends, where, and what is kept.</p>
 
 <h2>What the extension does with your data</h2>
 <p><strong>The cards you are looking at.</strong> When you open a deck page, a deck
@@ -46,11 +55,14 @@ list, a search result or a card page, the extension reads the cards shown there
 service to look up prices:</p>
 <pre>https://uvs-ultra-prices.marc-ee2.workers.dev</pre>
 <p>That request contains only card data — no account, no identifier, no browsing
-history, no IP-based profile beyond what any web request carries.</p>
-<p><strong>Local cache.</strong> Prices are cached in your browser
-(<code>chrome.storage.local</code>) for 12 hours so the same deck is not
-re-requested on every visit. The cache stays on your device and is cleared when you
-uninstall the extension.</p>
+history, no IP-based profile beyond what any web request carries. Firefox shows
+this transfer as the <strong>website content</strong> data collection category;
+it is the page content needed to look up prices, not personal information.</p>
+<p><strong>Local cache.</strong> Prices are cached in your browser's extension
+storage (<code>chrome.storage.local</code> in Chrome,
+<code>browser.storage.local</code> in Firefox) for 12 hours so the same deck is
+not re-requested on every visit. The cache stays on your device and is cleared
+when you uninstall the extension.</p>
 
 <h2>What the extension does not do</h2>
 <ul>
@@ -88,7 +100,7 @@ uninstall the extension.</p>
 <p>Prices are informational. Always confirm on TCGplayer before buying.</p>
 
 <h2>Contact</h2>
-<p>Email <a href="mailto:marc@ochsner.me">marc@ochsner.me</a>.</p>
+<p>Email <a href="mailto:marcaochsner+uvs@gmail.com">marcaochsner+uvs@gmail.com</a>.</p>
 
 <h2>Changes</h2>
 <p>If this policy changes, the date above changes with it, and the extension's store
@@ -98,17 +110,29 @@ listing points at the current version of this page.</p>
 </body></html>`;
 }
 
-export function homePage() {
+/** Shared by both pages so either URL can be verified. */
+function metaVerification(metaToken) {
+  return metaToken
+    ? `<meta name="google-site-verification" content="${String(metaToken).replace(/[^A-Za-z0-9_-]/g, '')}" />`
+    : '';
+}
+
+/**
+ * @param {string} [metaToken] Search Console HTML-tag token, if that method is used
+ */
+export function homePage(metaToken) {
   const base = 'https://uvs-ultra-prices.marc-ee2.workers.dev';
   const worker = `${base}/v1/health`;
+  const verificationTag = metaVerification(metaToken);
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
+${verificationTag}
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UVS Ultra Deck Prices</title>
 <style>${STYLE}</style></head>
 <body>
 <h1>UVS Ultra Deck Prices</h1>
-<p class="sub">A Chrome extension that shows TCGplayer prices on UVS Ultra decks.</p>
+<p class="sub">A browser extension that shows TCGplayer prices on UVS Ultra decks.</p>
 
 <p>This service exists for one reason: to answer the extension with TCGplayer prices
 without sending every user to TCGplayer's own site or to a third-party mirror. It
@@ -124,14 +148,21 @@ syncs the public catalog once a day and serves trimmed JSON.</p>
 <p>Live status: <a href="${worker}">${worker}</a></p>
 </div>
 
-<p>The extension itself: install it from the Chrome Web Store and open any deck,
-search result or card page on <a href="https://uvsultra.online">uvsultra.online</a>.
+<p>The extension itself: install it from the Chrome Web Store or Firefox Add-ons
+and open any deck, search result or card page on
+<a href="https://uvsultra.online">uvsultra.online</a>. Builds are also published on
+<a href="https://github.com/tressero/uvs-ultra-prices-plugin/releases">GitHub Releases</a>.
 Prices appear next to each card, with a total for the deck and for every deck in a
 list. Market, listed-median (mid) and low prices are available.</p>
 
 <p>Not affiliated with UVS Ultra, Jasco Games, or TCGplayer. Prices are
 informational.</p>
 
-<footer><a href="/privacy">Privacy policy</a></footer>
+<footer>
+  <a href="/privacy">Privacy policy</a>
+  · ${SITE_VERIFICATION_FILES.map(
+    (token) => `<a href="/${token}.html">Site verification file</a>`,
+  ).join(' · ')}
+</footer>
 </body></html>`;
 }
