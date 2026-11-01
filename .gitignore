@@ -4,7 +4,11 @@ node_modules/
 # Build output
 dist/
 dist-dev/
+dist-firefox/
+dist-firefox-dev/
 *.zip
+amo-artifacts/
+web-ext-artifacts/
 .wrangler/
 .dev.vars
 

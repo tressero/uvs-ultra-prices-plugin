@@ -21,9 +21,18 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - run: npm run build:firefox
 
-      - name: Package extension
-        run: npm run package
+      - name: Package extensions
+        run: |
+          npm run package
+          npm run package:firefox
+
+      - name: Lint the Firefox build
+        run: npm run lint:firefox
+
+      - name: Build the AMO source archive
+        run: npm run source:firefox
 
       - name: Read build label
         id: build
@@ -32,7 +41,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: extension-${{ steps.build.outputs.label }}
-          path: dist-*.zip
+          path: |
+            dist-*.zip
+            uvs-ultra-prices-source-*.zip
           if-no-files-found: error
 
   release:
@@ -51,6 +62,9 @@ jobs:
 
       - run: npm ci
       - run: npm run package
+      - run: npm run package:firefox
+      - run: npm run lint:firefox
+      - run: npm run source:firefox
 
       - name: Read build label
         id: build
@@ -61,14 +75,20 @@ jobs:
         env:
           CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
         run: |
           if [ -n "$CHROME_EXTENSION_ID" ]; then echo "chrome=true" >> "$GITHUB_OUTPUT"; else echo "chrome=false" >> "$GITHUB_OUTPUT"; fi
           if [ -n "$CLOUDFLARE_API_TOKEN" ]; then echo "cloudflare=true" >> "$GITHUB_OUTPUT"; else echo "cloudflare=false" >> "$GITHUB_OUTPUT"; fi
+          if [ -n "$AMO_JWT_ISSUER" ] && [ -n "$AMO_JWT_SECRET" ]; then echo "amo=true" >> "$GITHUB_OUTPUT"; else echo "amo=false" >> "$GITHUB_OUTPUT"; fi
 
-      - name: Attach the versioned zip to the GitHub release
+      - name: Attach the release assets
         uses: softprops/action-gh-release@v2
         with:
-          files: dist-*.zip
+          files: |
+            dist-${{ steps.build.outputs.label }}.zip
+            dist-firefox-${{ steps.build.outputs.label }}.zip
+            uvs-ultra-prices-source-${{ steps.build.outputs.label }}.zip
           generate_release_notes: true
 
       # Optional: publish to the Chrome Web Store on tag.
@@ -88,6 +108,27 @@ jobs:
             --client-id "$CLIENT_ID" \
             --client-secret "$CLIENT_SECRET" \
             --refresh-token "$REFRESH_TOKEN"
+
+      # Optional: submit the Firefox build to addons.mozilla.org.
+      #
+      # The FIRST submission is manual: the AMO listing, license and screenshots
+      # have to exist before this can update it. After that, set the repository
+      # variable AMO_PUBLISH=true and the AMO_JWT_ISSUER / AMO_JWT_SECRET
+      # secrets. Listed review can take days, so this step does not wait for it
+      # and a failure here must not fail the GitHub release.
+      - name: Submit to Firefox Add-ons (AMO)
+        if: steps.secrets.outputs.amo == 'true' && vars.AMO_PUBLISH == 'true'
+        continue-on-error: true
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          npx --no-install web-ext sign \
+            --source-dir dist-firefox \
+            --artifacts-dir amo-artifacts \
+            --channel listed \
+            --upload-source-code "uvs-ultra-prices-source-${{ steps.build.outputs.label }}.zip" \
+            --approval-timeout 0
 
       - name: Deploy the pricing worker
         if: steps.secrets.outputs.cloudflare == 'true'
