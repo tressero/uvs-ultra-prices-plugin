@@ -3,6 +3,8 @@
 Everything the dashboard asks for, written out. Copy from here, do not improvise
 during the review form.
 
+For the Firefox Add-ons listing, see [`docs/firefox-listing.md`](firefox-listing.md).
+
 ## Basics
 
 | Field | Value |
@@ -127,7 +129,7 @@ GET https://uvs-ultra-prices.marc-ee2.workers.dev/v1/health returns catalog stat
 ## Order of operations
 
 ```bash
-npm test                     # 49 tests, no network
+npm test                     # no network
 npm run coverage             # sampling report, optional
 npm run icons                # only if the mark changed
 npm run screenshots          # regenerates the three store images
