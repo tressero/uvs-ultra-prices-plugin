@@ -130,6 +130,21 @@ describe('syncCatalog', () => {
     expect(third.skipped).toBe(true);
   });
 
+  it('does not refetch the group listing once names are stored', async () => {
+    // The first sync stores the name in meta; later batches reuse it so a
+    // 24-set run fits the free plan's 50-subrequest cap.
+    const kv = fakeKV();
+    await syncCatalog(env(kv), { groups: ['24191'] });
+
+    const fetchMock = stubSource();
+    const result = await syncCatalog(env(kv), { groups: ['24191'], force: true });
+
+    expect(result.failures).toEqual([]);
+    const listingCalls = fetchMock.mock.calls.filter(([url]) => String(url).includes('/groups'));
+    expect(listingCalls).toHaveLength(0);
+    expect((await kv.get('group:24191', 'json')).name).toBe('Critical Role: Heroes of Exandria');
+  });
+
   it('sends a User-Agent, as tcgcsv requires', async () => {
     const kv = fakeKV();
     const fetchMock = stubSource();
