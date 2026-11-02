@@ -104,9 +104,9 @@ base variant and treat the collector number as confirmation, not identity.
 
 ```
 uvsultra.online                  proxy worker (Cloudflare)            tcgcsv.com
-┌────────────────┐   quote     ┌──────────────────────┐   daily cron   ┌──────────┐
+┌────────────────┐   quote     ┌──────────────────────┐  cron 2x/day   ┌──────────┐
 │ content script │ ──────────► │ catalog + prices KV  │ ─────────────► │ 61 groups│
-│ (DOM inject)   │ ◄────────── │ matching + caching   │   1x / 24h     └──────────┘
+│ (DOM inject)   │ ◄────────── │ matching + caching   │   2x / 24h     └──────────┘
 └───────┬────────┘   JSON      └──────────────────────┘
         │ chrome.runtime
 ┌───────▼────────┐
@@ -289,7 +289,8 @@ test (before there is anything to break).
   half the set's names or a clear margin plus agreeing set numbers, so
   "SoulCalibur 3" is not filed under "SoulCalibur VI".
 - Cloudflare's free plan allows 50 subrequests per invocation and a set costs
-  two, so a full refresh is batched: 20 sets per run, three cron runs a day.
+  two, so a full refresh is batched: 24 sets per run, two cron runs a day
+  (2am and 2pm America/New_York, with both UTC DST offsets declared).
 - The offline snapshot moved out of the service worker into `catalog.json`,
   loaded only when the worker is unreachable (bundle went from 2.4 MB to 6 KB).
 

@@ -128,6 +128,24 @@ async function handleAdminWarm(request, env) {
   return json({ ok: true, ...result });
 }
 
+/**
+ * True for the 2am and 2pm America/New_York runs.
+ *
+ * Worker cron expressions are UTC and have no timezone, so wrangler declares
+ * both DST offsets. This gate keeps only the invocation that lands on 2 or 14
+ * Eastern; the other two fire but do no work (and make no subrequests).
+ */
+export function isEasternPriceWindow(date) {
+  const hour = Number(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      hour: 'numeric',
+      hourCycle: 'h23',
+    }).format(date),
+  );
+  return hour === 2 || hour === 14;
+}
+
 function summarize(result) {
   return {
     skipped: result.skipped ?? false,
@@ -222,10 +240,14 @@ export default {
     return handleRequest(request, env, ctx);
   },
 
-  async scheduled(_event, env, ctx) {
+  async scheduled(event, env, ctx) {
+    // Both DST cron expressions fire; only the 2am/2pm Eastern one works.
+    if (!isEasternPriceWindow(new Date(event.scheduledTime ?? Date.now()))) return;
+
     // 24 sets max: each costs two subrequests and the plan allows 50 per run.
+    // The 2am run takes 24, the 2pm run finishes the remaining 23.
     ctx.waitUntil(
-      syncCatalog(env, { force: false, limit: 20 })
+      syncCatalog(env, { force: false, limit: 24 })
         .then((result) => {
           console.log(JSON.stringify({ message: 'cron sync', ...summarize(result) }));
         })
