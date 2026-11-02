@@ -1,34 +1,139 @@
-# UVS Ultra Deck Prices
+<h1 align="center">
+  <img src="extension/src/icons/icon-128.png" width="88" alt="UVS Ultra Deck Prices icon">
+  <br>
+  UVS Ultra Deck Prices
+</h1>
 
-A browser extension (Manifest V3) for Chrome and Firefox that shows TCGplayer
-prices next to every card on a [UVS Ultra](https://uvsultra.online) deck page,
-search result and card page, totals the deck, and sends the priced cards to
-TCGplayer's Mass Entry.
+<p align="center">
+  <strong>TCGplayer prices on every UVS Ultra deck, search result and card page.</strong><br>
+  A free browser extension for Chrome and Firefox — no account needed.
+</p>
 
-Full design and roadmap: [`plans/PLAN.md`](plans/PLAN.md).
+<!-- When the Firefox Add-ons listing is live, point the Firefox badge and the
+     note below at the AMO listing. -->
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/uvs-ultra-deck-prices/oheojpdmolhnhlojoojnkgpnadnanljd"><img src="docs/badges/chrome-web-store.svg" height="56" alt="Available in the Chrome Web Store"></a>
+  <a href="#install-from-a-github-release-zip"><img src="docs/badges/firefox-addons.svg" height="56" alt="Firefox Add-ons — install from a release zip while the store listing is in review"></a>
+</p>
 
-## Status
+<p align="center">
+  <em>Firefox Add-ons is in review — the Firefox badge goes to the zip install steps below.</em>
+</p>
 
-**M4 — Chrome Web Store submitted; Firefox Add-ons build and submission process
-added.**
+<p align="center">
+  <img src="docs/images/readme-deck.png" width="760" alt="A UVS Ultra deck with a TCGplayer price next to every card and the deck total at the top">
+</p>
 
-- Deck pages: a price chip per card, a deck total, a **Buy deck on TCGplayer**
-  button that sends only priced cards to Mass Entry, and a warning dialog listing
-  the cards TCGplayer cannot price yet.
-- Search results (`index.php`) and card pages (`showcard.php`, and the card popup
-  opened from a result or a deck row) show the card's TCGplayer price.
-- List pages (`topdecks.php`, `folder.php`, `user.php`): a total beside each
-  deck card, priced only when the card scrolls near the viewport, cached per
-  deck for 12 hours.
-- Prices can be shown as **Market** (default), **Mid** (listed median) or **Low**;
-  the extension popup sets the default and a deck page can override it for that
-  page only.
-- Cards TCGplayer cannot price get a marked estimate (`$1 (Est.)`,
-  `$15 (Est.)`, `$30 (Est.)`) by rarity.
-- 60 of 105 sets map to a TCGplayer group; everything else shows `n/a` instead
-  of a guessed price.
+## Install
 
-Store assets, listing copy and the submission checklist live in
+### Chrome, Edge and Brave
+
+The extension is live on the Chrome Web Store.
+
+1. Open the **[UVS Ultra Deck Prices listing](https://chromewebstore.google.com/detail/uvs-ultra-deck-prices/oheojpdmolhnhlojoojnkgpnadnanljd)**.
+2. Click **Add to Chrome**, then **Add extension**.
+3. Open any deck on [uvsultra.online](https://uvsultra.online). Prices appear next
+   to every card and the deck total appears at the top.
+
+Edge may ask you to allow extensions from other stores before it will install
+from the Chrome Web Store.
+
+### Firefox
+
+The Firefox Add-ons listing is **in review**. Until it is approved, use the
+[zip install](#install-from-a-github-release-zip) below. Firefox keeps a
+temporary add-on only until it restarts, so the store will be the permanent
+option once it is live.
+
+### Install from a GitHub release zip
+
+Use this to try a new build before it reaches the stores, or if you cannot use
+the stores. It takes about two minutes.
+
+1. Open the [latest release](https://github.com/tressero/uvs-ultra-prices-plugin/releases/latest).
+2. In the **Assets** list, download the file for your browser:
+   - **Chrome, Edge or Brave:** `dist-<version>.<sha>.zip` (not
+     `dist-firefox-...`), for example `dist-1.1.0.5211f58.zip`.
+   - **Firefox:** `dist-firefox-<version>.<sha>.zip`, for example
+     `dist-firefox-1.1.0.5211f58.zip`.
+
+   Ignore the `uvs-ultra-prices-source-...zip` file; that one is for store
+   reviewers. If the newest release has no `dist-firefox-` zip yet, use the
+   newest release that does, or [build from source](#build-from-source).
+3. Unzip the download into a folder you will keep. You should see
+   `manifest.json` directly inside the folder. The browser loads the folder,
+   not the zip file.
+
+#### Chrome, Edge and Brave
+
+1. Open `chrome://extensions` in a new tab. In Edge, use `edge://extensions`; in
+   Brave, `brave://extensions`.
+2. Turn on **Developer mode** — top right in Chrome, left sidebar in Edge.
+3. Click **Load unpacked** and choose the unzipped folder, the one that contains
+   `manifest.json`.
+4. Open any deck on [uvsultra.online](https://uvsultra.online).
+
+Chrome may show a notice about developer-mode extensions when it starts. Keep
+them enabled if asked. The extension stays installed until you remove it or turn
+developer mode off; some managed browsers block developer mode entirely.
+
+#### Firefox
+
+1. Open `about:debugging#/runtime/this-firefox` in a new tab.
+2. Click **Load Temporary Add-on…**.
+3. Select `manifest.json` inside the unzipped folder.
+4. Open any deck on [uvsultra.online](https://uvsultra.online).
+
+Firefox removes temporary add-ons when it restarts. Load `manifest.json` again
+after a restart, or install from Firefox Add-ons once the listing is approved.
+The GitHub zip is unsigned, so standard Firefox will not install it permanently.
+
+#### Updating a zip install
+
+Download the newer release and unzip it over the same folder. In
+`chrome://extensions`, click **Reload** on the extension card. In Firefox, load
+`manifest.json` again from `about:debugging`.
+
+The full walkthrough, including troubleshooting, is in
+[`docs/manual-install.md`](docs/manual-install.md).
+
+## What it does
+
+- **Deck pages:** a TCGplayer price next to every card and a total at the top.
+  **Buy deck on TCGplayer** sends only the priced cards to Mass Entry; cards
+  TCGplayer cannot price are listed first so nothing is added silently.
+- **Search and card pages:** prices appear in search results and on card pages,
+  including the popup opened from a deck row.
+- **Deck lists:** Top Decks, folders and player pages show what each deck costs
+  before you open it.
+- **Your price basis:** choose **Market** (recent sold prices, the default),
+  **Mid** (typical current listing) or **Low** (cheapest listing) from the
+  extension popup. A deck page can override it for that page only.
+- **Honest estimates:** a card TCGplayer cannot price gets a rarity-based
+  estimate marked `(Est.)`. A total that includes estimates starts with `≈`; a
+  total with cards still unpriced starts with `≥`.
+
+## Privacy
+
+No account, no analytics, no ads. The only data sent anywhere is the list of
+cards you are viewing, sent to this project's pricing service so it can return
+prices. Everything else stays in your browser. Read the
+[privacy policy](https://uvs-ultra-prices.marc-ee2.workers.dev/privacy).
+
+UVS Ultra Deck Prices is not affiliated with UVS Ultra, Jasco Games or
+TCGplayer. Prices are informational; confirm them on TCGplayer before buying.
+
+## Development
+
+UVS Ultra Deck Prices is a Manifest V3 extension. Build, test and release notes
+for contributors — if you only want to use the extension, stop at
+[Install](#install). Full design and roadmap:
+[`plans/PLAN.md`](plans/PLAN.md).
+
+### Project status
+
+**v1.1.0** — live on the Chrome Web Store; the Firefox Add-ons submission is in
+review. Store assets, listing copy and the submission checklist live in
 [`docs/store-listing.md`](docs/store-listing.md) for Chrome and
 [`docs/firefox-listing.md`](docs/firefox-listing.md) for Firefox; the policy is
 [`docs/privacy.md`](docs/privacy.md) and is also served at
@@ -36,7 +141,7 @@ Store assets, listing copy and the submission checklist live in
 [`docs/releasing.md`](docs/releasing.md) and manual installs are covered in
 [`docs/manual-install.md`](docs/manual-install.md).
 
-## Quick start
+### Quick start
 
 ```bash
 npm install
@@ -50,23 +155,16 @@ extension with Playwright, and writes screenshots to `/tmp/opencode/uvsp-*.png`.
 With `WORKER_URL=http://localhost:8789` it will exercise the real worker path
 (see below).
 
-### Load it in your own browser
+### Build from source
 
 ```bash
 npm run build            # -> dist/ (Chrome)
 npm run build:firefox    # -> dist-firefox/ (Firefox)
 ```
 
-Chrome: `chrome://extensions` → enable Developer mode → **Load unpacked** → pick
-`dist/`.
-
-Firefox: `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on…** →
-pick `dist-firefox/manifest.json`. A temporary add-on is removed when Firefox
-restarts; permanent installs use the signed store build.
-
-Then open any deck on https://uvsultra.online. Downloadable release builds and
-the full manual-install walkthrough are in
-[`docs/manual-install.md`](docs/manual-install.md).
+Then load `dist/` or `dist-firefox/` using the browser steps in
+[Install from a GitHub release zip](#install-from-a-github-release-zip), choosing
+the built folder instead of an extracted one.
 
 ## How it works
 
@@ -80,7 +178,7 @@ deck.php DOM ──► parse.js ──► {name, setCode, number, qty}
                                      ▼
                     chips + summary panel (content/deck.js)
 
-pricing worker ── daily cron ──► tcgcsv ──► KV (12 groups)
+pricing worker ── twice-daily cron ──► tcgcsv ──► KV (47 groups)
        ▲
        └── POST /v1/quote  { cards, metric }
 ```
@@ -97,8 +195,8 @@ pricing worker ── daily cron ──► tcgcsv ──► KV (12 groups)
   renders.
 - `extension/src/background/sw.js` — owns the price source: 12 h quote cache,
   then the worker, then a stale cache, then the bundled snapshot.
-- `worker/src/sync.js` — pulls tcgcsv once a day into KV, trimmed to
-  `{id, name, number, rarity, mid, market, low}` per product.
+- `worker/src/sync.js` — pulls tcgcsv into KV twice a day (2am and 2pm ET),
+  trimmed to `{id, name, number, rarity, mid, market, low}` per product.
 - `extension/src/content/deck.js` — renders deck pages, and never invents a number.
 - `extension/src/content/cards.js` — prices search results (`listing_cards.php`
   loaded into `#content`) and card pages (the colorbox fragment and
@@ -128,15 +226,18 @@ npm run worker:deploy
 ```
 
 After the first deploy, prime the catalog (otherwise the first extension visit
-waits for the daily cron):
+waits for the twice-daily cron):
 
 ```bash
 npm run worker:prime
 ```
 
-One invocation can only refresh ~20 sets: Cloudflare's free plan allows 50
+One invocation can only refresh ~24 sets: Cloudflare's free plan allows 50
 subrequests per request, and each set costs two. `worker:prime` repeats until
-the catalog is complete, which is also why the cron runs three times a day.
+the catalog is complete. The cron runs at 2am and 2pm America/New_York: the
+2am run takes the first 24 sets and the 2pm run finishes the catalog. Cron
+expressions are UTC only, so `worker/wrangler.jsonc` declares both DST offsets
+and `worker/src/index.js` acts only when the Eastern hour is 2 or 14.
 
 Then point the extension at it — one file, two consequences (the default URL in
 the service worker and the manifest host permission):
