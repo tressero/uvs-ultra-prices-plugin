@@ -1,7 +1,7 @@
 /**
  * Prime or refresh the deployed worker's catalog.
  *
- * A run can only refresh ~20 sets (Cloudflare's free plan allows 50
+ * A run can only refresh ~24 sets (Cloudflare's free plan allows 50
  * subrequests per invocation, and each set costs two), so this repeats until
  * the worker reports nothing left.
  *
@@ -31,7 +31,7 @@ const base = url.replace(/\/$/, '');
 console.log(`priming ${base}`);
 
 for (let round = 1; round <= 10; round++) {
-  const response = await fetch(`${base}/v1/admin/sync?limit=20`, {
+  const response = await fetch(`${base}/v1/admin/sync?limit=24`, {
     method: 'POST',
     headers: { authorization: `Bearer ${secret}`, 'content-type': 'application/json' },
     body: '{}',

@@ -75,7 +75,8 @@ function buildGroup(group, products, prices) {
  * The free plan allows 50 subrequests per invocation, and one set costs two
  * (products + prices), so a full refresh cannot happen in one request. Each run
  * refreshes at most `limit` sets that are still on an older stamp; the next run
- * picks up the rest.
+ * picks up the rest. The twice-daily cron does 24 sets at 2am Eastern and the
+ * remaining 23 at 2pm.
  */
 export async function syncCatalog(env, options = {}) {
   const base = (env.SOURCE_BASE ?? 'https://tcgcsv.com').replace(/\/$/, '');
@@ -105,8 +106,18 @@ export async function syncCatalog(env, options = {}) {
   }
 
   const batch = stale.slice(0, limit);
-  const groupList = await fetchJson(`${base}/tcgplayer/${category}/groups`, userAgent);
-  const names = new Map(groupList.results.map((group) => [String(group.groupId), group.name]));
+  // Group names are persisted in meta, so the groups listing is only needed
+  // when the batch contains a set that has never been synced. Skipping it keeps
+  // a 24-set run under the free plan's 50-subrequest cap (1 + 24 * 2 = 49).
+  const needNames = batch.some((groupId) => !groups[groupId]?.name);
+  const names = needNames
+    ? new Map(
+        (await fetchJson(`${base}/tcgplayer/${category}/groups`, userAgent)).results.map((group) => [
+          String(group.groupId),
+          group.name,
+        ]),
+      )
+    : new Map();
 
   const failures = [];
   let products = 0;

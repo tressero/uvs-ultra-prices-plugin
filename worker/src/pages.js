@@ -136,7 +136,7 @@ ${verificationTag}
 
 <p>This service exists for one reason: to answer the extension with TCGplayer prices
 without sending every user to TCGplayer's own site or to a third-party mirror. It
-syncs the public catalog once a day and serves trimmed JSON.</p>
+syncs the public catalog twice a day and serves trimmed JSON.</p>
 
 <div class="card">
 <h2 style="margin-top:0">Endpoints</h2>
