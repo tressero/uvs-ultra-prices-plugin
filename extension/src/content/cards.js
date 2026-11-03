@@ -24,6 +24,7 @@ const state = {
   showUnmatched: true,
   running: false,
   again: false,
+  retried: false,
   timer: 0,
 };
 
@@ -93,8 +94,15 @@ async function priceUnpriced() {
     if (!quote?.ok) {
       // Allow a later DOM change to try again instead of leaving dead marks.
       for (const entry of entries) delete entry.element.dataset[MARK];
+      // A sleeping background worker is worth one more attempt; a real failure
+      // is not, and repeating it forever would hammer the service.
+      if (quote?.retryable && !state.retried) {
+        state.retried = true;
+        setTimeout(schedule, 1500);
+      }
       return;
     }
+    state.retried = false;
 
     quote.items.forEach((item, index) => {
       const entry = entries[index];

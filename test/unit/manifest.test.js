@@ -43,6 +43,24 @@ describe('browser manifests', () => {
     expect(permissions).not.toContain('http://localhost:8787/*');
   });
 
+  it('covers both the apex and www hosts, in permissions and content scripts', () => {
+    const hostPermissions = hostPermissionsFor(base, {
+      workerOrigin: 'https://uvs-ultra-prices.example.workers.dev',
+      dev: false,
+    });
+    expect(hostPermissions).toEqual(
+      expect.arrayContaining(['https://uvsultra.online/*', 'https://www.uvsultra.online/*']),
+    );
+
+    const manifest = composeManifest(base, {}, { version: '1.1.1', hostPermissions });
+    for (const entry of manifest.content_scripts) {
+      const apex = entry.matches.filter((match) => match.startsWith('https://uvsultra.online/'));
+      const www = entry.matches.filter((match) => match.startsWith('https://www.uvsultra.online/'));
+      expect(www).toHaveLength(apex.length);
+      expect(www.map((match) => match.replace('www.', ''))).toEqual(apex);
+    }
+  });
+
   it('adds localhost to development builds', () => {
     const permissions = hostPermissionsFor(base, {
       workerOrigin: 'https://uvs-ultra-prices.example.workers.dev',

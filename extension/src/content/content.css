@@ -125,6 +125,31 @@ a.uvsp-chip.uvsp-chip--est:focus {
   color: #8a4b00;
 }
 
+.uvsp-panel--error {
+  border-color: #c9a227;
+  background: #fffdf5;
+}
+
+.uvsp-retry {
+  margin-top: 6px;
+  padding: 3px 10px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  color: #1b1b1b;
+  font: 12px/1.4 arial, sans-serif;
+  cursor: pointer;
+}
+
+.uvsp-retry:hover {
+  background: #f0f0f0;
+}
+
+.uvsp-retry:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .uvsp-panel-note--estimate {
   color: #4a4a4a;
   font-style: italic;
