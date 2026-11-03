@@ -208,11 +208,13 @@ function pump() {
     state.inFlight++;
     fetchQuote(card.deckId)
       .then((quote) => paint(card, quote))
-      .catch(() => {
+      .catch((error) => {
+        // Let a later scroll or DOM change try this deck again.
+        state.seen.delete(card.deckId);
         const chip = document.createElement('span');
         chip.className = `${CHIP_CLASS} ${CHIP_CLASS}--none`;
         chip.textContent = 'n/a';
-        chip.title = 'Could not price this deck';
+        chip.title = `Could not price this deck (${error?.message ?? 'no answer'}) — reload or scroll away and back to retry`;
         mount(card, chip);
       })
       .finally(() => {

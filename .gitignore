@@ -23,3 +23,6 @@ coverage/
 
 # Local admin token for the deployed worker
 worker/.admin-token
+
+# IDE
+.idea/

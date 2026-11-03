@@ -102,6 +102,61 @@ function metricRow(selected) {
   return row;
 }
 
+/**
+ * Shown when no quote could be obtained at all. Silence here was the bug: a
+ * failed message used to leave the deck looking like the extension was never
+ * installed.
+ */
+function renderErrorPanel(error, onRetry) {
+  const existing = document.getElementById(PANEL_ID);
+  const panel = existing ?? document.createElement('div');
+  panel.id = PANEL_ID;
+  panel.className = 'uvsp-panel uvsp-panel--error';
+  panel.replaceChildren();
+
+  const headline = document.createElement('div');
+  headline.className = 'uvsp-panel-headline';
+
+  const label = document.createElement('span');
+  label.className = 'uvsp-label';
+  label.textContent = 'TCGplayer prices';
+
+  const total = document.createElement('span');
+  total.className = 'uvsp-total';
+  total.textContent = '—';
+
+  headline.append(label, total);
+  panel.append(headline);
+
+  panel.append(
+    noteLine(
+      error === 'worker-unreachable'
+        ? 'Chrome did not answer from the extension background worker. Prices load again after a retry.'
+        : `Prices are unavailable right now${error ? ` (${error})` : ''}.`,
+      'warn',
+    ),
+  );
+
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.className = 'uvsp-retry';
+  retry.textContent = 'Try again';
+  retry.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    retry.disabled = true;
+    retry.textContent = 'Retrying…';
+    onRetry();
+  });
+  panel.append(retry);
+
+  if (!existing) {
+    const anchor = document.querySelector('.deck-header');
+    if (anchor) anchor.append(panel);
+    else document.querySelector('.deck-sort')?.after(panel);
+  }
+}
+
 function renderPanel(quote, items, uniqueCards, metric, settled) {
   const existing = document.getElementById(PANEL_ID);
   const panel = existing ?? document.createElement('div');
@@ -256,7 +311,11 @@ async function render() {
   const settings = await loadSettings();
   const metric = metricOverride ?? normalizeMetric(settings.metric);
   const quote = await requestQuote(cards, metric);
-  if (!quote?.ok || token !== renderToken) return;
+  if (token !== renderToken) return;
+  if (!quote?.ok) {
+    renderErrorPanel(quote?.error, () => schedule());
+    return;
+  }
 
   const missing = needsRarity(quote.items);
 

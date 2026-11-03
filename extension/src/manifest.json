@@ -10,7 +10,7 @@
     "128": "icons/icon-128.png"
   },
   "permissions": ["storage"],
-  "host_permissions": ["https://uvsultra.online/*"],
+  "host_permissions": ["https://uvsultra.online/*", "https://www.uvsultra.online/*"],
   "background": {
     "service_worker": "sw.js",
     "type": "module"
@@ -18,7 +18,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://uvsultra.online/deck.php*"
+        "https://uvsultra.online/deck.php*",
+        "https://www.uvsultra.online/deck.php*"
       ],
       "js": ["deck.js", "cards.js"],
       "css": ["content.css"],
@@ -27,8 +28,11 @@
     {
       "matches": [
         "https://uvsultra.online/topdecks.php*",
+        "https://www.uvsultra.online/topdecks.php*",
         "https://uvsultra.online/folder.php*",
-        "https://uvsultra.online/user.php*"
+        "https://www.uvsultra.online/folder.php*",
+        "https://uvsultra.online/user.php*",
+        "https://www.uvsultra.online/user.php*"
       ],
       "js": ["list.js"],
       "css": ["content.css"],
@@ -37,7 +41,9 @@
     {
       "matches": [
         "https://uvsultra.online/index.php*",
-        "https://uvsultra.online/showcard.php*"
+        "https://www.uvsultra.online/index.php*",
+        "https://uvsultra.online/showcard.php*",
+        "https://www.uvsultra.online/showcard.php*"
       ],
       "js": ["cards.js"],
       "css": ["content.css"],
