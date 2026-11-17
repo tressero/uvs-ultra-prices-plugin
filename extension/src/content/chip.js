@@ -25,6 +25,19 @@ export function tcgSearchUrl(name) {
   return `https://www.tcgplayer.com/search/universus/product?q=${encodeURIComponent(name)}`;
 }
 
+const round = (value) => Math.round(value * 100) / 100;
+
+/**
+ * What the chip prints for a row. A deck row can hold several copies, so it
+ * shows what those copies cost together ($15 each x4 prints $60.00); search
+ * results and card pages carry qty 1 and keep showing the single price.
+ */
+function lineTotal(item, unit) {
+  if (typeof item.line === 'number') return item.line;
+  const qty = Number(item.card?.qty) || 1;
+  return round(unit * qty);
+}
+
 /**
  * @param item a priced item from priceDeck
  * @param metric 'mid' | 'market' | 'low'
@@ -34,6 +47,7 @@ export function tcgSearchUrl(name) {
 export function chipFor(item, metric, options = {}) {
   const rarity = options.rarity ?? item.match?.rarity ?? null;
   const selected = normalizeMetric(metric);
+  const qty = Number(item.card?.qty) || 1;
 
   // Matched and priced: a real number, linked to the product page.
   if (item.unit != null) {
@@ -42,9 +56,10 @@ export function chipFor(item, metric, options = {}) {
     chip.href = productUrl(item.match);
     chip.target = '_blank';
     chip.rel = 'noopener noreferrer';
-    chip.textContent = money(item.unit);
+    chip.textContent = money(lineTotal(item, item.unit));
 
     const title = [`${item.match.name} — TCGplayer`];
+    if (qty > 1) title.push(`${qty} × ${money(item.unit)}`);
     title.push(`mid ${money(item.match.mid)}`, `market ${money(item.match.market)}`, `low ${money(item.match.low)}`);
     if (item.estimated) {
       title.push(`no ${selected} price, showing ${FIELD_LABEL[item.unitSource] ?? 'another price'}`);
@@ -64,17 +79,21 @@ export function chipFor(item, metric, options = {}) {
 
   // No price, but we know the rarity: show an estimate, marked as one.
   if (value != null) {
+    const line = round(value * qty);
     const chip = document.createElement('a');
     chip.className = `${CHIP_CLASS} uvsp-chip--est`;
-    chip.textContent = `${moneyWhole(value)} (Est.)`;
+    chip.textContent = `${moneyWhole(line)} (Est.)`;
     chip.href = link ?? tcgSearchUrl(item.card.name);
     chip.target = '_blank';
     chip.rel = 'noopener noreferrer';
     chip.title = [
-      `Estimate ${moneyWhole(value)} — no TCGplayer price`,
+      `Estimate ${moneyWhole(line)} — no TCGplayer price`,
+      qty > 1 ? `${qty} × ${moneyWhole(value)}` : null,
       `${rarity} · ${REASON_TEXT[item.reason] ?? 'not listed'}`,
       'Click to check TCGplayer',
-    ].join(' · ');
+    ]
+      .filter(Boolean)
+      .join(' · ');
     return chip;
   }
 
