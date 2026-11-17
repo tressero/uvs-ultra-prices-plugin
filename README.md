@@ -181,8 +181,10 @@ for contributors — if you only want to use the extension, stop at
 
 ### Project status
 
-**v1.2.0** — live on the Chrome Web Store and [Firefox
-Add-ons](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/). Store
+**v1.2.0** is the current release. The extension is live on the Chrome Web Store
+and [Firefox
+Add-ons](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/);
+store builds update from the release workflow. Store
 assets, listing copy and the submission checklist live in
 [`docs/store-listing.md`](docs/store-listing.md) for Chrome and
 [`docs/firefox-listing.md`](docs/firefox-listing.md) for Firefox; the policy is
