@@ -3,8 +3,7 @@
 The normal install paths are the browser stores:
 
 - **Chrome, Edge, Brave:** [Chrome Web Store](https://chromewebstore.google.com/detail/uvs-ultra-deck-prices/oheojpdmolhnhlojoojnkgpnadnanljd)
-- **Firefox:** [Firefox Add-ons](https://addons.mozilla.org/firefox/) — the
-  listing is in review. Until it is approved, use the GitHub zip below.
+- **Firefox:** [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/)
 
 These instructions are for people who want the exact build attached to a GitHub
 release, or who want to build from source. You do not need to install Node.js or
@@ -53,9 +52,10 @@ mode off. Some managed browsers block developer mode entirely.
 5. Open a deck on <https://uvsultra.online>.
 
 Firefox removes temporary add-ons when it restarts. Load `manifest.json` again
-after a restart, or install from [Firefox Add-ons](https://addons.mozilla.org/firefox/)
-once the listing is live. The GitHub zip is unsigned; standard Firefox will not
-install it permanently. A permanent install needs the signed store build.
+after a restart, or install the signed build from [Firefox
+Add-ons](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/).
+The GitHub zip is unsigned; standard Firefox will not install it permanently. A
+permanent install needs the signed store build.
 
 ### Updating a zip install
 
@@ -75,7 +75,7 @@ install.
 | **Load unpacked** is missing or greyed out | Turn on **Developer mode** on `chrome://extensions`. |
 | Chrome says “Manifest file is missing or unreadable” | You selected the wrong folder. Select the folder that has `manifest.json` directly inside it; extraction sometimes creates a nested folder. |
 | Firefox will not accept the file | Choose `manifest.json` from inside the extracted folder, not the zip file. |
-| The add-on disappeared after restarting Firefox | Temporary add-ons are removed on restart. Load `manifest.json` again, or wait for the Firefox Add-ons listing. |
+| The add-on disappeared after restarting Firefox | Temporary add-ons are removed on restart. Load `manifest.json` again, or install the signed build from [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/). |
 | No prices appear on UVS Ultra | Check that the extension is enabled, then reload the UVS Ultra tab. The extension only runs on <https://uvsultra.online>. |
 | A card shows `n/a` | TCGplayer has no matching product or no price for that card. See [Known limits](../README.md#known-limits). |
 
