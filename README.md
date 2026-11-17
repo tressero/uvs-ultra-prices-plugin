@@ -9,15 +9,19 @@
   A free browser extension for Chrome and Firefox — no account needed.
 </p>
 
-<!-- When the Firefox Add-ons listing is live, point the Firefox badge and the
-     note below at the AMO listing. -->
 <p align="center">
   <a href="https://chromewebstore.google.com/detail/uvs-ultra-deck-prices/oheojpdmolhnhlojoojnkgpnadnanljd"><img src="docs/badges/chrome-web-store.svg" height="56" alt="Available in the Chrome Web Store"></a>
-  <a href="#install-from-a-github-release-zip"><img src="docs/badges/firefox-addons.svg" height="56" alt="Firefox Add-ons — install from a release zip while the store listing is in review"></a>
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/"><img src="docs/badges/firefox-addons.svg" height="56" alt="Get the Firefox Add-on"></a>
 </p>
 
 <p align="center">
-  <em>Firefox Add-ons is in review — the Firefox badge goes to the zip install steps below.</em>
+  <a href="https://chromewebstore.google.com/detail/uvs-ultra-deck-prices/oheojpdmolhnhlojoojnkgpnadnanljd">Chrome Web Store</a>
+  ·
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/">Firefox Add-ons</a>
+  ·
+  <a href="#install-from-a-github-release-zip">Install a release zip</a>
+  ·
+  <a href="#build-and-load-from-source">Build from source</a>
 </p>
 
 <p align="center">
@@ -40,10 +44,14 @@ from the Chrome Web Store.
 
 ### Firefox
 
-The Firefox Add-ons listing is **in review**. Until it is approved, use the
-[zip install](#install-from-a-github-release-zip) below. Firefox keeps a
-temporary add-on only until it restarts, so the store will be the permanent
-option once it is live.
+The extension is live on [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/).
+
+1. Open the **[UVS Ultra Deck Prices listing](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/)**.
+2. Click **Add to Firefox**, then **Add**.
+3. Open any deck on [uvsultra.online](https://uvsultra.online). Prices appear next
+   to every card and the deck total appears at the top.
+
+Firefox for Android 142 and later is supported too, through the same listing.
 
 ### Install from a GitHub release zip
 
@@ -53,13 +61,13 @@ the stores. It takes about two minutes.
 1. Open the [latest release](https://github.com/tressero/uvs-ultra-prices-plugin/releases/latest).
 2. In the **Assets** list, download the file for your browser:
    - **Chrome, Edge or Brave:** `dist-<version>.<sha>.zip` (not
-     `dist-firefox-...`), for example `dist-1.1.0.5211f58.zip`.
+     `dist-firefox-...`), for example `dist-1.2.0.c256c6c.zip`.
    - **Firefox:** `dist-firefox-<version>.<sha>.zip`, for example
-     `dist-firefox-1.1.0.5211f58.zip`.
+     `dist-firefox-1.2.0.c256c6c.zip`.
 
    Ignore the `uvs-ultra-prices-source-...zip` file; that one is for store
    reviewers. If the newest release has no `dist-firefox-` zip yet, use the
-   newest release that does, or [build from source](#build-from-source).
+   newest release that does, or [build from source](#build-and-load-from-source).
 3. Unzip the download into a folder you will keep. You should see
    `manifest.json` directly inside the folder. The browser loads the folder,
    not the zip file.
@@ -85,8 +93,10 @@ developer mode off; some managed browsers block developer mode entirely.
 4. Open any deck on [uvsultra.online](https://uvsultra.online).
 
 Firefox removes temporary add-ons when it restarts. Load `manifest.json` again
-after a restart, or install from Firefox Add-ons once the listing is approved.
-The GitHub zip is unsigned, so standard Firefox will not install it permanently.
+after a restart, or install the signed build from
+[Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/)
+for a permanent install. The GitHub zip is unsigned, so standard Firefox will
+not install it permanently.
 
 #### Updating a zip install
 
@@ -97,11 +107,50 @@ Download the newer release and unzip it over the same folder. In
 The full walkthrough, including troubleshooting, is in
 [`docs/manual-install.md`](docs/manual-install.md).
 
+### Build and load from source
+
+This is the path for trying unreleased code or working on the extension. You
+need Node.js 20 (see `.nvmrc`) and npm.
+
+```bash
+git clone https://github.com/tressero/uvs-ultra-prices-plugin.git
+cd uvs-ultra-prices-plugin
+npm ci
+
+npm run build:dev          # Chrome -> dist-dev/
+npm run build:firefox:dev  # Firefox -> dist-firefox-dev/
+```
+
+Load the generated folder with the same browser steps as a release zip, choosing
+`dist-dev/` or `dist-firefox-dev/` instead of an extracted folder:
+
+- **Chrome, Edge and Brave:** `chrome://extensions` → **Developer mode** →
+  **Load unpacked** → `dist-dev/`.
+- **Firefox:** `about:debugging#/runtime/this-firefox` → **Load Temporary
+  Add-on…** → `dist-firefox-dev/manifest.json`.
+
+For a production-shaped build with the version stamp, run `npm run build` or
+`npm run build:firefox`, then load `dist/` or `dist-firefox/`. To produce the
+same zips the release publishes:
+
+```bash
+npm run package          # dist-<label>.zip + dist.zip
+npm run package:firefox  # dist-firefox-<label>.zip + dist-firefox.zip
+```
+
+The source is plain ES modules: `extension/src/` holds the content scripts,
+popup, service worker and manifests; `shared/` holds parsing, matching, totals
+and formatting used by both the extension and the worker; `worker/src/` serves
+the pricing API. Start with
+[`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
+
 ## What it does
 
 - **Deck pages:** a TCGplayer price next to every card and a total at the top.
-  **Buy deck on TCGplayer** sends only the priced cards to Mass Entry; cards
-  TCGplayer cannot price are listed first so nothing is added silently.
+  Each row shows what all its copies cost (four $15 cards read `$60.00`), and the
+  hover text keeps the per-copy price. **Buy deck on TCGplayer** sends only the
+  priced cards to Mass Entry; cards TCGplayer cannot price are listed first so
+  nothing is added silently.
 - **Search and card pages:** prices appear in search results and on card pages,
   including the popup opened from a deck row.
 - **Deck lists:** Top Decks, folders and player pages show what each deck costs
@@ -132,8 +181,9 @@ for contributors — if you only want to use the extension, stop at
 
 ### Project status
 
-**v1.1.0** — live on the Chrome Web Store; the Firefox Add-ons submission is in
-review. Store assets, listing copy and the submission checklist live in
+**v1.2.0** — live on the Chrome Web Store and [Firefox
+Add-ons](https://addons.mozilla.org/en-US/firefox/addon/uvs-ultra-deck-prices/). Store
+assets, listing copy and the submission checklist live in
 [`docs/store-listing.md`](docs/store-listing.md) for Chrome and
 [`docs/firefox-listing.md`](docs/firefox-listing.md) for Firefox; the policy is
 [`docs/privacy.md`](docs/privacy.md) and is also served at
@@ -155,16 +205,34 @@ extension with Playwright, and writes screenshots to `/tmp/opencode/uvsp-*.png`.
 With `WORKER_URL=http://localhost:8789` it will exercise the real worker path
 (see below).
 
-### Build from source
+### Build and load
 
-```bash
-npm run build            # -> dist/ (Chrome)
-npm run build:firefox    # -> dist-firefox/ (Firefox)
-```
+See [Build and load from source](#build-and-load-from-source) for the clone,
+build and browser-load steps, including how to produce release zips locally.
 
-Then load `dist/` or `dist-firefox/` using the browser steps in
-[Install from a GitHub release zip](#install-from-a-github-release-zip), choosing
-the built folder instead of an extracted one.
+## Contributing
+
+Pull requests are welcome. Before you open one:
+
+1. **Open an issue first** for a new feature or a behavior change, so the
+   approach can be agreed on before code is written. Small fixes can go straight
+   to a PR.
+2. **Keep the PR focused.** One concern per PR, with no drive-by formatting or
+   unrelated refactors.
+3. **Explain why the change is needed**, what changed, and how you verified it.
+4. **Disclose generated code.** If a tool, assistant or prompt wrote part of the
+   change, say which one and what it produced. You are still responsible for
+   reviewing it and making sure it matches this project.
+5. **Run the checks:** `npm test`, `npm run build`, `npm run build:firefox` and,
+   for anything touching the Firefox build, `npm run lint:firefox`.
+
+The full guide, including the PR description template, commit conventions and
+review expectations, is in [`CONTRIBUTING.md`](CONTRIBUTING.md). The matching
+[PR template](.github/pull_request_template.md) puts the why, the AI/tool
+disclosure and the test steps in every new pull request.
+
+Release work (version bump, tag, store uploads) is separate; see
+[`docs/releasing.md`](docs/releasing.md).
 
 ## How it works
 
@@ -322,11 +390,11 @@ Firefox builds keep only the SemVer version so an AMO rebuild from the submitted
 source produces identical files; the archive name and tag still carry the commit:
 
 ```text
-VERSION.txt                    1.1.0
-Chrome build label             1.1.0.<7-char-sha>
-Firefox build label / manifest 1.1.0
-popup (Chrome / Firefox)       v1.1.0.<sha> / v1.1.0
-git tag                        v1.1.0.<sha>
+VERSION.txt                    1.2.0
+Chrome build label             1.2.0.<7-char-sha>
+Firefox build label / manifest 1.2.0
+popup (Chrome / Firefox)       v1.2.0.<sha> / v1.2.0
+git tag                        v1.2.0.<sha>
 ```
 
 Tagging a release (the working tree must be clean):
@@ -380,7 +448,7 @@ how many were left out.
 | --- | --- |
 | `data/set-map.json` | UVS set code → TCGplayer group, scored by card-name overlap (`npm run set-map`) |
 | `data/prices.snapshot.json` | Offline fallback, trimmed products + prices for the mapped sets (`npm run prices`) |
-| `VERSION.txt` | SemVer core (`1.1.0`); Chrome build label `1.1.0.<sha>`, Firefox label `1.1.0`, tag `v1.1.0.<sha>` |
+| `VERSION.txt` | SemVer core (`1.2.0`); Chrome build label `1.2.0.<sha>`, Firefox label `1.2.0`, tag `v1.2.0.<sha>` |
 | `config/worker.json` | The deployed pricing worker URL (single source for the manifest and the client) |
 | `extension/src/manifest.firefox.json` | Firefox overlay: event page, Gecko ID and data-collection declaration |
 | `fixtures/` | Saved pages so tests never touch the network (`npm run fixtures`) |
